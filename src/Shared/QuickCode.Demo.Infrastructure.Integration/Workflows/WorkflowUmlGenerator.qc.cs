@@ -11,7 +11,7 @@ public static class WorkflowUmlGenerator
 {
     public static string GenerateSequenceDiagram(this Workflow workflow)
     {
-        string Sanitize(string input) => input.Replace(" ", "");
+        string Sanitize(string? input) => (input ?? string.Empty).Replace(" ", "");
 
         var plantUml = new StringBuilder();
         plantUml.AppendLine("@startuml");
@@ -19,6 +19,12 @@ public static class WorkflowUmlGenerator
         
         plantUml.AppendLine("autonumber");
         plantUml.AppendLine("actor User");
+
+        if (workflow.Steps is not { Count: > 0 })
+        {
+            plantUml.AppendLine("@enduml");
+            return plantUml.ToString();
+        }
 
         foreach (var step in workflow.Steps)
         {
@@ -35,13 +41,13 @@ public static class WorkflowUmlGenerator
 
             plantUml.AppendLine($"note right of {stepName}");
             plantUml.AppendLine($"API: {currentStep.Url}");
-            if (currentStep.Headers.Count > 0)
+            if (currentStep.Headers is { Count: > 0 })
             {
                 plantUml.AppendLine("Headers:");
                 foreach (var header in currentStep.Headers) plantUml.AppendLine($"- {header.Key}: {header.Value}");
             }
 
-            if (currentStep.Body.Count > 0)
+            if (currentStep.Body is { Count: > 0 })
             {
                 plantUml.AppendLine("Body:");
                 foreach (var body in currentStep.Body) plantUml.AppendLine($"- {body.Key}: {body.Value}");
@@ -49,7 +55,7 @@ public static class WorkflowUmlGenerator
 
             plantUml.AppendLine("end note");
 
-            if (currentStep.Transitions.Any())
+            if (currentStep.Transitions is { Count: > 0 })
             {
                 string transitionType = "alt";
                 foreach (var transition in currentStep.Transitions)
@@ -149,7 +155,7 @@ public static class WorkflowUmlGenerator
             var step = workflow.Steps[stepName];
             uml.AppendLine($":{stepName};");
 
-            if (step.Body.Count > 0)
+            if (step.Body is { Count: > 0 })
             {
                 uml.AppendLine(":Body:");
                 var bodyParams = new List<string>();
