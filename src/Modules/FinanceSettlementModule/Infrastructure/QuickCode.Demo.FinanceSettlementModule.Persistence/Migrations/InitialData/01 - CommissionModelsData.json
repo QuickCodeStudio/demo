@@ -1,0 +1,60 @@
+﻿{
+  "COMMISSION_MODELS": [
+    {
+      "MODEL_NAME": "Public Scope 1",
+      "DESCRIPTION": "Stage report template process project detail ticket archive audience import.",
+      "COMMISSION_PERCENTAGE": 30.25183437,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2022-05-10T12:10:13.3241127Z"
+    },
+    {
+      "MODEL_NAME": "Regional Model 2",
+      "DESCRIPTION": "Widget draft dashboard invoice export refund comment active value.",
+      "COMMISSION_PERCENTAGE": 19.54539726,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2022-01-28T21:39:38.3105721Z"
+    },
+    {
+      "MODEL_NAME": "General Status 3",
+      "DESCRIPTION": "Detail process message record archived deadline profit contract cycle reminder inventory.",
+      "COMMISSION_PERCENTAGE": 6.21430180,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2022-09-15T01:25:22.4816122Z"
+    },
+    {
+      "MODEL_NAME": "Featured Series 4",
+      "DESCRIPTION": "Module process value service retention status contract cohort issue profile system.",
+      "COMMISSION_PERCENTAGE": 15.58177290,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2022-11-28T02:36:48.2788064Z"
+    },
+    {
+      "MODEL_NAME": "Private Series 5",
+      "DESCRIPTION": "Inventory workflow retention metric churn session panel invoice event.",
+      "COMMISSION_PERCENTAGE": 59.95004557,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2024-05-05T08:23:30.1741126Z"
+    },
+    {
+      "MODEL_NAME": "Modern Region 6",
+      "DESCRIPTION": "Archive contract funnel status message cycle.",
+      "COMMISSION_PERCENTAGE": 11.73438519,
+      "IS_ACTIVE": false,
+      "CREATED_DATE": "2024-08-08T02:23:42.3966072Z"
+    },
+    {
+      "MODEL_NAME": "Secondary Permission 7",
+      "DESCRIPTION": "Revenue account revenue contract campaign milestone import.",
+      "COMMISSION_PERCENTAGE": 99.32140433,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2024-03-25T04:12:45.9335177Z"
+    },
+    {
+      "MODEL_NAME": "Professional Package 8",
+      "DESCRIPTION": "Archived audience contract backup summary response template balance campaign schedule archive.",
+      "COMMISSION_PERCENTAGE": 37.74620483,
+      "IS_ACTIVE": true,
+      "CREATED_DATE": "2023-07-21T03:59:03.1804261Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "ModuleDbmlHashes": {
+    "IdentityModule": "l0OkKqn1e4LnYek5OF6ojA==",
+    "FinanceSettlementModule": "PEtv3s5VGx4PxIAH\u002B6Fu2Q==",
+    "OrderManagementModule": "UNV8YqGDD9r6oJozaRZELA==",
+    "PricingEngineModule": "4XdLHGt9dwQ/nwhzv7ElJw==",
+    "ProductCatalogModule": "Dd0\u002B/0ns\u002B0vkpYO/t1CBmA==",
+    "SellerManagementModule": "MhE2qeuyhYtz2hR7qyAuUQ=="
+  },
+  "TemplateDirHash": "aa80ef9219f88e58373e7c993faac22cd625f2bef71b57e700bec07b799cbeba",
+  "GeneratorHash": "2026-08-16T20:37:04.0000000Z",
+  "GeneratedAt": "2026-08-16T22:03:02.8601585Z",
+  "LastBuildSucceeded": true,
+  "LastBuildAt": "2026-08-16T22:04:39.19943Z",
+  "LastBuildError": ""
+}

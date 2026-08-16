@@ -1,0 +1,60 @@
+﻿@using QuickCode.Demo.Portal.Models.OrderManagementModule
+@using QuickCode.Demo.Portal.Helpers
+@inject IPortalPagePermissionManager PortalPagePermissions
+@model OrderManagementModule.ReturnRequestData
+@{
+    int startIndex = ((Model.CurrentPage - 1) * Model.PageSize) + 1;
+    int endIndex = ((Model.CurrentPage) * Model.PageSize);
+    if (endIndex > Model.NumberOfRecord) {
+        endIndex = Model.NumberOfRecord;
+    }
+
+    var pagerData = new PagerData() { CurrentPage = Model.CurrentPage, NumberOfRecord = Model.NumberOfRecord, PageSize = Model.PageSize, TotalPage = Model.TotalPage, StartIndex = startIndex, EndIndex = endIndex };
+    var areaName = ViewContext.RouteData.Values["Area"]?.ToString() ?? string.Empty;
+    var controllerName = ViewContext.RouteData.Values["Controller"]?.ToString() ?? string.Empty;
+    var actionName = ViewContext.RouteData.Values["Action"]?.ToString() ?? string.Empty;
+    var ops = await PortalPagePermissions.GetPagePermission($"{areaName}{controllerName}", actionName);
+}
+@if (Model.List.Count == 0)
+{
+    <div class="alert alert-danger" role="alert">
+        No Data available in OrderManagementModule.ReturnRequest table.
+    </div>
+}
+else
+{
+    <vc:pager pager-data=pagerData></vc:pager>
+    <div class="table-responsive portal-table-scroll">
+        <table bc-border="Bordered" bc-striped="true" bc-hover="true" class="table" bc-theme="Light">
+            <thead bc-theme="Dark">
+                <tr>
+                    @PortalOperationButtonsHtml.Cell(ops, "Header", areaName, controllerName)
+                    <th class="portal-col" data-col-type="id" data-col-key="Id">ID</th>
+<th class="portal-col" data-col-type="fk" data-col-key="OrderId">Order ID</th>
+<th class="portal-col" data-col-type="fk" data-col-key="OrderItemId">Order Item ID</th>
+<th class="portal-col" data-col-type="large" data-col-key="Reason">Reason</th>
+<th class="portal-col" data-col-type="text" data-col-key="Status">Status</th>
+<th class="portal-col" data-col-type="datetime" data-col-key="RequestedDate">Requested Date</th>
+<th class="portal-col" data-col-type="datetime" data-col-key="UpdatedDate">Updated Date</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.List)
+                {
+                    <tr>
+                        @PortalOperationButtonsHtml.Cell(ops, item.GetKey(), areaName, controllerName)
+                        <td class="portal-col" data-col-type="id" data-col-key="Id">@item.Id</td>
+<td class="portal-col" data-col-type="fk" data-col-key="OrderId">			@string.Format("{0}", Model.GetComboBoxValue("Orders", item.OrderId))</td>
+<td class="portal-col" data-col-type="fk" data-col-key="OrderItemId">			@string.Format("{0}", Model.GetComboBoxValue("OrderItems", item.OrderItemId))</td>
+<td class="portal-col" data-col-type="large" data-col-key="Reason">@item.Reason</td>
+<td class="portal-col" data-col-type="text" data-col-key="Status">@item.Status</td>
+<td class="portal-col" data-col-type="datetime" data-col-key="RequestedDate">@(((object)item.RequestedDate).ToPortalGridDateTime())</td>
+<td class="portal-col" data-col-type="datetime" data-col-key="UpdatedDate">@(((object)item.UpdatedDate).ToPortalGridDateTime())</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,84 @@
+﻿{
+  "TRANSACTION_LEDGERS": [
+    {
+      "SELLER_ID": 162,
+      "TRANSACTION_TYPE": "Payout",
+      "AMOUNT": 1013.59,
+      "REFERENCE_ID": "EXP-0001",
+      "REFERENCE_TYPE": "CUS-0001",
+      "DESCRIPTION": "Campaign query issue contract archived margin draft task customer conversion approve.",
+      "TRANSACTION_DATE": "2025-04-22T08:54:33.8683298Z",
+      "CREATED_DATE": "2023-08-17T17:46:31.9614836Z"
+    },
+    {
+      "SELLER_ID": 189,
+      "TRANSACTION_TYPE": "Chargeback",
+      "AMOUNT": 1364.98,
+      "REFERENCE_ID": "TRU-0002",
+      "REFERENCE_TYPE": "EXT-0002",
+      "DESCRIPTION": "Project project status publish export deadline.",
+      "TRANSACTION_DATE": "2024-11-14T07:29:50.0777569Z",
+      "CREATED_DATE": "2023-09-11T19:55:58.114495Z"
+    },
+    {
+      "SELLER_ID": 563,
+      "TRANSACTION_TYPE": "Refund",
+      "AMOUNT": 1133.53,
+      "REFERENCE_ID": "SEC-0003",
+      "REFERENCE_TYPE": "ARC-0003",
+      "DESCRIPTION": "Funnel meeting phase product order catalog payment.",
+      "TRANSACTION_DATE": "2024-07-02T12:19:21.4368108Z",
+      "CREATED_DATE": "2022-12-26T01:34:12.4403553Z"
+    },
+    {
+      "SELLER_ID": 578,
+      "TRANSACTION_TYPE": "Chargeback",
+      "AMOUNT": 819.08,
+      "REFERENCE_ID": "ARC-0004",
+      "REFERENCE_TYPE": "ENT-0004",
+      "DESCRIPTION": "Record campaign coupon widget status debit approve queue conversion discount funnel.",
+      "TRANSACTION_DATE": "2024-04-24T09:29:05.8084906Z",
+      "CREATED_DATE": "2023-03-21T04:23:33.8428985Z"
+    },
+    {
+      "SELLER_ID": 950,
+      "TRANSACTION_TYPE": "Sale",
+      "AMOUNT": 255.29,
+      "REFERENCE_ID": "SEC-0005",
+      "REFERENCE_TYPE": "ULT-0005",
+      "DESCRIPTION": "Reminder publish message system calendar draft campaign module.",
+      "TRANSACTION_DATE": "2024-01-22T20:15:55.4138955Z",
+      "CREATED_DATE": "2023-07-16T03:04:03.104983Z"
+    },
+    {
+      "SELLER_ID": 610,
+      "TRANSACTION_TYPE": "Commission",
+      "AMOUNT": 1925.14,
+      "REFERENCE_ID": "REC-0006",
+      "REFERENCE_TYPE": "MOD-0006",
+      "DESCRIPTION": "Forecast milestone deadline campaign filter budget coupon debit metric.",
+      "TRANSACTION_DATE": "2024-07-22T22:53:11.8314348Z",
+      "CREATED_DATE": "2022-05-03T07:46:10.2056135Z"
+    },
+    {
+      "SELLER_ID": 823,
+      "TRANSACTION_TYPE": "Commission",
+      "AMOUNT": 1329.55,
+      "REFERENCE_ID": "STA-0007",
+      "REFERENCE_TYPE": "LIM-0007",
+      "DESCRIPTION": "Alert audience panel promo promo invoice cohort order workflow.",
+      "TRANSACTION_DATE": "2025-01-09T12:58:00.6456365Z",
+      "CREATED_DATE": "2022-11-09T04:23:27.1909128Z"
+    },
+    {
+      "SELLER_ID": 321,
+      "TRANSACTION_TYPE": "AdjustmentCredit",
+      "AMOUNT": 2724.45,
+      "REFERENCE_ID": "PRI-0008",
+      "REFERENCE_TYPE": "SEC-0008",
+      "DESCRIPTION": "Agenda notes stage agenda funnel payment meeting task.",
+      "TRANSACTION_DATE": "2025-03-24T21:43:15.3709921Z",
+      "CREATED_DATE": "2023-02-12T16:19:23.3548384Z"
+    }
+  ]
+}

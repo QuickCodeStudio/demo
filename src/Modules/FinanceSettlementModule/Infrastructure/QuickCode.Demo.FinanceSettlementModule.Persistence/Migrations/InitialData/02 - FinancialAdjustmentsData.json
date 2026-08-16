@@ -1,0 +1,100 @@
+﻿{
+  "FINANCIAL_ADJUSTMENTS": [
+    {
+      "SELLER_ID": 834,
+      "PAYOUT_ID": 125,
+      "AMOUNT": 3979.02,
+      "REASON": "ShippingFee",
+      "NOTES": "Comment conversion export detail agenda vendor task.",
+      "CREATED_BY_USER_ID": 411,
+      "APPROVED_BY_USER_ID": 129,
+      "CREATED_DATE": "2023-01-11T07:58:56.6383507Z",
+      "APPROVED_DATE": "2025-12-13T20:46:12.9217609Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 761,
+      "PAYOUT_ID": 782,
+      "AMOUNT": 1075.85,
+      "REASON": "ChargebackReversal",
+      "NOTES": "Balance filter batch alpha approve dashboard config backup result conversion reminder.",
+      "CREATED_BY_USER_ID": 852,
+      "APPROVED_BY_USER_ID": 648,
+      "CREATED_DATE": "2024-08-09T13:42:13.0783641Z",
+      "APPROVED_DATE": "2024-09-20T23:08:31.1531839Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 278,
+      "PAYOUT_ID": 448,
+      "AMOUNT": 4729.75,
+      "REASON": "ShippingFee",
+      "NOTES": "Event order template template archived export segment campaign pipeline archived.",
+      "CREATED_BY_USER_ID": 50,
+      "APPROVED_BY_USER_ID": 932,
+      "CREATED_DATE": "2024-11-17T06:46:52.4128798Z",
+      "APPROVED_DATE": "2024-08-15T20:52:57.5416143Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 286,
+      "PAYOUT_ID": 266,
+      "AMOUNT": 765.80,
+      "REASON": "ChargebackReversal",
+      "NOTES": "Pending invoice project workflow reject import export reminder.",
+      "CREATED_BY_USER_ID": 98,
+      "APPROVED_BY_USER_ID": 483,
+      "CREATED_DATE": "2023-01-01T21:41:59.3860089Z",
+      "APPROVED_DATE": "2024-07-15T06:21:23.8688062Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 46,
+      "PAYOUT_ID": 181,
+      "AMOUNT": 1169.96,
+      "REASON": "ShippingFee",
+      "NOTES": "Retention retention message reminder document issue pending.",
+      "CREATED_BY_USER_ID": 919,
+      "APPROVED_BY_USER_ID": 688,
+      "CREATED_DATE": "2023-09-03T05:36:06.1726628Z",
+      "APPROVED_DATE": "2024-01-07T06:39:58.23476Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 12,
+      "PAYOUT_ID": 296,
+      "AMOUNT": 2118.85,
+      "REASON": "PlatformError",
+      "NOTES": "Widget discount cost session service cost supplier.",
+      "CREATED_BY_USER_ID": 783,
+      "APPROVED_BY_USER_ID": 260,
+      "CREATED_DATE": "2022-10-13T13:13:14.1600946Z",
+      "APPROVED_DATE": "2025-07-25T06:47:56.7752344Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 915,
+      "PAYOUT_ID": 131,
+      "AMOUNT": 600.84,
+      "REASON": "MarketingBonus",
+      "NOTES": "Order inactive order churn backup value session event queue cohort notification.",
+      "CREATED_BY_USER_ID": 714,
+      "APPROVED_BY_USER_ID": 471,
+      "CREATED_DATE": "2022-02-11T17:24:38.2664963Z",
+      "APPROVED_DATE": "2025-09-09T21:51:09.8346027Z",
+      "IS_ACTIVE": true
+    },
+    {
+      "SELLER_ID": 785,
+      "PAYOUT_ID": 759,
+      "AMOUNT": 1908.34,
+      "REASON": "ShippingFee",
+      "NOTES": "Debit retention campaign debit result summary.",
+      "CREATED_BY_USER_ID": 786,
+      "APPROVED_BY_USER_ID": 451,
+      "CREATED_DATE": "2024-04-26T18:02:21.1795903Z",
+      "APPROVED_DATE": "2024-11-07T14:05:49.8720479Z",
+      "IS_ACTIVE": false
+    }
+  ]
+}
