@@ -16,7 +16,11 @@
         <h1 class="auth-card__title">Sign in</h1>
         <p class="auth-card__lead">Sign in to continue to Demo.</p>
 
-        <form class="auth-form" asp-action="Index" asp-all-route-data="routeData" novalidate>
+        <form class="auth-form"
+              asp-action="Index"
+              asp-all-route-data="routeData"
+              novalidate
+              data-auth-invalid-credentials="@(Model.InvalidCredentials ? "true" : "false")">
             <div class="auth-field">
                 <label class="auth-field__label" asp-for="Username">Email</label>
                 <input asp-for="Username"
@@ -34,7 +38,7 @@
                 <div class="auth-password">
                     <input asp-for="Password"
                            id="login-password"
-                           class="auth-field__input"
+                           class="auth-field__input@(Model.InvalidCredentials ? " is-invalid" : "")"
                            type="password"
                            autocomplete="current-password"
                            placeholder="Enter your password"

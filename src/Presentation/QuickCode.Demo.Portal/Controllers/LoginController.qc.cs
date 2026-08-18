@@ -133,9 +133,10 @@ namespace QuickCode.Demo.Portal.Controllers
 
                 if (ex.StatusCode == 401)
                 {
-                    model.ErrorMessage = "The email or password you entered is incorrect. Please check and try again.";
+                    model.ErrorMessage = "Email or password is incorrect.";
                     model.Password = null;
-                    return AuthPage(model, model.ErrorMessage);
+                    model.InvalidCredentials = true;
+                    return AuthPage(model, model.ErrorMessage, invalidCredentials: true);
                 }
             }
             catch (Exception ex)
@@ -505,10 +506,11 @@ namespace QuickCode.Demo.Portal.Controllers
             string toast = null,
             bool ok = false,
             bool showResendConfirmation = false,
+            bool invalidCredentials = false,
             string viewName = null)
         {
             if (IsAuthFetch())
-                return AuthJson(ok, error, toast, showResendConfirmation: showResendConfirmation);
+                return AuthJson(ok, error, toast, showResendConfirmation: showResendConfirmation, invalidCredentials: invalidCredentials);
 
             return string.IsNullOrEmpty(viewName) ? View(model) : View(viewName, model);
         }
@@ -518,14 +520,16 @@ namespace QuickCode.Demo.Portal.Controllers
             string error = null,
             string toast = null,
             string redirectUrl = null,
-            bool showResendConfirmation = false) =>
+            bool showResendConfirmation = false,
+            bool invalidCredentials = false) =>
             Json(new
             {
                 ok,
                 error,
                 toast,
                 redirectUrl,
-                showResendConfirmation
+                showResendConfirmation,
+                invalidCredentials
             });
     }
 }

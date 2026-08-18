@@ -273,6 +273,26 @@
 .auth-field__input.is-invalid,
 .auth-form .form-control.input-validation-error {
   border-color: var(--auth-danger);
+  background: #fff8f7;
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.14);
+}
+
+@keyframes auth-card-shake {
+  0%, 100% { transform: translateX(0); }
+  18% { transform: translateX(-7px); }
+  36% { transform: translateX(6px); }
+  54% { transform: translateX(-4px); }
+  72% { transform: translateX(3px); }
+}
+
+.auth-card__inner.is-shaking {
+  animation: auth-card-shake 0.42s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card__inner.is-shaking {
+    animation: none;
+  }
 }
 
 .auth-field__hint,

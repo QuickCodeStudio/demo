@@ -69,6 +69,45 @@
     alertEl.removeAttribute("hidden");
   }
 
+  function passwordInput(form) {
+    return form.querySelector("#login-password") || form.querySelector('[name="Password"]');
+  }
+
+  function clearInvalidCredentials(form) {
+    var password = passwordInput(form);
+    if (password) {
+      password.classList.remove("is-invalid");
+    }
+    var inner = form.closest(".auth-card__inner");
+    if (inner) {
+      inner.classList.remove("is-shaking");
+    }
+  }
+
+  function markInvalidCredentials(form) {
+    var password = passwordInput(form);
+    if (password) {
+      password.classList.add("is-invalid");
+      password.focus();
+    }
+
+    var inner = form.closest(".auth-card__inner");
+    if (!inner) {
+      return;
+    }
+    inner.classList.remove("is-shaking");
+    void inner.offsetWidth;
+    inner.classList.add("is-shaking");
+    inner.addEventListener(
+      "animationend",
+      function onEnd() {
+        inner.classList.remove("is-shaking");
+        inner.removeEventListener("animationend", onEnd);
+      },
+      { once: true }
+    );
+  }
+
   function applyFieldErrors(form, fieldErrors) {
     form.querySelectorAll("[data-valmsg-for]").forEach(function (span) {
       var name = span.getAttribute("data-valmsg-for");
@@ -308,6 +347,16 @@
     }
 
     root.querySelectorAll("form.auth-form").forEach(function (form) {
+      var password = passwordInput(form);
+      if (password) {
+        password.addEventListener("input", function () {
+          password.classList.remove("is-invalid");
+        });
+      }
+      if (form.getAttribute("data-auth-invalid-credentials") === "true") {
+        markInvalidCredentials(form);
+      }
+
       form.addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -325,6 +374,7 @@
         setButtonBusy(submitter, true, original);
         setAlert(form, "");
         applyFieldErrors(form, null);
+        clearInvalidCredentials(form);
 
         var headers = {
           "X-Auth-Fetch": "1",
@@ -380,6 +430,9 @@
             }
 
             setAlert(form, data.error || "Something went wrong. Please try again.", "error");
+            if (data.invalidCredentials) {
+              markInvalidCredentials(form);
+            }
           })
           .catch(function () {
             setButtonBusy(submitter, false);

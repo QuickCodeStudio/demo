@@ -14,7 +14,8 @@ namespace QuickCode.Demo.Portal.Models
 {
 	public class LoginData
 	{
-		[Required(ErrorMessage = "Username/Email is required")]
+		[Display(Name = "Email")]
+		[Required(ErrorMessage = "Email is required")]
 		[EmailAddress(ErrorMessage = "Please enter a valid email address")]
 		public string Username { get; set; }
 		
@@ -25,6 +26,7 @@ namespace QuickCode.Demo.Portal.Models
 		public string ErrorMessage { get; set; }
 		public string SuccessMessage { get; set; }
 		public bool ShowResendConfirmation { get; set; }
+		public bool InvalidCredentials { get; set; }
 		public string Email { get; set; }
 	}
 
