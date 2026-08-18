@@ -316,7 +316,7 @@ namespace QuickCode.Demo.Portal.Controllers
 
                 await authenticationsClient.ApiAuthForgotPasswordPostAsync(forgotPasswordRequest);
                 
-                model.SuccessMessage = "If an account with that email exists, we sent instructions. Confirm your email first if you have not already.";
+                model.SuccessMessage = "If an account with that email exists, we sent a reset link. Confirm your email first if you have not already.";
                 return View(model);
             }
             catch (QuickCodeSwaggerException)
@@ -385,7 +385,7 @@ namespace QuickCode.Demo.Portal.Controllers
             {
                 if (ex.StatusCode == 400)
                 {
-                    model.ErrorMessage = "Invalid reset code or email. Please check your information and try again.";
+                    model.ErrorMessage = "This reset link is invalid or expired. Request a new one.";
                 }
                 else
                 {

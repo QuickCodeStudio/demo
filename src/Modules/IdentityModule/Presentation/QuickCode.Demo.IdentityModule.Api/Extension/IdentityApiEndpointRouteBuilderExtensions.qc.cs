@@ -364,7 +364,15 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 {
                     var code = await userManager.GeneratePasswordResetTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    await emailSender.SendPasswordResetCodeAsync(user, resetRequest.Email, code);
+                    var resetLink = BuildPortalResetPasswordUrl(context, resetRequest.Email, code);
+                    if (resetLink is null)
+                    {
+                        await emailSender.SendPasswordResetCodeAsync(user, resetRequest.Email, code);
+                    }
+                    else
+                    {
+                        await emailSender.SendPasswordResetLinkAsync(user, resetRequest.Email, resetLink);
+                    }
                 }
             }
 
@@ -605,11 +613,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         string code,
         string? changedEmail)
     {
-        var configuration = context.RequestServices.GetService<IConfiguration>();
-        var portal = FirstNonEmpty(
-            configuration?["EmailService:PortalUrl"],
-            configuration?["AppSettings:PortalUrl"],
-            Environment.GetEnvironmentVariable("QUICKCODE_PORTAL_URL"));
+        var portal = ResolvePortalBaseUrl(context);
         if (string.IsNullOrWhiteSpace(portal))
             return null;
 
@@ -618,6 +622,25 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         if (!string.IsNullOrWhiteSpace(changedEmail))
             url += $"&changedEmail={Uri.EscapeDataString(changedEmail)}";
         return url;
+    }
+
+    private static string? BuildPortalResetPasswordUrl(HttpContext context, string email, string code)
+    {
+        var portal = ResolvePortalBaseUrl(context);
+        if (string.IsNullOrWhiteSpace(portal))
+            return null;
+
+        return
+            $"{portal.TrimEnd('/')}/Login/ResetPassword?email={Uri.EscapeDataString(email)}&code={Uri.EscapeDataString(code)}";
+    }
+
+    private static string? ResolvePortalBaseUrl(HttpContext context)
+    {
+        var configuration = context.RequestServices.GetService<IConfiguration>();
+        return FirstNonEmpty(
+            configuration?["EmailService:PortalUrl"],
+            configuration?["AppSettings:PortalUrl"],
+            Environment.GetEnvironmentVariable("QUICKCODE_PORTAL_URL"));
     }
 
     private static string? FirstNonEmpty(params string?[] values) =>
