@@ -62,14 +62,14 @@
                     data-auth-resend
                     formaction="@Url.Action("ResendConfirmation")"
                     formnovalidate
-                    @(Model.ShowResendConfirmation ? null : "hidden")>
+                    hidden="@(!Model.ShowResendConfirmation)">
                 Resend confirmation email
             </button>
 
             <div class="auth-alert auth-alert--error"
                  data-auth-alert
                  role="alert"
-                 @(string.IsNullOrEmpty(Model.ErrorMessage) ? "hidden" : null)>@Model.ErrorMessage</div>
+                 hidden="@string.IsNullOrEmpty(Model.ErrorMessage)">@Model.ErrorMessage</div>
         </form>
 
         <div class="auth-footer">
