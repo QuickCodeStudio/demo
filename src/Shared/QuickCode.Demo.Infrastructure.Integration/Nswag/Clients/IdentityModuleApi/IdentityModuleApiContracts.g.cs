@@ -760,6 +760,11 @@ namespace QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModule
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="QuickCode.Demo.Infrastructure.Integration.Models.QuickCodeSwaggerException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task ApiAuthChangePasswordPostAsync(ChangePasswordRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="QuickCode.Demo.Infrastructure.Integration.Models.QuickCodeSwaggerException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TwoFactorResponse> ApiAuthManageUser2faPostAsync(TwoFactorRequest? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -2742,6 +2747,42 @@ namespace QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModule
                 options.Converters.Add(converter);
 
             return System.Text.Json.JsonSerializer.Deserialize<ValidateApiKeyResultDto>(data, options);
+
+        }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ChangePasswordRequestDto
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("oldPassword")]
+        public string? OldPassword { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("newPassword")]
+        public string? NewPassword { get; set; } = default!;
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            var converters = new System.Text.Json.Serialization.JsonConverter[] { new QuickCode.Demo.Infrastructure.Integration.Helpers.NullTolerantJsonStringEnumConverter() };
+            foreach(var converter in converters)
+                options.Converters.Add(converter);
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static ChangePasswordRequestDto FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            var converters = new System.Text.Json.Serialization.JsonConverter[] { new QuickCode.Demo.Infrastructure.Integration.Helpers.NullTolerantJsonStringEnumConverter() };
+            foreach(var converter in converters)
+                options.Converters.Add(converter);
+
+            return System.Text.Json.JsonSerializer.Deserialize<ChangePasswordRequestDto>(data, options);
 
         }
     }

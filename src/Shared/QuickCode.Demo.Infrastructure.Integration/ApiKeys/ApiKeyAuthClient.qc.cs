@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using QuickCode.Demo.Application.Contracts.ApiKeys;
+using QuickCode.Demo.Application.Contracts.Auth;
 using QuickCode.Demo.Infrastructure.Integration.Models;
 
 namespace QuickCode.Demo.Infrastructure.Integration.ApiKeys;
@@ -93,6 +94,18 @@ public sealed class ApiKeyAuthClient(HttpClient httpClient) : Nswag.ClientBase, 
         if (string.IsNullOrWhiteSpace(payload))
             return true;
         return JsonSerializer.Deserialize<bool>(payload, JsonOptions);
+    }
+
+    public async Task ChangePasswordAsync(ChangePasswordRequestDto request, CancellationToken cancellationToken = default)
+    {
+        using var message = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+        message.Method = HttpMethod.Post;
+        message.RequestUri = new Uri("api/auth/change-password", UriKind.Relative);
+        message.Content = JsonContent.Create(request ?? new ChangePasswordRequestDto(), options: JsonOptions);
+
+        using var response = await httpClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        var payload = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        EnsureSuccess(response, payload, "Change password failed.");
     }
 
     private static void EnsureSuccess(HttpResponseMessage response, string payload, string message)

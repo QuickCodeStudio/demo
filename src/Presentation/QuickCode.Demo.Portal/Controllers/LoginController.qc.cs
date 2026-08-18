@@ -8,16 +8,20 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using QuickCode.Demo.Infrastructure.Integration.ApiKeys;
 using QuickCode.Demo.Infrastructure.Integration.Nswag;
 using QuickCode.Demo.Infrastructure.Integration.Helpers;
 using QuickCode.Demo.Infrastructure.Integration.Models;
 using QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts;
 using QuickCode.Demo.Portal.Models;
+using QuickCode.Demo.Application.Contracts.Auth;
+using QuickCode.Demo.Infrastructure.Web.Helpers;
 using QuickCode.Demo.Portal.Helpers;
 using LoginRequest = QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts.LoginRequest;
 
@@ -31,14 +35,18 @@ namespace QuickCode.Demo.Portal.Controllers
     {
         private readonly IAuthenticationsClient authenticationsClient;
         private readonly IAspNetUsersClient usersClient;
+        private readonly IApiKeyAuthClient accountAuthClient;
 
         public LoginController(IAuthenticationsClient authenticationsClient,
-            IAspNetUsersClient usersClient, ITableComboboxSettingsClient tableComboboxSettingsClient,
+            IAspNetUsersClient usersClient,
+            IApiKeyAuthClient accountAuthClient,
+            ITableComboboxSettingsClient tableComboboxSettingsClient,
             IHttpContextAccessor httpContextAccessor, IMemoryCache cache) : base(tableComboboxSettingsClient,
             httpContextAccessor, cache)
         {
             this.authenticationsClient = authenticationsClient;
             this.usersClient = usersClient;
+            this.accountAuthClient = accountAuthClient;
         }
 
         public  IActionResult Index(string returnUrl)
@@ -146,6 +154,63 @@ namespace QuickCode.Demo.Portal.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
           
             return RedirectToAction("Index", "Login");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordData model)
+        {
+            if (model == null
+                || string.IsNullOrWhiteSpace(model.OldPassword)
+                || string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                return BadRequest(new { success = false, message = "Current password and new password are required." });
+            }
+
+            if (!string.Equals(model.NewPassword, model.ConfirmPassword, StringComparison.Ordinal))
+            {
+                return BadRequest(new { success = false, message = "New password and confirmation do not match." });
+            }
+
+            if (string.Equals(model.OldPassword, model.NewPassword, StringComparison.Ordinal))
+            {
+                return BadRequest(new { success = false, message = "New password must be different from the current password." });
+            }
+
+            var policyError = PasswordPolicy.FirstError(model.NewPassword);
+            if (!string.IsNullOrEmpty(policyError))
+            {
+                return BadRequest(new { success = false, message = policyError });
+            }
+
+            try
+            {
+                await accountAuthClient.ChangePasswordAsync(new ChangePasswordRequestDto
+                {
+                    OldPassword = model.OldPassword,
+                    NewPassword = model.NewPassword
+                });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Your password has been changed. A confirmation email was sent to your address."
+                });
+            }
+            catch (QuickCodeSwaggerException ex)
+            {
+                var message = ProblemDetailsMessageParser.Extract(
+                    !string.IsNullOrWhiteSpace(ex.Response) ? ex.Response : ex.Message,
+                    ex.StatusCode == 400
+                        ? "The current password is incorrect or the new password does not meet the requirements."
+                        : "Could not change password. Please try again.");
+                return StatusCode(ex.StatusCode is >= 400 and < 600 ? ex.StatusCode : 400,
+                    new { success = false, message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "Could not change password. Please try again." });
+            }
         }
 
         public IActionResult Register()

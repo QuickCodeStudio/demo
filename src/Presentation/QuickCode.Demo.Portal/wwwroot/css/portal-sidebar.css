@@ -999,6 +999,12 @@ body.portal-sidebar-mobile-open {
     outline: none;
 }
 
+.portal-topbar-user-menu__item i {
+    width: 1rem;
+    text-align: center;
+    color: #64748b;
+}
+
 .portal-topbar-user-menu__logout {
     color: #b91c1c !important;
 }

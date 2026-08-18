@@ -21,7 +21,20 @@ INFRA_SERVICES=(
   demo-kafdrop
 )
 
-docker compose --env-file .env up -d "${INFRA_SERVICES[@]}" "$@"
+COMPOSE_SERVICES="$(docker compose --env-file .env config --services 2>/dev/null || true)"
+AVAILABLE=()
+for svc in "${INFRA_SERVICES[@]}"; do
+  if printf '%s\n' "$COMPOSE_SERVICES" | grep -qx "$svc"; then
+    AVAILABLE+=("$svc")
+  fi
+done
+
+if [[ ${#AVAILABLE[@]} -eq 0 ]]; then
+  echo "No database / Elasticsearch / Kafka services in this compose file (shared VM infrastructure)."
+  exit 0
+fi
+
+docker compose --env-file .env up -d "${AVAILABLE[@]}" "$@"
 
 echo ""
 echo "Infrastructure containers started. Debug a single service on the host via LaunchSettings,"

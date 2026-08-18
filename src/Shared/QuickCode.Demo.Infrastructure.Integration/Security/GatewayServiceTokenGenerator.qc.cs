@@ -69,9 +69,16 @@ public sealed class GatewayServiceTokenGenerator : IGatewayServiceTokenGenerator
             new("PermissionGroupName", permissionGroup ?? "InternalService")
         };
 
+        if (!string.IsNullOrWhiteSpace(userId)
+            && !string.Equals(userId, "gateway", StringComparison.OrdinalIgnoreCase))
+        {
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
+        }
+
         if (!string.IsNullOrWhiteSpace(userEmail))
         {
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, userEmail));
+            claims.Add(new Claim(ClaimTypes.Email, userEmail));
         }
 
         var credentials = new SigningCredentials(SigningKey, SecurityAlgorithms.RsaSha256);

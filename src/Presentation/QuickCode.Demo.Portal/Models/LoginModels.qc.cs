@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using QuickCode.Demo.Infrastructure.Web.Helpers;
 
 namespace QuickCode.Demo.Portal.Models
 {
@@ -40,7 +41,8 @@ namespace QuickCode.Demo.Portal.Models
 		public string Email { get; set; }
 
 		[Required(ErrorMessage = "Password is required")]
-		[StringLength(100, ErrorMessage = "Password must be at least {2} characters long", MinimumLength = 6)]
+		[StringLength(PasswordPolicy.MaxLength, ErrorMessage = PasswordPolicy.ErrorMessage, MinimumLength = PasswordPolicy.MinLength)]
+		[RegularExpression(PasswordPolicy.ComplexityPattern, ErrorMessage = PasswordPolicy.ErrorMessage)]
 		public string Password { get; set; }
 
 		[Required(ErrorMessage = "Confirm password is required")]
@@ -71,7 +73,8 @@ namespace QuickCode.Demo.Portal.Models
 		public string ResetCode { get; set; }
 
 		[Required(ErrorMessage = "New password is required")]
-		[StringLength(100, ErrorMessage = "Password must be at least {2} characters long", MinimumLength = 6)]
+		[StringLength(PasswordPolicy.MaxLength, ErrorMessage = PasswordPolicy.ErrorMessage, MinimumLength = PasswordPolicy.MinLength)]
+		[RegularExpression(PasswordPolicy.ComplexityPattern, ErrorMessage = PasswordPolicy.ErrorMessage)]
 		public string NewPassword { get; set; }
 
 		[Required(ErrorMessage = "Confirm password is required")]
@@ -81,5 +84,19 @@ namespace QuickCode.Demo.Portal.Models
 		public string ErrorMessage { get; set; }
 		public string SuccessMessage { get; set; }
 	}
-}
 
+	public class ChangePasswordData
+	{
+		[Required(ErrorMessage = "Current password is required")]
+		public string OldPassword { get; set; }
+
+		[Required(ErrorMessage = "New password is required")]
+		[StringLength(PasswordPolicy.MaxLength, ErrorMessage = PasswordPolicy.ErrorMessage, MinimumLength = PasswordPolicy.MinLength)]
+		[RegularExpression(PasswordPolicy.ComplexityPattern, ErrorMessage = PasswordPolicy.ErrorMessage)]
+		public string NewPassword { get; set; }
+
+		[Required(ErrorMessage = "Confirm password is required")]
+		[Compare("NewPassword", ErrorMessage = "Passwords do not match")]
+		public string ConfirmPassword { get; set; }
+	}
+}

@@ -6346,6 +6346,15 @@
     "UrlPath": "/api/auth/resetPassword"
   },
   {
+    "Key": "PostapiauthchangepasswordAuthenticationsController",
+    "ModuleName": "IdentityModule",
+    "ModelName": "Authentications",
+    "HttpMethod": "Post",
+    "ControllerName": "AuthenticationsController",
+    "MethodName": "/api/auth/change-password",
+    "UrlPath": "/api/auth/change-password"
+  },
+  {
     "Key": "Postapiauthmanageuser2faAuthenticationsController",
     "ModuleName": "IdentityModule",
     "ModelName": "Authentications",

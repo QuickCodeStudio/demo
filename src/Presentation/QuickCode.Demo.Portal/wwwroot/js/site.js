@@ -4103,11 +4103,13 @@ function showPortalToast(message, type) {
     }
 
     var toastType = (type || 'success').toLowerCase();
-    toastEl.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info');
+    toastEl.classList.remove(
+        'text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info',
+        'portal-toast--success', 'portal-toast--error');
 
     var iconClass = 'fas fa-check-circle';
     if (toastType === 'error' || toastType === 'danger') {
-        toastEl.classList.add('text-bg-danger');
+        toastEl.classList.add('text-bg-danger', 'portal-toast--error');
         iconClass = 'fas fa-exclamation-circle';
     } else if (toastType === 'warning') {
         toastEl.classList.add('text-bg-warning');
@@ -4116,7 +4118,7 @@ function showPortalToast(message, type) {
         toastEl.classList.add('text-bg-info');
         iconClass = 'fas fa-info-circle';
     } else {
-        toastEl.classList.add('text-bg-success');
+        toastEl.classList.add('text-bg-success', 'portal-toast--success');
         iconClass = 'fas fa-check-circle';
     }
 
@@ -4127,10 +4129,10 @@ function showPortalToast(message, type) {
     toastBody.textContent = message;
 
     if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
-        var toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500, autohide: true });
+        var toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 6000, autohide: true });
         toast.show();
     } else if (typeof $.fn.toast !== 'undefined') {
-        $(toastEl).toast({ delay: 3500, autohide: true }).toast('show');
+        $(toastEl).toast({ delay: 6000, autohide: true }).toast('show');
     }
 }
 
@@ -4369,6 +4371,145 @@ function initPortalAccountMenu() {
     }
 }
 
+function validatePasswordPolicy(password) {
+    if (!password || password.length < 8) {
+        return 'Password must be at least 8 characters long.';
+    }
+    if (password.length > 100) {
+        return 'Password cannot exceed 100 characters.';
+    }
+    if (!/[A-Z]/.test(password)) {
+        return 'Password must contain at least one uppercase letter.';
+    }
+    if (!/[a-z]/.test(password)) {
+        return 'Password must contain at least one lowercase letter.';
+    }
+    if (!/\d/.test(password)) {
+        return 'Password must contain at least one number.';
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+        return 'Password must contain at least one symbol.';
+    }
+    return '';
+}
+
+function initChangePasswordForm() {
+    var form = document.getElementById('changePasswordForm');
+    var modalEl = document.getElementById('changePasswordModal');
+    if (!form || !modalEl) {
+        return;
+    }
+
+    var oldInput = document.getElementById('changePasswordOld');
+    var newInput = document.getElementById('changePasswordNew');
+    var confirmInput = document.getElementById('changePasswordConfirm');
+    var errorEl = document.getElementById('changePasswordError');
+    var submitBtn = document.getElementById('changePasswordSubmit');
+    var pendingToast = null;
+
+    function setError(message) {
+        if (!errorEl) {
+            return;
+        }
+        if (!message) {
+            errorEl.classList.add('d-none');
+            errorEl.textContent = '';
+            return;
+        }
+        errorEl.textContent = message;
+        errorEl.classList.remove('d-none');
+    }
+
+    function resetForm() {
+        form.reset();
+        setError('');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+        }
+    }
+
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        resetForm();
+        if (pendingToast && typeof showPortalToast === 'function') {
+            showPortalToast(pendingToast.message, pendingToast.type || 'success');
+            pendingToast = null;
+        }
+    });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        setError('');
+
+        var oldPassword = (oldInput && oldInput.value) || '';
+        var newPassword = (newInput && newInput.value) || '';
+        var confirmPassword = (confirmInput && confirmInput.value) || '';
+
+        if (!oldPassword || !newPassword) {
+            setError('Current password and new password are required.');
+            return;
+        }
+        var policyError = validatePasswordPolicy(newPassword);
+        if (policyError) {
+            setError(policyError);
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setError('New password and confirmation do not match.');
+            return;
+        }
+        if (oldPassword === newPassword) {
+            setError('New password must be different from the current password.');
+            return;
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        $.ajax({
+            url: '/Login/ChangePassword',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                oldPassword: oldPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
+            })
+        }).done(function (data) {
+            var ok = data && (data.success === true || data.Success === true);
+            var message = (data && (data.message || data.Message))
+                || 'Your password has been changed. A confirmation email was sent to your address.';
+            if (!ok) {
+                setError(message);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                }
+                return;
+            }
+            pendingToast = { message: message, type: 'success' };
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+            } else if (typeof showPortalToast === 'function') {
+                showPortalToast(message, 'success');
+                pendingToast = null;
+            }
+        }).fail(function (xhr) {
+            var payload = xhr.responseJSON || {};
+            var message = payload.message || payload.Message
+                || 'Could not change password. Please try again.';
+            if (payload.redirectUrl || payload.RedirectUrl) {
+                window.location.href = payload.redirectUrl || payload.RedirectUrl;
+                return;
+            }
+            setError(message);
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+        });
+    });
+}
+
 function init() {
     // Bootstrap 5 popover initialization
     if (typeof bootstrap !== 'undefined') {
@@ -4384,6 +4525,7 @@ function init() {
     }
     consumeQueuedPortalToast();
     initPortalAccountMenu();
+    initChangePasswordForm();
     initPortalModuleCombo();
     const placeholderElement = $('#itemDetailsContainer');
     // Select2 first — before Flatpickr — so combos do not sit unenhanced for long.

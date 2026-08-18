@@ -4,6 +4,7 @@
 // Where to put custom code: see AGENTS.md at repo root.
 // </auto-generated>
 using System.ComponentModel.DataAnnotations;
+using QuickCode.Demo.Infrastructure.Web.Helpers;
 
 namespace QuickCode.Demo.IdentityModule.Api.Models;
 
@@ -14,7 +15,8 @@ public class CustomRegisterRequest
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(100, MinimumLength = 6)]
+    [StringLength(PasswordPolicy.MaxLength, MinimumLength = PasswordPolicy.MinLength, ErrorMessage = PasswordPolicy.ErrorMessage)]
+    [RegularExpression(PasswordPolicy.ComplexityPattern, ErrorMessage = PasswordPolicy.ErrorMessage)]
     public string Password { get; set; } = string.Empty;
 
     [Required]

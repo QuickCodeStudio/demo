@@ -10,7 +10,11 @@ if [[ ! -f .env ]]; then
   fi
 fi
 
-docker compose --env-file .env up -d --build "$@"
+if [[ -f docker-compose.vm.yml ]]; then
+  docker compose -f docker-compose.yml -f docker-compose.vm.yml --env-file .env up -d --build "$@"
+else
+  docker compose --env-file .env up -d --build "$@"
+fi
 
 echo ""
 echo "QuickCode stack (see .env for ports):"

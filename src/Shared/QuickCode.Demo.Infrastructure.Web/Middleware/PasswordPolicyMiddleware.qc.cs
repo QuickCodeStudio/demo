@@ -3,37 +3,41 @@
 // This file is overwritten on full template regen. Add user logic in separate .cs files.
 // Where to put custom code: see AGENTS.md at repo root.
 // </auto-generated>
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using QuickCode.Demo.Infrastructure.Web.Helpers;
 
 namespace QuickCode.Demo.Infrastructure.Web.Middleware;
 
 public class PasswordPolicyMiddleware
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<PasswordPolicyMiddleware> _logger;
+    private static readonly Regex JsonPasswordField = new(
+        @"""(?:newPassword|NewPassword|password|Password)""\s*:\s*""(?<value>(?:\\.|[^""\\])*)""",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    public PasswordPolicyMiddleware(RequestDelegate next, ILogger<PasswordPolicyMiddleware> logger)
+    private readonly RequestDelegate _next;
+
+    public PasswordPolicyMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         if (IsPasswordChangeRequest(context))
         {
-            var password = await ExtractPasswordFromRequest(context);
+            var password = await ExtractNewPasswordFromRequest(context);
             if (!string.IsNullOrEmpty(password))
             {
-                var validationResult = ValidatePasswordStrength(password);
+                var validationResult = PasswordPolicy.Validate(password);
                 if (!validationResult.IsValid)
                 {
-                    context.Response.StatusCode = 400;
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     await context.Response.WriteAsJsonAsync(new
                     {
-                        error = "Password does not meet security requirements",
-                        details = validationResult.Errors
+                        message = PasswordPolicy.ErrorMessage,
+                        errors = validationResult.Errors
                     });
                     return;
                 }
@@ -45,101 +49,63 @@ public class PasswordPolicyMiddleware
 
     private static bool IsPasswordChangeRequest(HttpContext context)
     {
-        var path = context.Request.Path.ToString().ToLower();
-        return path.Contains("/password") || 
-               path.Contains("/auth/change-password") ||
-               path.Contains("/user/password");
+        var path = context.Request.Path.Value ?? string.Empty;
+        return path.Contains("/auth/register", StringComparison.OrdinalIgnoreCase)
+               || path.Contains("/auth/resetPassword", StringComparison.OrdinalIgnoreCase)
+               || path.Contains("/auth/change-password", StringComparison.OrdinalIgnoreCase)
+               || path.Contains("/auth/manage/info", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static async Task<string> ExtractPasswordFromRequest(HttpContext context)
+    private static async Task<string> ExtractNewPasswordFromRequest(HttpContext context)
     {
         if (context.Request.HasFormContentType)
         {
             var form = await context.Request.ReadFormAsync();
-            return form["password"].ToString() ?? form["newPassword"].ToString() ?? string.Empty;
+            var newPassword = form["newPassword"].ToString();
+            if (!string.IsNullOrEmpty(newPassword))
+                return newPassword;
+            return form["password"].ToString();
         }
 
-        if (context.Request.ContentType?.Contains("application/json") == true)
-        {
-            context.Request.EnableBuffering();
-            var body = await new StreamReader(context.Request.Body).ReadToEndAsync();
-            context.Request.Body.Position = 0;
+        if (context.Request.ContentType?.Contains("application/json", StringComparison.OrdinalIgnoreCase) != true)
+            return string.Empty;
 
-            // Basit JSON parsing (production'da daha güvenli yöntem kullanın)
-            if (body.Contains("password"))
-            {
-                var match = Regex.Match(body, @"""password""\s*:\s*""([^""]+)""");
-                return match.Success ? match.Groups[1].Value : string.Empty;
-            }
+        context.Request.EnableBuffering();
+        using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        context.Request.Body.Position = 0;
+
+        if (string.IsNullOrWhiteSpace(body))
+            return string.Empty;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.TryGetProperty("newPassword", out var newPassword)
+                && newPassword.ValueKind == JsonValueKind.String)
+                return newPassword.GetString() ?? string.Empty;
+
+            if (doc.RootElement.TryGetProperty("NewPassword", out newPassword)
+                && newPassword.ValueKind == JsonValueKind.String)
+                return newPassword.GetString() ?? string.Empty;
+
+            if (doc.RootElement.TryGetProperty("password", out var password)
+                && password.ValueKind == JsonValueKind.String)
+                return password.GetString() ?? string.Empty;
+
+            if (doc.RootElement.TryGetProperty("Password", out password)
+                && password.ValueKind == JsonValueKind.String)
+                return password.GetString() ?? string.Empty;
+        }
+        catch (JsonException)
+        {
+            var match = JsonPasswordField.Match(body);
+            if (match.Success)
+                return match.Groups["value"].Value;
         }
 
         return string.Empty;
     }
-
-    private PasswordValidationResult ValidatePasswordStrength(string password)
-    {
-        var errors = new List<string>();
-
-        // Minimum uzunluk kontrolü
-        if (password.Length < 12)
-        {
-            errors.Add("Password must be at least 12 characters long");
-        }
-
-        // Büyük harf kontrolü
-        if (!Regex.IsMatch(password, @"[A-Z]"))
-        {
-            errors.Add("Password must contain at least one uppercase letter");
-        }
-
-        // Küçük harf kontrolü
-        if (!Regex.IsMatch(password, @"[a-z]"))
-        {
-            errors.Add("Password must contain at least one lowercase letter");
-        }
-
-        // Rakam kontrolü
-        if (!Regex.IsMatch(password, @"\d"))
-        {
-            errors.Add("Password must contain at least one number");
-        }
-
-        // Özel karakter kontrolü
-        if (!Regex.IsMatch(password, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]"))
-        {
-            errors.Add("Password must contain at least one special character");
-        }
-
-        // Yaygın şifre kontrolü
-        var commonPasswords = new[]
-        {
-            "password", "123456", "qwerty", "admin", "letmein",
-            "welcome", "monkey", "dragon", "master", "football"
-        };
-
-        if (commonPasswords.Any(cp => password.ToLower().Contains(cp)))
-        {
-            errors.Add("Password cannot contain common words or patterns");
-        }
-
-        // Ardışık karakter kontrolü
-        if (Regex.IsMatch(password, @"(.)\1{2,}"))
-        {
-            errors.Add("Password cannot contain more than 2 consecutive identical characters");
-        }
-
-        return new PasswordValidationResult
-        {
-            IsValid = errors.Count == 0,
-            Errors = errors
-        };
-    }
-}
-
-public class PasswordValidationResult
-{
-    public bool IsValid { get; set; }
-    public List<string> Errors { get; set; } = new();
 }
 
 public static class PasswordPolicyMiddlewareExtensions
@@ -148,4 +114,4 @@ public static class PasswordPolicyMiddlewareExtensions
     {
         return builder.UseMiddleware<PasswordPolicyMiddleware>();
     }
-} 
+}

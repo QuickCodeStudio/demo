@@ -46,6 +46,7 @@ using TwoFactorRequest = Microsoft.AspNetCore.Identity.Data.TwoFactorRequest;
 using TwoFactorResponse = Microsoft.AspNetCore.Identity.Data.TwoFactorResponse;
 using QuickCode.Demo.IdentityModule.Persistence.Stores;
 using QuickCode.Demo.Application.Contracts.ApiKeys;
+using QuickCode.Demo.Application.Contracts.Auth;
 
 namespace QuickCode.Demo.IdentityModule.Api.Extension;
 
@@ -392,8 +393,35 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 return CreateValidationProblem(result);
             }
 
+            await TrySendPasswordChangedEmailAsync(sp, userManager, user);
             return TypedResults.Ok();
         });
+
+        routeGroup.MapPost("/change-password", async Task<Results<Ok, ValidationProblem, NotFound, UnauthorizedHttpResult>>
+            (ClaimsPrincipal claimsPrincipal, [FromBody] ChangePasswordRequestDto request, [FromServices] IServiceProvider sp) =>
+        {
+            var userManager = sp.GetRequiredService<UserManager<TUser>>();
+            var user = await ResolveCurrentUserAsync(userManager, claimsPrincipal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (string.IsNullOrWhiteSpace(request?.OldPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return CreateValidationProblem("PasswordRequired",
+                    "Current password and new password are required.");
+            }
+
+            var changePasswordResult = await userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                return CreateValidationProblem(changePasswordResult);
+            }
+
+            await TrySendPasswordChangedEmailAsync(sp, userManager, user);
+            return TypedResults.Ok();
+        }).RequireAuthorization();
 
         var accountGroup = routeGroup.MapGroup("/manage").RequireAuthorization();
 
@@ -656,6 +684,54 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         }
     }
     
+    private static async Task TrySendPasswordChangedEmailAsync<TUser>(
+        IServiceProvider sp,
+        UserManager<TUser> userManager,
+        TUser user)
+        where TUser : class
+    {
+        try
+        {
+            var emailSender = sp.GetService<IIdentityAccountEmailSender>();
+            var email = await userManager.GetEmailAsync(user);
+            if (emailSender is null || string.IsNullOrWhiteSpace(email))
+                return;
+
+            var displayName = user is ApiUser apiUser
+                ? $"{apiUser.FirstName} {apiUser.LastName}".Trim()
+                : email;
+            await emailSender.SendPasswordChangedAsync(email, displayName);
+        }
+        catch
+        {
+            // Password is already changed; email is best-effort.
+        }
+    }
+
+    private static async Task<TUser?> ResolveCurrentUserAsync<TUser>(UserManager<TUser> userManager, ClaimsPrincipal principal)
+        where TUser : class
+    {
+        if (await userManager.GetUserAsync(principal) is { } user)
+            return user;
+
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? principal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (!string.IsNullOrWhiteSpace(userId)
+            && !string.Equals(userId, "gateway", StringComparison.OrdinalIgnoreCase))
+        {
+            user = await userManager.FindByIdAsync(userId);
+            if (user is not null)
+                return user;
+        }
+
+        var email = principal.FindFirstValue(ClaimTypes.Email)
+                    ?? principal.FindFirstValue(JwtRegisteredClaimNames.Email);
+        if (!string.IsNullOrWhiteSpace(email))
+            return await userManager.FindByEmailAsync(email);
+
+        return null;
+    }
+
     private static ValidationProblem CreateValidationProblem(IdentityResult result)
     {
         // We expect a single error code and description in the normal case.

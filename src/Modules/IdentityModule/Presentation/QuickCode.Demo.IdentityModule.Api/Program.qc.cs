@@ -30,6 +30,7 @@ using QuickCode.Demo.Infrastructure.Web.Extensions;
 using QuickCode.Demo.Infrastructure.Web.Filters;
 using QuickCode.Demo.Infrastructure.Web.Helpers;
 using QuickCode.Demo.Infrastructure.Web.Models;
+using QuickCode.Demo.IdentityModule.Api.Models;
 using QuickCode.Demo.Infrastructure.Integration.Models;
 using QuickCode.Demo.Infrastructure.Integration.Nswag.Extensions;
 using QuickCode.Demo.IdentityModule.Api.Extension;
@@ -92,12 +93,21 @@ builder.Services.AddIdentityCore<ApiUser>()
     .AddSignInManager()
     .AddApiEndpoints();
 
+builder.Services.AddTransient<IEmailSender<ApiUser>, IdentityEmailServiceClient>();
+builder.Services.AddTransient<IIdentityAccountEmailSender, IdentityEmailServiceClient>();
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedEmail = false;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
+    options.Password.RequiredLength = PasswordPolicy.MinLength;
+    options.Password.RequiredUniqueChars = 1;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
 });
 
 builder.Services.AddResponseCompression();

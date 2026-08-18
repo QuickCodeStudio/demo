@@ -63,6 +63,8 @@ public sealed class GroupMethodAuthorizationIndex
         if (path.StartsWith("/api/auth/login", StringComparison.OrdinalIgnoreCase)
             || path.StartsWith("/api/auth/refresh", StringComparison.OrdinalIgnoreCase)
             || path.StartsWith("/api/auth/logout", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWith("/api/auth/change-password", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWith("/api/auth/manage", StringComparison.OrdinalIgnoreCase)
             || (path.StartsWith("/api/auth/validate", StringComparison.OrdinalIgnoreCase)
                 && !path.StartsWith("/api/auth/validate-api-key", StringComparison.OrdinalIgnoreCase)))
             return true;

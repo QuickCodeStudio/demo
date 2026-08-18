@@ -380,6 +380,15 @@
                             </li>
                             <li>
                                 <button type="button"
+                                        class="dropdown-item portal-topbar-user-menu__item"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#changePasswordModal">
+                                    <i class="fas fa-key" aria-hidden="true"></i>
+                                    <span>Change password</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button"
                                         class="dropdown-item portal-topbar-user-menu__item portal-topbar-user-menu__logout"
                                         data-bs-toggle="modal"
                                         data-bs-target="#logoutModal">
@@ -424,6 +433,59 @@
             </div>
         </div>
     </div>
+    <!-- Change password modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="changePasswordForm" autocomplete="off">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changePasswordModalLabel">Change password</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-3">Enter your current password, then choose a new one.</p>
+                        <div class="mb-3">
+                            <label class="form-label" for="changePasswordOld">Current password</label>
+                            <input id="changePasswordOld"
+                                   name="oldPassword"
+                                   type="password"
+                                   class="form-control"
+                                   autocomplete="current-password"
+                                   required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="changePasswordNew">New password</label>
+                            <input id="changePasswordNew"
+                                   name="newPassword"
+                                   type="password"
+                                   class="form-control"
+                                   autocomplete="new-password"
+                                   minlength="8"
+                                   required />
+                            <div class="form-text">At least 8 characters, with uppercase, lowercase, a number, and a symbol.</div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label" for="changePasswordConfirm">Confirm new password</label>
+                            <input id="changePasswordConfirm"
+                                   name="confirmPassword"
+                                   type="password"
+                                   class="form-control"
+                                   autocomplete="new-password"
+                                   minlength="8"
+                                   required />
+                        </div>
+                        <div id="changePasswordError" class="alert alert-danger mt-3 mb-0 d-none" role="alert"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" type="submit" id="changePasswordSubmit">
+                            Update password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -443,7 +505,7 @@
     </div>
 
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090;" aria-live="polite" aria-atomic="true">
-        <div id="portalToast" class="toast align-items-center border-0 text-white" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3500">
+        <div id="portalToast" class="toast align-items-center border-0 text-white portal-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="6000">
             <div class="d-flex align-items-center w-100">
                 <div class="toast-body d-flex align-items-center gap-2 py-2">
                     <i id="portalToastIcon" class="fas fa-check-circle" aria-hidden="true"></i>

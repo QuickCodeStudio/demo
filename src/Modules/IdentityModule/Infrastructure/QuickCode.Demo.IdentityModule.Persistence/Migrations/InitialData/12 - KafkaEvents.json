@@ -1331,6 +1331,11 @@
     "IsActive": false
   },
   {
+    "ApiMethodDefinitionKey": "PostapiauthchangepasswordAuthenticationsController",
+    "TopicName": "demo.auth.change_password_post",
+    "IsActive": false
+  },
+  {
     "ApiMethodDefinitionKey": "Postapiauthmanageuser2faAuthenticationsController",
     "TopicName": "demo.auth.manage.user2fa_post",
     "IsActive": false
