@@ -4,7 +4,9 @@
 // Where to put custom code: see AGENTS.md at repo root.
 // </auto-generated>
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -65,14 +67,14 @@ namespace QuickCode.Demo.Portal.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return AuthHome();
             }
             
             ModelBinder(ref model);
             
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return AuthInvalid(model);
             }
             
             try
@@ -102,9 +104,9 @@ namespace QuickCode.Demo.Portal.Controllers
                 var userPrincipal = new ClaimsPrincipal(identity);
                 var authProperties = new AuthenticationProperties
                 {
-                    IsPersistent = model.RememberMe,
+                    IsPersistent = false,
                     AllowRefresh = true,
-                    ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddMinutes(30)
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
                 };
                 PortalApiTokenStore.ApplyTokensToProperties(
                     authProperties,
@@ -114,14 +116,11 @@ namespace QuickCode.Demo.Portal.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal,
                     authProperties);
-                
 
-                if (string.IsNullOrEmpty(model.ReturnUrl) || !Url.IsLocalUrl(model.ReturnUrl))
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-
-                return Redirect(model.ReturnUrl);
+                var redirectUrl = string.IsNullOrEmpty(model.ReturnUrl) || !Url.IsLocalUrl(model.ReturnUrl)
+                    ? Url.Action("Index", "Home")
+                    : model.ReturnUrl;
+                return AuthRedirect(redirectUrl);
             }
             catch (QuickCodeSwaggerException ex)
             {
@@ -130,28 +129,23 @@ namespace QuickCode.Demo.Portal.Controllers
                     model.ErrorMessage =
                         "Confirm your email before signing in. Open the link we sent, or request a new confirmation email.";
                     model.ShowResendConfirmation = true;
-                    return View(model);
+                    return AuthPage(model, model.ErrorMessage, showResendConfirmation: true);
                 }
 
                 if (ex.StatusCode == 401)
                 {
-                    model = new LoginData
-                    {
-                        ErrorMessage = "The email or password you entered is incorrect. Please check and try again."
-                    };
-                    return View(model);
+                    model.ErrorMessage = "The email or password you entered is incorrect. Please check and try again.";
+                    model.Password = null;
+                    return AuthPage(model, model.ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
-                model = new LoginData
-                {
-                    ErrorMessage = $"Server Error !!!\nPlease try again later.\nError:{ex.Message}"
-                };
-                return await Task.FromResult<IActionResult>(View(model));
+                model.ErrorMessage = $"Server Error !!!\nPlease try again later.\nError:{ex.Message}";
+                return AuthPage(model, model.ErrorMessage);
             }
             
-            return await Task.FromResult<IActionResult>(View(model));
+            return AuthPage(model, model.ErrorMessage);
         }
 
         public async Task<IActionResult> Logout()
@@ -236,14 +230,14 @@ namespace QuickCode.Demo.Portal.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return AuthHome();
             }
             
             ModelBinder(ref model);
             
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return AuthInvalid(model);
             }
 
             try
@@ -259,7 +253,7 @@ namespace QuickCode.Demo.Portal.Controllers
                 await authenticationsClient.ApiAuthRegisterPostAsync(customRegisterRequest);
                 
                 model.SuccessMessage = "Check your email and open the confirmation link before signing in.";
-                return View(model);
+                return AuthPage(model, toast: model.SuccessMessage, ok: true);
             }
             catch (QuickCodeSwaggerException ex)
             {
@@ -271,12 +265,12 @@ namespace QuickCode.Demo.Portal.Controllers
                 {
                     model.ErrorMessage = "An error occurred during registration. Please try again later.";
                 }
-                return View(model);
+                return AuthPage(model, model.ErrorMessage);
             }
             catch (Exception ex)
             {
                 model.ErrorMessage = $"Server Error! Please try again later. Error: {ex.Message}";
-                return View(model);
+                return AuthPage(model, model.ErrorMessage);
             }
         }
 
@@ -297,14 +291,14 @@ namespace QuickCode.Demo.Portal.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return AuthHome();
             }
             
             ModelBinder(ref model);
             
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return AuthInvalid(model);
             }
 
             try
@@ -317,17 +311,17 @@ namespace QuickCode.Demo.Portal.Controllers
                 await authenticationsClient.ApiAuthForgotPasswordPostAsync(forgotPasswordRequest);
                 
                 model.SuccessMessage = "If an account with that email exists, we sent a reset link. Confirm your email first if you have not already.";
-                return View(model);
+                return AuthPage(model, toast: model.SuccessMessage, ok: true);
             }
             catch (QuickCodeSwaggerException)
             {
                 model.ErrorMessage = "An error occurred while processing your request. Please try again later.";
-                return View(model);
+                return AuthPage(model, model.ErrorMessage);
             }
             catch (Exception ex)
             {
                 model.ErrorMessage = $"Server Error! Please try again later. Error: {ex.Message}";
-                return View(model);
+                return AuthPage(model, model.ErrorMessage);
             }
         }
 
@@ -357,14 +351,14 @@ namespace QuickCode.Demo.Portal.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return AuthHome();
             }
             
             ModelBinder(ref model);
             
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return AuthInvalid(model);
             }
 
             try
@@ -377,9 +371,20 @@ namespace QuickCode.Demo.Portal.Controllers
                 };
 
                 await authenticationsClient.ApiAuthResetPasswordPostAsync(resetPasswordRequest);
-                
-                model.SuccessMessage = "Your password has been reset successfully. You can now login with your new password.";
-                return View(model);
+
+                const string toast = "Password updated. Sign in with your new password.";
+                if (IsAuthFetch())
+                {
+                    return AuthJson(ok: true, toast: toast, redirectUrl: Url.Action(nameof(Index)));
+                }
+
+                var login = new LoginData
+                {
+                    Username = model.Email,
+                    SuccessMessage = toast
+                };
+                SetModelBinder(ref login);
+                return RedirectToAction(nameof(Index));
             }
             catch (QuickCodeSwaggerException ex)
             {
@@ -391,12 +396,12 @@ namespace QuickCode.Demo.Portal.Controllers
                 {
                     model.ErrorMessage = "An error occurred while resetting your password. Please try again later.";
                 }
-                return View(model);
+                return AuthPage(model, model.ErrorMessage);
             }
             catch (Exception ex)
             {
                 model.ErrorMessage = $"Server Error! Please try again later. Error: {ex.Message}";
-                return View(model);
+                return AuthPage(model, model.ErrorMessage);
             }
         }
 
@@ -437,7 +442,7 @@ namespace QuickCode.Demo.Portal.Controllers
             {
                 model.ErrorMessage = "Enter your email to resend the confirmation link.";
                 model.ShowResendConfirmation = true;
-                return View("Index", model);
+                return AuthPage(model, model.ErrorMessage, showResendConfirmation: true, viewName: "Index");
             }
 
             try
@@ -445,13 +450,13 @@ namespace QuickCode.Demo.Portal.Controllers
                 await accountAuthClient.ResendConfirmationEmailAsync(email.Trim());
                 model.SuccessMessage = "If an account with that email exists, a confirmation link was sent.";
                 model.ShowResendConfirmation = true;
-                return View("Index", model);
+                return AuthPage(model, toast: model.SuccessMessage, ok: true, showResendConfirmation: true, viewName: "Index");
             }
             catch (Exception)
             {
                 model.ErrorMessage = "Could not resend the confirmation email. Please try again later.";
                 model.ShowResendConfirmation = true;
-                return View("Index", model);
+                return AuthPage(model, model.ErrorMessage, showResendConfirmation: true, viewName: "Index");
             }
         }
 
@@ -461,6 +466,67 @@ namespace QuickCode.Demo.Portal.Controllers
             return await Task.FromResult(View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }));
         }
 
+        private bool IsAuthFetch() =>
+            string.Equals(Request.Headers["X-Auth-Fetch"], "1", StringComparison.OrdinalIgnoreCase);
 
+        private IActionResult AuthHome()
+        {
+            var url = Url.Action("Index", "Home");
+            return IsAuthFetch() ? AuthJson(ok: true, redirectUrl: url) : RedirectToAction("Index", "Home");
+        }
+
+        private IActionResult AuthRedirect(string url) =>
+            IsAuthFetch() ? AuthJson(ok: true, redirectUrl: url) : Redirect(url);
+
+        private IActionResult AuthInvalid(object model)
+        {
+            if (!IsAuthFetch())
+                return View(model);
+
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var item in ModelState)
+            {
+                var message = item.Value?.Errors.FirstOrDefault()?.ErrorMessage;
+                if (string.IsNullOrEmpty(item.Key) || string.IsNullOrEmpty(message))
+                    continue;
+                fieldErrors[item.Key] = message;
+            }
+
+            return Json(new
+            {
+                ok = false,
+                error = fieldErrors.Values.FirstOrDefault() ?? "Please check the form and try again.",
+                fieldErrors
+            });
+        }
+
+        private IActionResult AuthPage(
+            object model,
+            string error = null,
+            string toast = null,
+            bool ok = false,
+            bool showResendConfirmation = false,
+            string viewName = null)
+        {
+            if (IsAuthFetch())
+                return AuthJson(ok, error, toast, showResendConfirmation: showResendConfirmation);
+
+            return string.IsNullOrEmpty(viewName) ? View(model) : View(viewName, model);
+        }
+
+        private JsonResult AuthJson(
+            bool ok,
+            string error = null,
+            string toast = null,
+            string redirectUrl = null,
+            bool showResendConfirmation = false) =>
+            Json(new
+            {
+                ok,
+                error,
+                toast,
+                redirectUrl,
+                showResendConfirmation
+            });
     }
 }

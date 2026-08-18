@@ -26,6 +26,31 @@
         </div>
     </main>
 
+    @if (ViewData["AuthToast"] is string authToast && !string.IsNullOrWhiteSpace(authToast))
+    {
+        var toastType = ViewData["AuthToastType"] as string ?? "success";
+        <div id="authToast"
+             class="auth-toast auth-toast--@toastType is-visible"
+             role="status"
+             aria-live="polite">
+            <i id="authToastIcon" class="fas @(string.Equals(toastType, "error", System.StringComparison.OrdinalIgnoreCase) ? "fa-exclamation-circle" : "fa-check-circle")" aria-hidden="true"></i>
+            <span id="authToastBody" class="auth-toast__body">@authToast</span>
+            <button type="button" class="auth-toast__close" data-auth-toast-close aria-label="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+    }
+    else
+    {
+        <div id="authToast" class="auth-toast" hidden role="status" aria-live="polite">
+            <i id="authToastIcon" class="fas fa-check-circle" aria-hidden="true"></i>
+            <span id="authToastBody" class="auth-toast__body"></span>
+            <button type="button" class="auth-toast__close" data-auth-toast-close aria-label="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+    }
+
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
