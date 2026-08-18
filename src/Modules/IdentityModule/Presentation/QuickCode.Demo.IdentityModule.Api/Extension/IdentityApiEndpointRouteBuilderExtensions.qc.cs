@@ -144,6 +144,11 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 }
             }
 
+            if (result.IsNotAllowed)
+            {
+                return TypedResults.Problem("EmailNotConfirmed", statusCode: StatusCodes.Status403Forbidden);
+            }
+
             if (!result.Succeeded)
             {
                 return TypedResults.Problem(result.ToString(), statusCode: StatusCodes.Status401Unauthorized);
@@ -344,21 +349,25 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         });
 
         routeGroup.MapPost("/forgotPassword", async Task<Results<Ok, ValidationProblem>>
-            ([FromBody] ForgotPasswordRequest resetRequest, [FromServices] IServiceProvider sp) =>
+            ([FromBody] ForgotPasswordRequest resetRequest, HttpContext context, [FromServices] IServiceProvider sp) =>
         {
             var userManager = sp.GetRequiredService<UserManager<TUser>>();
             var user = await userManager.FindByEmailAsync(resetRequest.Email);
 
-            if (user is not null && await userManager.IsEmailConfirmedAsync(user))
+            if (user is not null)
             {
-                var code = await userManager.GeneratePasswordResetTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                await emailSender.SendPasswordResetCodeAsync(user, resetRequest.Email, code);
+                if (!await userManager.IsEmailConfirmedAsync(user))
+                {
+                    await SendConfirmationEmailAsync(user, userManager, context, resetRequest.Email);
+                }
+                else
+                {
+                    var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    await emailSender.SendPasswordResetCodeAsync(user, resetRequest.Email, code);
+                }
             }
 
-            // Don't reveal that the user does not exist or is not confirmed, so don't return a 200 if we would have
-            // returned a 400 for an invalid code given a valid user email.
             return TypedResults.Ok();
         });
 
@@ -369,9 +378,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
             var user = await userManager.FindByEmailAsync(resetRequest.Email);
 
-            if (user is null || !(await userManager.IsEmailConfirmedAsync(user)))
+            if (user is null)
             {
-                // Don't reveal that the user does not exist or is not confirmed, so don't return a 200 if we would have
+                // Don't reveal that the user does not exist, so don't return a 200 if we would have
                 // returned a 400 for an invalid code given a valid user email.
                 return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidToken()));
             }
@@ -577,7 +586,8 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 routeValues.Add("changedEmail", email);
             }
 
-            var confirmEmailUrl = linkGenerator.GetUriByName(context, confirmEmailEndpointName, routeValues)
+            var confirmEmailUrl = BuildPortalConfirmEmailUrl(context, userId, code, isChange ? email : null)
+                ?? linkGenerator.GetUriByName(context, confirmEmailEndpointName, routeValues)
                 ?? throw new NotSupportedException($"Could not find endpoint named '{confirmEmailEndpointName}'.");
 
             await emailSender.SendConfirmationLinkAsync(user, email, confirmEmailUrl);
@@ -585,6 +595,30 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
         return new IdentityEndpointsConventionBuilder(routeGroup);
     }
+
+    private static string? BuildPortalConfirmEmailUrl(
+        HttpContext context,
+        string userId,
+        string code,
+        string? changedEmail)
+    {
+        var configuration = context.RequestServices.GetService<IConfiguration>();
+        var portal = FirstNonEmpty(
+            configuration?["EmailService:PortalUrl"],
+            configuration?["AppSettings:PortalUrl"],
+            Environment.GetEnvironmentVariable("QUICKCODE_PORTAL_URL"));
+        if (string.IsNullOrWhiteSpace(portal))
+            return null;
+
+        var url =
+            $"{portal.TrimEnd('/')}/Login/ConfirmEmail?userId={Uri.EscapeDataString(userId)}&code={Uri.EscapeDataString(code)}";
+        if (!string.IsNullOrWhiteSpace(changedEmail))
+            url += $"&changedEmail={Uri.EscapeDataString(changedEmail)}";
+        return url;
+    }
+
+    private static string? FirstNonEmpty(params string?[] values) =>
+        values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim();
 
     private static ValidationProblem CreateValidationProblem(string errorCode, string errorDescription) =>
         TypedResults.ValidationProblem(new Dictionary<string, string[]> {

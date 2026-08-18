@@ -56,9 +56,23 @@
 
             <button type="submit" class="auth-btn">Sign in</button>
 
+            @if (Model.ShowResendConfirmation)
+            {
+                <button type="submit"
+                        class="auth-btn"
+                        formaction="@Url.Action("ResendConfirmation")"
+                        formnovalidate>
+                    Resend confirmation email
+                </button>
+            }
+
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
             {
                 <div class="auth-alert auth-alert--error" role="alert">@Model.ErrorMessage</div>
+            }
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="auth-alert auth-alert--success" role="status">@Model.SuccessMessage</div>
             }
         </form>
 

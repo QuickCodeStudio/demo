@@ -3,6 +3,8 @@
 // This file is overwritten on full template regen. Add user logic in separate .cs files.
 // Where to put custom code: see AGENTS.md at repo root.
 // </auto-generated>
+using System;
+using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -106,6 +108,36 @@ public sealed class ApiKeyAuthClient(HttpClient httpClient) : Nswag.ClientBase, 
         using var response = await httpClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
         var payload = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         EnsureSuccess(response, payload, "Change password failed.");
+    }
+
+    public async Task ConfirmEmailAsync(
+        string userId,
+        string code,
+        string changedEmail = null,
+        CancellationToken cancellationToken = default)
+    {
+        using var message = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+        message.Method = HttpMethod.Get;
+        var query = $"userId={Uri.EscapeDataString(userId ?? "")}&code={Uri.EscapeDataString(code ?? "")}";
+        if (!string.IsNullOrWhiteSpace(changedEmail))
+            query += $"&changedEmail={Uri.EscapeDataString(changedEmail)}";
+        message.RequestUri = new Uri($"api/auth/confirmEmail?{query}", UriKind.Relative);
+
+        using var response = await httpClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        var payload = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        EnsureSuccess(response, payload, "Email confirmation failed.");
+    }
+
+    public async Task ResendConfirmationEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        using var message = await CreateHttpRequestMessageAsync(cancellationToken).ConfigureAwait(false);
+        message.Method = HttpMethod.Post;
+        message.RequestUri = new Uri("api/auth/resendConfirmationEmail", UriKind.Relative);
+        message.Content = JsonContent.Create(new { email }, options: JsonOptions);
+
+        using var response = await httpClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        var payload = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        EnsureSuccess(response, payload, "Resend confirmation email failed.");
     }
 
     private static void EnsureSuccess(HttpResponseMessage response, string payload, string message)

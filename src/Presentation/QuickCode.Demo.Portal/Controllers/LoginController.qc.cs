@@ -125,13 +125,21 @@ namespace QuickCode.Demo.Portal.Controllers
             }
             catch (QuickCodeSwaggerException ex)
             {
+                if (ex.StatusCode == 403)
+                {
+                    model.ErrorMessage =
+                        "Confirm your email before signing in. Open the link we sent, or request a new confirmation email.";
+                    model.ShowResendConfirmation = true;
+                    return View(model);
+                }
+
                 if (ex.StatusCode == 401)
                 {
                     model = new LoginData
                     {
                         ErrorMessage = "The email or password you entered is incorrect. Please check and try again."
                     };
-                    return await Task.FromResult<IActionResult>(View(model));
+                    return View(model);
                 }
             }
             catch (Exception ex)
@@ -250,7 +258,7 @@ namespace QuickCode.Demo.Portal.Controllers
 
                 await authenticationsClient.ApiAuthRegisterPostAsync(customRegisterRequest);
                 
-                model.SuccessMessage = "Registration successful! Please check your email to confirm your account.";
+                model.SuccessMessage = "Check your email and open the confirmation link before signing in.";
                 return View(model);
             }
             catch (QuickCodeSwaggerException ex)
@@ -308,7 +316,7 @@ namespace QuickCode.Demo.Portal.Controllers
 
                 await authenticationsClient.ApiAuthForgotPasswordPostAsync(forgotPasswordRequest);
                 
-                model.SuccessMessage = "If an account with that email exists, a password reset link has been sent to your email address.";
+                model.SuccessMessage = "If an account with that email exists, we sent instructions. Confirm your email first if you have not already.";
                 return View(model);
             }
             catch (QuickCodeSwaggerException)
@@ -389,6 +397,61 @@ namespace QuickCode.Demo.Portal.Controllers
             {
                 model.ErrorMessage = $"Server Error! Please try again later. Error: {ex.Message}";
                 return View(model);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code, string changedEmail = null)
+        {
+            var model = new ConfirmEmailData();
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(code))
+            {
+                model.ErrorMessage = "This confirmation link is missing information. Request a new email from the sign-in page.";
+                return View(model);
+            }
+
+            try
+            {
+                await accountAuthClient.ConfirmEmailAsync(userId, code, changedEmail);
+                model.SuccessMessage = "Your email is confirmed. You can sign in now.";
+                return View(model);
+            }
+            catch (QuickCodeSwaggerException)
+            {
+                model.ErrorMessage = "This confirmation link is invalid or has expired. Request a new email from the sign-in page.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                model.ErrorMessage = $"Could not confirm your email. Please try again later. Error: {ex.Message}";
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResendConfirmation(LoginData model)
+        {
+            ModelBinder(ref model);
+            var email = string.IsNullOrWhiteSpace(model.Username) ? model.Email : model.Username;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                model.ErrorMessage = "Enter your email to resend the confirmation link.";
+                model.ShowResendConfirmation = true;
+                return View("Index", model);
+            }
+
+            try
+            {
+                await accountAuthClient.ResendConfirmationEmailAsync(email.Trim());
+                model.SuccessMessage = "If an account with that email exists, a confirmation link was sent.";
+                model.ShowResendConfirmation = true;
+                return View("Index", model);
+            }
+            catch (Exception)
+            {
+                model.ErrorMessage = "Could not resend the confirmation email. Please try again later.";
+                model.ShowResendConfirmation = true;
+                return View("Index", model);
             }
         }
 

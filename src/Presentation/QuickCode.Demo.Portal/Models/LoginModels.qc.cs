@@ -24,6 +24,9 @@ namespace QuickCode.Demo.Portal.Models
 		public bool RememberMe { get; set; }
 		public string ReturnUrl { get; set; }
 		public string ErrorMessage { get; set; }
+		public string SuccessMessage { get; set; }
+		public bool ShowResendConfirmation { get; set; }
+		public string Email { get; set; }
 	}
 
 	public class RegisterData
@@ -57,6 +60,7 @@ namespace QuickCode.Demo.Portal.Models
 	{
 		[Required(ErrorMessage = "Email is required")]
 		[EmailAddress(ErrorMessage = "Please enter a valid email address")]
+		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 
 		public string ErrorMessage { get; set; }
@@ -81,6 +85,12 @@ namespace QuickCode.Demo.Portal.Models
 		[Compare("NewPassword", ErrorMessage = "Passwords do not match")]
 		public string ConfirmPassword { get; set; }
 
+		public string ErrorMessage { get; set; }
+		public string SuccessMessage { get; set; }
+	}
+
+	public class ConfirmEmailData
+	{
 		public string ErrorMessage { get; set; }
 		public string SuccessMessage { get; set; }
 	}

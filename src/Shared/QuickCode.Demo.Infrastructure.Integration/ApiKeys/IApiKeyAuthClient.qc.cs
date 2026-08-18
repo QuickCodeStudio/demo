@@ -3,6 +3,10 @@
 // This file is overwritten on full template regen. Add user logic in separate .cs files.
 // Where to put custom code: see AGENTS.md at repo root.
 // </auto-generated>
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using QuickCode.Demo.Application.Contracts.ApiKeys;
 using QuickCode.Demo.Application.Contracts.Auth;
 
@@ -22,4 +26,8 @@ public interface IApiKeyAuthClient
     Task<bool> RevokeApiKeyAsync(Guid id);
 
     Task ChangePasswordAsync(ChangePasswordRequestDto request, CancellationToken cancellationToken = default);
+
+    Task ConfirmEmailAsync(string userId, string code, string changedEmail = null, CancellationToken cancellationToken = default);
+
+    Task ResendConfirmationEmailAsync(string email, CancellationToken cancellationToken = default);
 }

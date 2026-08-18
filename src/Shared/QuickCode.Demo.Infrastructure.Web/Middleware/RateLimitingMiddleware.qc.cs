@@ -98,6 +98,7 @@ public class RateLimitingMiddleware
                || value.StartsWith("/api/auth/register", StringComparison.OrdinalIgnoreCase)
                || value.StartsWith("/api/auth/forgotPassword", StringComparison.OrdinalIgnoreCase)
                || value.StartsWith("/api/auth/resetPassword", StringComparison.OrdinalIgnoreCase)
+               || value.StartsWith("/api/auth/confirmEmail", StringComparison.OrdinalIgnoreCase)
                || value.StartsWith("/api/auth/resendConfirmationEmail", StringComparison.OrdinalIgnoreCase);
     }
 }
