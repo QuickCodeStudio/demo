@@ -173,10 +173,25 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
             Environment.GetEnvironmentVariable(AlternateApiKeyEnvVar));
     }
 
-    private string? ResolveProjectKey() =>
-        FirstNonEmpty(
+    private string? ResolveProjectKey()
+    {
+        var configured = FirstNonEmpty(
             _configuration[ProjectKeyConfigKey],
             Environment.GetEnvironmentVariable(ProjectKeyEnvVar));
+        if (configured != null)
+            return configured;
+
+        var issuer = _configuration["JwtSettings:Issuer"];
+        if (Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
+        {
+            var host = uri.Host;
+            const string suffix = "-api.quickcode.net";
+            if (host.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                return host[..^suffix.Length];
+        }
+
+        return null;
+    }
 
     private static string? FirstNonEmpty(params string?[] values) =>
         values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim();
