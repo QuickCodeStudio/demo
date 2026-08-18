@@ -13,7 +13,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using QuickCode.Demo.Application.Contracts.Mediator;
@@ -355,7 +354,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 var code = await userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                await emailSender.SendPasswordResetCodeAsync(user, resetRequest.Email, HtmlEncoder.Default.Encode(code));
+                await emailSender.SendPasswordResetCodeAsync(user, resetRequest.Email, code);
             }
 
             // Don't reveal that the user does not exist or is not confirmed, so don't return a 200 if we would have
@@ -581,7 +580,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             var confirmEmailUrl = linkGenerator.GetUriByName(context, confirmEmailEndpointName, routeValues)
                 ?? throw new NotSupportedException($"Could not find endpoint named '{confirmEmailEndpointName}'.");
 
-            await emailSender.SendConfirmationLinkAsync(user, email, HtmlEncoder.Default.Encode(confirmEmailUrl));
+            await emailSender.SendConfirmationLinkAsync(user, email, confirmEmailUrl);
         }
 
         return new IdentityEndpointsConventionBuilder(routeGroup);

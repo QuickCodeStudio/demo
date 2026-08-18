@@ -4,6 +4,7 @@
 // Where to put custom code: see AGENTS.md at repo root.
 // </auto-generated>
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -22,16 +23,19 @@ public interface IIdentityAccountEmailSender
 }
 
 /// <summary>
-/// Identity does not send mail. It posts to QuickCode.Api <c>/api/Email/send</c> with an API key.
+/// Identity does not send mail. It posts to QuickCode.Api <c>/api/Email/send-from-template</c>
+/// with projectKey, templateId, and data. Subject and HTML are chosen on the server.
 /// </summary>
 public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentityAccountEmailSender
 {
     public const string DefaultBaseUrl = "https://api.quickcode.net/";
-    public const string DefaultSendPath = "api/Email/send";
+    public const string DefaultSendPath = "api/Email/send-from-template";
     public const string ApiKeyConfigKey = "EmailService:ApiKey";
     public const string QuickcodeApiKeyConfigKey = "QuickcodeApiKeys:EmailSenderModuleApiKey";
     public const string ApiKeyEnvVar = "QuickcodeApiKeys__EmailSenderModuleApiKey";
     public const string AlternateApiKeyEnvVar = "QUICKCODE_EMAIL_API_KEY";
+    public const string ProjectKeyConfigKey = "EmailService:ProjectKey";
+    public const string ProjectKeyEnvVar = "QUICKCODE_PROJECT_KEY";
     public const string ApiKeyHeaderName = "X-Api-Key";
 
     private readonly IHttpClientFactory _httpClientFactory;
@@ -49,36 +53,32 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
     }
 
     public Task SendConfirmationLinkAsync(ApiUser user, string email, string confirmationLink) =>
-        SendAsync(
-            email,
-            "Confirm your email",
-            "Confirm your email",
-            DisplayName(user),
-            $"Please confirm your email address by opening this link:<br/><a href=\"{confirmationLink}\">{confirmationLink}</a>");
+        SendAsync(email, "confirm-email", DisplayName(user), new Dictionary<string, string>
+        {
+            ["displayName"] = DisplayName(user),
+            ["confirmationLink"] = confirmationLink
+        });
 
     public Task SendPasswordResetLinkAsync(ApiUser user, string email, string resetLink) =>
-        SendAsync(
-            email,
-            "Reset your password",
-            "Reset your password",
-            DisplayName(user),
-            $"A password reset was requested for this account. Open this link to choose a new password:<br/><a href=\"{resetLink}\">{resetLink}</a>");
+        SendAsync(email, "password-reset-link", DisplayName(user), new Dictionary<string, string>
+        {
+            ["displayName"] = DisplayName(user),
+            ["resetLink"] = resetLink
+        });
 
     public Task SendPasswordResetCodeAsync(ApiUser user, string email, string resetCode) =>
-        SendAsync(
-            email,
-            "Your password reset code",
-            "Password reset code",
-            DisplayName(user),
-            $"Use this code to reset your password:<br/><strong style=\"font-size:1.25rem;letter-spacing:0.08em\">{resetCode}</strong>");
+        SendAsync(email, "password-reset", DisplayName(user), new Dictionary<string, string>
+        {
+            ["displayName"] = DisplayName(user),
+            ["resetCode"] = resetCode
+        });
 
     public Task SendPasswordChangedAsync(string email, string? displayName, CancellationToken cancellationToken = default) =>
         SendAsync(
             email,
-            "Your password was changed",
-            "Password changed",
+            "password-changed",
             displayName,
-            "The password for your account was changed successfully. If you did not make this change, reset your password immediately or contact your administrator.",
+            new Dictionary<string, string> { ["displayName"] = displayName ?? "" },
             cancellationToken);
 
     private static string DisplayName(ApiUser user)
@@ -89,10 +89,9 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
 
     private async Task SendAsync(
         string email,
-        string subject,
-        string heading,
+        string templateId,
         string? greetingName,
-        string bodyHtml,
+        Dictionary<string, string> data,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(email))
@@ -102,9 +101,20 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             _logger.LogWarning(
-                "Email API key is not configured (EmailService:ApiKey / QuickcodeApiKeys:EmailSenderModuleApiKey / {EnvVar}); skipping '{Subject}' to {Email}",
+                "Email API key is not configured (EmailService:ApiKey / QuickcodeApiKeys:EmailSenderModuleApiKey / {EnvVar}); skipping '{TemplateId}' to {Email}",
                 AlternateApiKeyEnvVar,
-                subject,
+                templateId,
+                email);
+            return;
+        }
+
+        var projectKey = ResolveProjectKey();
+        if (string.IsNullOrWhiteSpace(projectKey))
+        {
+            _logger.LogWarning(
+                "EmailService:ProjectKey / {EnvVar} is not configured; skipping '{TemplateId}' to {Email}",
+                ProjectKeyEnvVar,
+                templateId,
                 email);
             return;
         }
@@ -116,17 +126,8 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
         var sendPath = FirstNonEmpty(_configuration["EmailService:SendPath"], DefaultSendPath)!;
         var url = $"{baseUrl.TrimEnd('/')}/{sendPath.TrimStart('/')}";
 
-        var name = string.IsNullOrWhiteSpace(greetingName) ? "there" : greetingName;
-        var html = $"""
-            <html>
-            <body style="font-family:Arial,sans-serif;color:#1e293b;line-height:1.5">
-              <h2 style="color:#3b488e;margin:0 0 1rem">{heading}</h2>
-              <p>Hi {System.Net.WebUtility.HtmlEncode(name)},</p>
-              <p>{bodyHtml}</p>
-              <p style="color:#64748b;font-size:0.875rem;margin-top:1.5rem">If you did not request this, you can ignore this email.</p>
-            </body>
-            </html>
-            """;
+        if (!string.IsNullOrWhiteSpace(greetingName) && !data.ContainsKey("displayName"))
+            data["displayName"] = greetingName;
 
         try
         {
@@ -135,9 +136,10 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
             {
                 Content = JsonContent.Create(new
                 {
+                    projectKey,
                     to = email,
-                    subject,
-                    htmlBody = html
+                    templateId,
+                    data
                 })
             };
             request.Headers.TryAddWithoutValidation(ApiKeyHeaderName, apiKey);
@@ -146,15 +148,15 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
-                    "Email service returned {Status} for '{Subject}' to {Email}",
+                    "Email service returned {Status} for '{TemplateId}' to {Email}",
                     (int)response.StatusCode,
-                    subject,
+                    templateId,
                     email);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to call email service for '{Subject}' to {Email}", subject, email);
+            _logger.LogError(ex, "Failed to call email service for '{TemplateId}' to {Email}", templateId, email);
         }
     }
 
@@ -170,6 +172,11 @@ public sealed class IdentityEmailServiceClient : IEmailSender<ApiUser>, IIdentit
             Environment.GetEnvironmentVariable(ApiKeyEnvVar),
             Environment.GetEnvironmentVariable(AlternateApiKeyEnvVar));
     }
+
+    private string? ResolveProjectKey() =>
+        FirstNonEmpty(
+            _configuration[ProjectKeyConfigKey],
+            Environment.GetEnvironmentVariable(ProjectKeyEnvVar));
 
     private static string? FirstNonEmpty(params string?[] values) =>
         values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim();
