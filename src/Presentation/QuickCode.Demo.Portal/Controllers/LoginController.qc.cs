@@ -20,14 +20,12 @@ using QuickCode.Demo.Infrastructure.Integration.Helpers;
 using QuickCode.Demo.Infrastructure.Integration.Models;
 using QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts;
 using QuickCode.Demo.Portal.Models;
-using QuickCode.Demo.Application.Contracts.Auth;
 using QuickCode.Demo.Infrastructure.Web.Helpers;
 using QuickCode.Demo.Portal.Helpers;
 using LoginRequest = QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts.LoginRequest;
-
-
 using ForgotPasswordRequest = QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts.ForgotPasswordRequest;
 using ResetPasswordRequest = QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts.ResetPasswordRequest;
+using ChangePasswordRequestDto = QuickCode.Demo.Application.Contracts.Auth.ChangePasswordRequestDto;
 
 namespace QuickCode.Demo.Portal.Controllers
 {
