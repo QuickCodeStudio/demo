@@ -80,15 +80,115 @@
   }
 
   function showResend(form, visible) {
-    var btn = form.querySelector("[data-auth-resend]");
-    if (!btn) {
+    var dialog = document.getElementById("authConfirmDialog");
+    if (!dialog) {
       return;
     }
-    if (visible) {
-      btn.removeAttribute("hidden");
-    } else {
-      btn.setAttribute("hidden", "");
+
+    var emailEl = dialog.querySelector("[data-auth-dialog-email]");
+    var username = form.querySelector('[name="Username"]');
+    if (emailEl && username && username.value) {
+      emailEl.textContent = username.value;
     }
+
+    if (visible) {
+      dialog.classList.add("is-open");
+      var confirmBtn = dialog.querySelector("[data-auth-dialog-confirm]");
+      if (confirmBtn) {
+        confirmBtn.focus();
+      }
+    } else {
+      dialog.classList.remove("is-open");
+    }
+  }
+
+  function postResendConfirmation(form, dialog) {
+    var url = dialog.getAttribute("data-auth-resend-url");
+    var username = form.querySelector('[name="Username"]');
+    if (!url || !username || !username.value) {
+      showAuthToast("Enter your email to resend the confirmation link.", "error");
+      return;
+    }
+
+    var confirmBtn = dialog.querySelector("[data-auth-dialog-confirm]");
+    var original = (confirmBtn && (confirmBtn.textContent || "").trim()) || "Send email";
+    setButtonBusy(confirmBtn, true, original);
+
+    var body = new FormData();
+    body.append("Username", username.value);
+    var token = antiforgeryToken(form);
+    if (token) {
+      body.append("__RequestVerificationToken", token);
+    }
+
+    var headers = {
+      "X-Auth-Fetch": "1",
+      Accept: "application/json"
+    };
+    if (token) {
+      headers.RequestVerificationToken = token;
+    }
+
+    window
+      .fetch(url, {
+        method: "POST",
+        body: body,
+        credentials: "same-origin",
+        headers: headers
+      })
+      .then(function (response) {
+        return response.text().then(function (text) {
+          var data = {};
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch (e) {
+            data = { ok: false, error: "Could not resend the confirmation email. Please try again later." };
+          }
+          return data;
+        });
+      })
+      .then(function (data) {
+        setButtonBusy(confirmBtn, false);
+        if (data.ok) {
+          showResend(form, false);
+          showAuthToast(data.toast || "If an account with that email exists, a confirmation link was sent.", "success");
+          return;
+        }
+        showAuthToast(data.error || "Could not resend the confirmation email. Please try again later.", "error");
+      })
+      .catch(function () {
+        setButtonBusy(confirmBtn, false);
+        showAuthToast("Could not resend the confirmation email. Please try again later.", "error");
+      });
+  }
+
+  function initAuthDialog() {
+    var dialog = document.getElementById("authConfirmDialog");
+    if (!dialog) {
+      return;
+    }
+
+    dialog.querySelectorAll("[data-auth-dialog-dismiss]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        dialog.classList.remove("is-open");
+      });
+    });
+
+    var confirmBtn = dialog.querySelector("[data-auth-dialog-confirm]");
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", function () {
+        var form = document.querySelector("form.auth-form");
+        if (form) {
+          postResendConfirmation(form, dialog);
+        }
+      });
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && dialog.classList.contains("is-open")) {
+        dialog.classList.remove("is-open");
+      }
+    });
   }
 
   function setButtonBusy(btn, busy, original) {
@@ -292,6 +392,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     initPasswordToggles(document);
     initAuthToast();
+    initAuthDialog();
     initAuthFetch(document);
   });
 })();

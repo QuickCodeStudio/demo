@@ -57,15 +57,6 @@
 
             <button type="submit" class="auth-btn">Sign in</button>
 
-            <button type="submit"
-                    class="auth-btn"
-                    data-auth-resend
-                    formaction="@Url.Action("ResendConfirmation")"
-                    formnovalidate
-                    hidden="@(!Model.ShowResendConfirmation)">
-                Resend confirmation email
-            </button>
-
             <div class="auth-alert auth-alert--error"
                  data-auth-alert
                  role="alert"
@@ -77,6 +68,24 @@
         </div>
     </div>
 </section>
+
+<div id="authConfirmDialog"
+     class="auth-dialog@(Model.ShowResendConfirmation ? " is-open" : "")"
+     data-auth-resend-url="@Url.Action("ResendConfirmation")"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="authConfirmTitle">
+    <div class="auth-dialog__backdrop" data-auth-dialog-dismiss></div>
+    <div class="auth-dialog__panel">
+        <p class="auth-card__eyebrow">Email confirmation</p>
+        <h2 id="authConfirmTitle" class="auth-dialog__title">Confirm your email first</h2>
+        <p class="auth-dialog__lead">This account exists, but the email is not confirmed yet. Send a new confirmation link to <strong data-auth-dialog-email>@Model.Username</strong>?</p>
+        <div class="auth-dialog__actions">
+            <button type="button" class="auth-btn auth-btn--ghost" data-auth-dialog-dismiss>Not now</button>
+            <button type="button" class="auth-btn" data-auth-dialog-confirm>Send email</button>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

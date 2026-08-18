@@ -126,8 +126,7 @@ namespace QuickCode.Demo.Portal.Controllers
             {
                 if (ex.StatusCode == 403)
                 {
-                    model.ErrorMessage =
-                        "Confirm your email before signing in. Open the link we sent, or request a new confirmation email.";
+                    model.ErrorMessage = "Confirm your email before signing in.";
                     model.ShowResendConfirmation = true;
                     return AuthPage(model, model.ErrorMessage, showResendConfirmation: true);
                 }
@@ -449,8 +448,8 @@ namespace QuickCode.Demo.Portal.Controllers
             {
                 await accountAuthClient.ResendConfirmationEmailAsync(email.Trim());
                 model.SuccessMessage = "If an account with that email exists, a confirmation link was sent.";
-                model.ShowResendConfirmation = true;
-                return AuthPage(model, toast: model.SuccessMessage, ok: true, showResendConfirmation: true, viewName: "Index");
+                model.ShowResendConfirmation = false;
+                return AuthPage(model, toast: model.SuccessMessage, ok: true, viewName: "Index");
             }
             catch (Exception)
             {
