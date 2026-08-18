@@ -401,6 +401,9 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 return CreateValidationProblem(result);
             }
 
+            await userManager.ResetAccessFailedCountAsync(user);
+            await userManager.SetLockoutEndDateAsync(user, null);
+
             await TrySendPasswordChangedEmailAsync(sp, userManager, user);
             return TypedResults.Ok();
         });
