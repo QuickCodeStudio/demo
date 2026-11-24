@@ -1,0 +1,96 @@
+use crate::db::{execute_sql_script, execute_sql_script_positional, execute_sql_script_positional_count, load_sql, DbPool};
+use anyhow::Result;
+use serde_json::{json, Value};
+use std::collections::HashMap;
+
+fn pick(body: &HashMap<String, Value>, snake: &str, pascal: &str) -> Value {
+    body.get(snake)
+        .cloned()
+        .or_else(|| body.get(pascal).cloned())
+        .or_else(|| {
+            let camel: String = {
+                let mut chars = pascal.chars();
+                match chars.next() {
+                    None => String::new(),
+                    Some(f) => f.to_lowercase().collect::<String>() + chars.as_str(),
+                }
+            };
+            body.get(&camel).cloned()
+        })
+        .unwrap_or(Value::Null)
+}
+
+pub struct BrandRepository;
+
+impl BrandRepository {
+    pub async fn list(pool: &DbPool, page: i64, page_size: i64) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Crud", "List")?;
+        let offset = ((page.max(1) - 1) * page_size.max(1)).max(0);
+        let mut named = HashMap::new();
+        named.insert("PRM_QC_LIST_OFFSET".into(), json!(offset));
+        named.insert("PRM_QC_LIST_PAGE_SIZE".into(), json!(page_size.max(1)));
+        execute_sql_script(pool, &sql, &named).await
+    }
+
+    pub async fn count(pool: &DbPool) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Crud", "Count")?;
+        let named = HashMap::new();
+        execute_sql_script(pool, &sql, &named).await
+    }
+
+    pub async fn get_by_pk(pool: &DbPool, id: Value) -> Result<Option<Value>> {
+        let sql = load_sql("Brand", "Crud", "GetByPk")?;
+        let mut named = HashMap::new();
+        named.insert("PRM_BRAND_ID".into(), id);
+        let rows = execute_sql_script(pool, &sql, &named).await?;
+        Ok(rows.into_iter().next())
+    }
+
+    pub async fn insert(pool: &DbPool, body: HashMap<String, Value>) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Crud", "Insert")?;
+        let mut named = HashMap::new();
+        named.insert("PRM_BRAND_NAME".into(), pick(&body, "name", "Name"));
+        named.insert("PRM_BRAND_LOGO".into(), pick(&body, "logo", "Logo"));
+        named.insert("PRM_BRAND_PHOTO".into(), pick(&body, "photo", "Photo"));
+        named.insert("PRM_BRAND_BRAND_VIDEO".into(), pick(&body, "brand_video", "BrandVideo"));
+        named.insert("PRM_BRAND_CATALOG_PDF".into(), pick(&body, "catalog_pdf", "CatalogPdf"));
+        named.insert("PRM_BRAND_IS_ACTIVE".into(), pick(&body, "is_active", "IsActive"));
+        execute_sql_script(pool, &sql, &named).await
+    }
+
+    pub async fn update(pool: &DbPool, id: Value, body: HashMap<String, Value>) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Crud", "Update")?;
+        let mut named = HashMap::new();
+        named.insert("PRM_BRAND_NAME".into(), pick(&body, "name", "Name"));
+        named.insert("PRM_BRAND_LOGO".into(), pick(&body, "logo", "Logo"));
+        named.insert("PRM_BRAND_PHOTO".into(), pick(&body, "photo", "Photo"));
+        named.insert("PRM_BRAND_BRAND_VIDEO".into(), pick(&body, "brand_video", "BrandVideo"));
+        named.insert("PRM_BRAND_CATALOG_PDF".into(), pick(&body, "catalog_pdf", "CatalogPdf"));
+        named.insert("PRM_BRAND_IS_ACTIVE".into(), pick(&body, "is_active", "IsActive"));
+        named.insert("PRM_BRAND_ID".into(), id);
+        execute_sql_script(pool, &sql, &named).await
+    }
+
+    pub async fn delete(pool: &DbPool, id: Value) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Crud", "Delete")?;
+        let mut named = HashMap::new();
+        named.insert("PRM_BRAND_ID".into(), id);
+        execute_sql_script(pool, &sql, &named).await
+    }
+
+    pub async fn get_active(pool: &DbPool, values: Vec<Value>) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Query", "GetActive")?;
+        execute_sql_script_positional(pool, &sql, &values).await
+    }
+
+    pub async fn search_by_name(pool: &DbPool, values: Vec<Value>) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Query", "SearchByName")?;
+        execute_sql_script_positional(pool, &sql, &values).await
+    }
+
+    pub async fn deactivate(pool: &DbPool, values: Vec<Value>) -> Result<Vec<Value>> {
+        let sql = load_sql("Brand", "Command", "Deactivate")?;
+        execute_sql_script_positional(pool, &sql, &values).await
+    }
+
+}

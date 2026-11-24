@@ -1,0 +1,12 @@
+#[path = "insert_product_command.g.rs"]
+pub mod insert_product_command;
+#[path = "update_product_command.g.rs"]
+pub mod update_product_command;
+#[path = "delete_item_product_command.g.rs"]
+pub mod delete_item_product_command;
+#[path = "approve_product_command.g.rs"]
+pub mod approve_product_command;
+#[path = "reject_product_command.g.rs"]
+pub mod reject_product_command;
+#[path = "set_featured_product_command.g.rs"]
+pub mod set_featured_product_command;

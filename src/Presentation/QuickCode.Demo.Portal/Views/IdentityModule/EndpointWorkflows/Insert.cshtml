@@ -1,0 +1,132 @@
+@using QuickCode.Demo.Portal.Models.IdentityModule
+@model IdentityModule.EndpointWorkflowData
+<div class="modal-content portal-entity-modal" data-operation="Insert">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Endpoint Workflow Insert Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="card" IsPageAvailable="true">
+            <div class="card-body">
+                <form bc-label-width-sm="4" bc-horizontal="false" id="formInsert" action="Insert" method="post" class="needs-validation portal-entity-form" bc-validation="true">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="SelectedKey" />
+                    @await Html.PartialAsync("~/Views/IdentityModule/EndpointWorkflows/_StudioFormFields.cshtml", Model)
+
+                    <div id="actionResultDiv">
+                        <h5 id="actionResultMessage">Action Result</h5>
+                    </div>
+                    <div class="portal-entity-footer">
+                        <div class="portal-entity-actions">
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-portal-secondary" bc-color="Secondary">Cancel</button>
+                            <button type="reset" class="btn btn-portal-ghost" bc-outline="true" bc-color="Info">Clear</button>
+                            <button type="submit" formmethod="post" formaction="/IdentityModuleEndpointWorkflows/Insert" class="btn btn-portal-primary" bc-color="Primary">Insert</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card" IsPageAvailable="false">
+            @await Html.PartialAsync("_NotAuthorized")
+        </div>
+    </div>
+</div>
+<script src="/js/bootstrap-toggle.js"></script>
+<script>
+    function checkBoxChanged(cbox) {
+        var itemId = cbox.id.replace("cbox_", "").replace(".", "_");
+        $("#" + itemId).val(cbox.checked);
+    }
+
+    var forms = document.getElementsByClassName('needs-validation');
+    $("#formInsert").off('submit.ewfInsert').on('submit.ewfInsert', function (e) {
+        $("#actionResultDiv").hide();
+        if ($("#formInsert").valid()) {
+            var formData = new FormData(this);
+            e.preventDefault();
+            $("#actionResultDiv").show();
+            $("#actionResultMessage").css('color', 'black');
+            $("#actionResultMessage").text("Please wait...");
+            addYamlEditorsToFormData(formData);
+
+            var listSelectedKey = ($('#SelectedKey').val() || $('#formList').data('SelectedKey') || '').toString();
+            if (listSelectedKey) {
+                formData.set('SelectedKey', listSelectedKey);
+            }
+
+            var button = this.querySelector('button[type="submit"]');
+            var formActionUrl = button.getAttribute('formaction');
+
+            $.ajax({
+                url: formActionUrl,
+                type: "POST",
+                dataType: "JSON",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    $("#actionResultDiv").show();
+                    $("#actionResultMessage").css('color', 'green');
+                    $("#actionResultMessage").text('Successfully Completed');
+
+                    var operation = ($('#formInsert').closest('.portal-entity-modal').attr('data-operation') || 'Insert').toString();
+                    var successMessage = (typeof getPortalCrudSuccessMessage === 'function')
+                        ? getPortalCrudSuccessMessage(operation)
+                        : 'Operation completed successfully.';
+
+                    if (typeof finishPortalCrudSuccess === 'function') {
+                        finishPortalCrudSuccess(successMessage, operation);
+                    } else {
+                        if (typeof showPortalToast === 'function') {
+                            showPortalToast(successMessage, 'success');
+                        }
+                        document.location.reload(true);
+                    }
+                },
+                error: function (xhr, desc, error) {
+                    $("#actionResultMessage").css('color', 'red');
+                    var fallbackMessage = error || desc || 'Request failed';
+                    if (typeof handlePortalAjaxError === 'function') {
+                        handlePortalAjaxError(xhr, { reload: false, fallbackMessage: fallbackMessage });
+                        var payload = (typeof getPortalAjaxErrorPayload === 'function')
+                            ? getPortalAjaxErrorPayload(xhr)
+                            : (xhr.responseJSON || null);
+                        var msg = (payload && payload.message) ? payload.message : fallbackMessage;
+                        $("#actionResultMessage").text(msg);
+                        return;
+                    }
+                    if (xhr.responseJSON && xhr.responseJSON.redirectUrl) {
+                        window.location = xhr.responseJSON.redirectUrl;
+                        return;
+                    }
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message)
+                        ? xhr.responseJSON.message
+                        : fallbackMessage;
+                    $("#actionResultMessage").text(msg);
+                    if (typeof showPortalToast === 'function') {
+                        showPortalToast(msg, 'error');
+                    }
+                }
+            });
+        }
+    });
+
+    Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+
+    setTimeout(function () {
+        Array.prototype.filter.call(forms, function (form) {
+            $("#actionResultDiv").hide();
+            form.classList.add('was-validated');
+        });
+    }, 50);
+
+    initSearchableSelects(document.getElementById('itemDetailsContainer') || document);
+</script>

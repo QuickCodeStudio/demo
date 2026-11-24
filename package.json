@@ -1,0 +1,14 @@
+{
+  "name": "quickcode-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NestJS workspace for API modules only. Gateway, Portal, and EventListener stay C#.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build:common": "npm -w src/libs/common run build"
+  },
+  "workspaces": [
+    "src/libs/common",
+    "src/Modules/*"
+  ]
+}

@@ -1,0 +1,12 @@
+#[path = "insert_product_variant_command.g.rs"]
+pub mod insert_product_variant_command;
+#[path = "update_product_variant_command.g.rs"]
+pub mod update_product_variant_command;
+#[path = "delete_item_product_variant_command.g.rs"]
+pub mod delete_item_product_variant_command;
+#[path = "update_stock_product_variant_command.g.rs"]
+pub mod update_stock_product_variant_command;
+#[path = "update_price_product_variant_command.g.rs"]
+pub mod update_price_product_variant_command;
+#[path = "deactivate_product_variant_command.g.rs"]
+pub mod deactivate_product_variant_command;

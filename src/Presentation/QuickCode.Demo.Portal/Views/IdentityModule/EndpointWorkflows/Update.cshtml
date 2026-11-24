@@ -1,0 +1,225 @@
+@using QuickCode.Demo.Portal.Models.IdentityModule
+@using QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts
+@model IdentityModule.EndpointWorkflowData
+@{
+    ViewData["ShowWorkflowWorkspace"] = true;
+    var item = Model.SelectedItem ?? new EndpointWorkflowDto();
+    var titleName = string.IsNullOrWhiteSpace(item.Name) ? "Endpoint Workflow" : item.Name.Trim();
+}
+<div class="modal-content portal-entity-modal ewf-editor-modal" data-operation="Update">
+    <div class="modal-header">
+        <div class="ewf-editor-heading">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Workflow</h5>
+            <p class="ewf-editor-heading__meta">@titleName</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="card ewf-editor-card" IsPageAvailable="true">
+            <div class="card-body">
+                <form bc-label-width-sm="4" bc-horizontal="false" id="formUpdate" action="Update" method="post" class="needs-validation portal-entity-form ewf-editor-form" bc-validation="true">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="SelectedKey" />
+                    <input type="hidden" asp-for="SelectedItem.Id" />
+
+                    <div class="ewf-editor-meta">
+                        @await Html.PartialAsync("~/Views/IdentityModule/EndpointWorkflows/_StudioFormFields.cshtml", Model)
+                    </div>
+
+                    @await Html.PartialAsync("~/Views/IdentityModule/EndpointWorkflows/_WorkflowWorkspace.cshtml", Model)
+
+                    <div id="actionResultDiv" style="display: none;">
+                        <h5 id="actionResultMessage">Action Result</h5>
+                    </div>
+                    <div class="portal-entity-footer">
+                        <div class="portal-entity-actions">
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-portal-secondary" bc-color="Secondary">Cancel</button>
+                            <button type="submit" formmethod="post" formaction="/IdentityModuleEndpointWorkflows/Update" class="btn btn-portal-primary" bc-color="Primary">Update</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card" IsPageAvailable="false">
+            @await Html.PartialAsync("_NotAuthorized")
+        </div>
+    </div>
+</div>
+<script src="/js/bootstrap-toggle.js"></script>
+<script>
+(function () {
+    function checkBoxChanged(cbox) {
+        var itemId = cbox.id.replace("cbox_", "").replace(".", "_");
+        $("#" + itemId).val(cbox.checked);
+    }
+    window.checkBoxChanged = checkBoxChanged;
+
+    var modal = document.getElementById('itemDetailsModal');
+    var dialog = modal ? modal.querySelector('.modal-dialog') : null;
+    if (dialog) {
+        dialog.classList.add('portal-workflow-edit-dialog');
+        $(modal).off('hidden.bs.modal.ewfEditor').one('hidden.bs.modal.ewfEditor', function () {
+            dialog.classList.remove('portal-workflow-edit-dialog');
+        });
+    }
+
+    function resizeWorkspaceEditors(root) {
+        var scope = root ? $(root) : $('#ewfWorkflowWorkspace');
+        scope.find('.yamleditor-class, .umleditor-class').each(function () {
+            if (this.env && this.env.editor) {
+                this.env.editor.resize(true);
+            }
+        });
+    }
+
+    function loadEndpointWorkflowUml(root) {
+        var $root = root ? $(root) : $('#ewfWorkflowWorkspace');
+        $root.find('.uml-content').each(function () {
+            var itemId = $(this).data('item-id');
+            if (itemId === undefined || itemId === null || itemId === '') {
+                return;
+            }
+            var elementId = this.id;
+            $.ajax({
+                url: '/IdentityModuleEndpointWorkflows/GetUml/' + encodeURIComponent(itemId),
+                type: 'GET',
+                success: function (data) {
+                    if (typeof ensureAceLoaded === 'function') {
+                        ensureAceLoaded(function () {
+                            ace.edit(elementId).session.setValue(data);
+                            resizeWorkspaceEditors($root);
+                        });
+                    } else if (typeof ace !== 'undefined') {
+                        ace.edit(elementId).session.setValue(data);
+                        resizeWorkspaceEditors($root);
+                    }
+                },
+                error: function () {
+                    var el = document.getElementById(elementId);
+                    if (el) {
+                        el.textContent = 'UML content failed to load.';
+                    }
+                }
+            });
+        });
+    }
+
+    var workspace = document.getElementById('ewfWorkflowWorkspace');
+    loadEndpointWorkflowUml(workspace);
+
+    $(workspace).off('shown.bs.tab.ewfEditor').on('shown.bs.tab.ewfEditor', 'a[data-bs-toggle="tab"]', function () {
+        resizeWorkspaceEditors(workspace);
+    });
+
+    $(workspace).off('click.ewfPreview').on('click.ewfPreview', 'img.preview-image', function () {
+        var originalSrc = $(this).data('src') || this.src;
+        if (!originalSrc) {
+            return;
+        }
+        $('#modalImage').attr('src', originalSrc);
+        var imageModalElement = document.getElementById('imageModal');
+        if (imageModalElement && typeof bootstrap !== 'undefined') {
+            bootstrap.Modal.getOrCreateInstance(imageModalElement).show();
+        } else {
+            $('#imageModal').modal('show');
+        }
+    });
+
+    $(modal).off('shown.bs.modal.ewfEditorResize').on('shown.bs.modal.ewfEditorResize', function () {
+        resizeWorkspaceEditors(workspace);
+    });
+
+    var forms = document.getElementsByClassName('needs-validation');
+    $("#formUpdate").off('submit.ewfUpdate').on('submit.ewfUpdate', function (e) {
+        $("#actionResultDiv").hide();
+        if ($("#formUpdate").valid()) {
+            var formData = new FormData(this);
+            e.preventDefault();
+            $("#actionResultDiv").show();
+            $("#actionResultMessage").css('color', 'black');
+            $("#actionResultMessage").text("Please wait...");
+            addYamlEditorsToFormData(formData);
+
+            var listSelectedKey = ($('#SelectedKey').val() || $('#formList').data('SelectedKey') || '').toString();
+            if (listSelectedKey) {
+                formData.set('SelectedKey', listSelectedKey);
+            }
+
+            var button = this.querySelector('button[type="submit"]');
+            var formActionUrl = button.getAttribute('formaction');
+
+            $.ajax({
+                url: formActionUrl,
+                type: "POST",
+                dataType: "JSON",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    $("#actionResultDiv").show();
+                    $("#actionResultMessage").css('color', 'green');
+                    $("#actionResultMessage").text('Successfully Completed');
+
+                    var operation = ($('#formUpdate').closest('.portal-entity-modal').attr('data-operation') || 'Update').toString();
+                    var successMessage = (typeof getPortalCrudSuccessMessage === 'function')
+                        ? getPortalCrudSuccessMessage(operation)
+                        : 'Operation completed successfully.';
+
+                    if (typeof finishPortalCrudSuccess === 'function') {
+                        finishPortalCrudSuccess(successMessage, operation);
+                    } else {
+                        if (typeof showPortalToast === 'function') {
+                            showPortalToast(successMessage, 'success');
+                        }
+                        document.location.reload(true);
+                    }
+                },
+                error: function (xhr, desc, error) {
+                    $("#actionResultMessage").css('color', 'red');
+                    var fallbackMessage = error || desc || 'Request failed';
+                    if (typeof handlePortalAjaxError === 'function') {
+                        handlePortalAjaxError(xhr, { reload: false, fallbackMessage: fallbackMessage });
+                        var payload = (typeof getPortalAjaxErrorPayload === 'function')
+                            ? getPortalAjaxErrorPayload(xhr)
+                            : (xhr.responseJSON || null);
+                        var msg = (payload && payload.message) ? payload.message : fallbackMessage;
+                        $("#actionResultMessage").text(msg);
+                        return;
+                    }
+                    if (xhr.responseJSON && xhr.responseJSON.redirectUrl) {
+                        window.location = xhr.responseJSON.redirectUrl;
+                        return;
+                    }
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message)
+                        ? xhr.responseJSON.message
+                        : fallbackMessage;
+                    $("#actionResultMessage").text(msg);
+                    if (typeof showPortalToast === 'function') {
+                        showPortalToast(msg, 'error');
+                    }
+                }
+            });
+        }
+    });
+
+    Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+
+    setTimeout(function () {
+        Array.prototype.filter.call(forms, function (form) {
+            $("#actionResultDiv").hide();
+            form.classList.add('was-validated');
+        });
+        resizeWorkspaceEditors(workspace);
+    }, 50);
+
+    initSearchableSelects(document.getElementById('itemDetailsContainer') || document);
+})();
+</script>

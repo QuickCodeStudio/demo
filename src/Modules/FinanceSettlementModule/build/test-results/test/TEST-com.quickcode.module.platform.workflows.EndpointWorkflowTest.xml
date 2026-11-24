@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.quickcode.module.platform.workflows.EndpointWorkflowTest" tests="24" skipped="0" failures="0" errors="0" timestamp="2026-11-02T09:00:37.594Z" hostname="Uzeyirs-Mac.local" time="0.09">
+  <properties/>
+  <testcase name="matchesTemplatesAndExtractsDecodedParameters()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="parallelChildrenBothSucceed()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.031"/>
+  <testcase name="filterReturns500OnUnexpectedError()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.003"/>
+  <testcase name="unexpectedErrorsAreNotCached()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.003"/>
+  <testcase name="foreachSequentialStopsOnFirstFailureAndEmptyArraySucceeds()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.003"/>
+  <testcase name="successfulSagaIsCompletedWithoutCompensation()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="requestsWithoutIdempotencyKeyAreNotCached()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.005"/>
+  <testcase name="filterWritesOutputWithCorrelationHeaderAndSkipsNonMatching()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="foreachParallelRunsAllItems()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.003"/>
+  <testcase name="executesSimpleGetWorkflowAndProjectsOutput()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="repeatRetriesWithBackoffAndExposesRetryCount()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.004"/>
+  <testcase name="idempotencyKeyReplaysCachedSuccessWithoutReexecuting()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.003"/>
+  <testcase name="idempotencyReplaysCached502WithSagaDetails()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.009"/>
+  <testcase name="foreachSequentialOverInputArrayWithItemTokenInUrl()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.001"/>
+  <testcase name="matchesExactPathIgnoringCaseAndTrailingSlash()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.0"/>
+  <testcase name="skipsInfrastructurePaths()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.0"/>
+  <testcase name="failTransitionMarksWorkflowFailedAndKeepsStepResults()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.001"/>
+  <testcase name="filterReturns502WhenWorkflowFails()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="repeatGivesUpAfterMaxAttempts()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.004"/>
+  <testcase name="parallelJoinAllFailsWhenOneChildFailsAndAnySucceeds()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="parsesRegistryJson()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.001"/>
+  <testcase name="compensatesInLifoOrderWhenLaterStepFails()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.002"/>
+  <testcase name="matchesOptionalParamSegment()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.0"/>
+  <testcase name="skipsInactiveAndIncompleteEntries()" classname="com.quickcode.module.platform.workflows.EndpointWorkflowTest" time="0.0"/>
+  <system-out><![CDATA[12:00:37.617 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Parallel SagaId=fc7a04fd848c4c359325dda4ae96a0ee CorrelationId=c1
+12:00:37.617 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fanOut
+12:00:37.626 [virtual-56] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step b completed with status code 200
+12:00:37.626 [virtual-54] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step a completed with status code 200
+12:00:37.627 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fanOut reached terminal action success
+12:00:37.627 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Parallel completed. Success=true Compensated=0
+12:00:37.629 [Test worker] ERROR com.quickcode.module.platform.workflows.EndpointWorkflowFilter -- Endpoint workflow wf execution failed (correlation 2c0f9fe387ac4a0f96ed622d9cf3afc8)
+java.lang.IllegalStateException: kaboom
+	at com.quickcode.module.platform.workflows.EndpointWorkflowTest$1.execute(EndpointWorkflowTest.java:554)
+	at com.quickcode.module.platform.workflows.EndpointWorkflowFilter.doFilterInternal(EndpointWorkflowFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at com.quickcode.module.platform.workflows.EndpointWorkflowTest.filterReturns500OnUnexpectedError(EndpointWorkflowTest.java:562)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:93)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:48)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$0(InterceptingLauncher.java:41)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:40)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:48)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestDefinitionProcessor$CollectThenExecuteTestDefinitionConsumer.processAllTestDefinitions(JUnitPlatformTestDefinitionProcessor.java:206)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestDefinitionProcessor$CollectThenExecuteTestDefinitionConsumer.access$000(JUnitPlatformTestDefinitionProcessor.java:123)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestDefinitionProcessor.stop(JUnitPlatformTestDefinitionProcessor.java:117)
+	at org.gradle.api.internal.tasks.testing.SuiteTestDefinitionProcessor.stop(SuiteTestDefinitionProcessor.java:63)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.gradle.internal.dispatch.MethodInvocation.invokeOn(MethodInvocation.java:77)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:28)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:19)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:88)
+	at jdk.proxy1/jdk.proxy1.$Proxy4.stop(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:195)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
+	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+12:00:37.632 [Test worker] ERROR com.quickcode.module.platform.workflows.EndpointWorkflowFilter -- Endpoint workflow wf execution failed (correlation 2b2aa9b9a83f436e9ed83e11e72912be)
+java.lang.IllegalStateException: kaboom
+	at com.quickcode.module.platform.workflows.EndpointWorkflowTest$2.execute(EndpointWorkflowTest.java:672)
+	at com.quickcode.module.platform.workflows.EndpointWorkflowFilter.doFilterInternal(EndpointWorkflowFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at com.quickcode.module.platform.workflows.EndpointWorkflowTest.unexpectedErrorsAreNotCached(EndpointWorkflowTest.java:681)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:93)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:48)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$0(InterceptingLauncher.java:41)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:40)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:48)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestDefinitionProcessor$CollectThenExecuteTestDefinitionConsumer.processAllTestDefinitions(JUnitPlatformTestDefinitionProcessor.java:206)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestDefinitionProcessor$CollectThenExecuteTestDefinitionConsumer.access$000(JUnitPlatformTestDefinitionProcessor.java:123)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestDefinitionProcessor.stop(JUnitPlatformTestDefinitionProcessor.java:117)
+	at org.gradle.api.internal.tasks.testing.SuiteTestDefinitionProcessor.stop(SuiteTestDefinitionProcessor.java:63)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.gradle.internal.dispatch.MethodInvocation.invokeOn(MethodInvocation.java:77)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:28)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:19)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:88)
+	at jdk.proxy1/jdk.proxy1.$Proxy4.stop(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:195)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
+	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+12:00:37.635 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Foreach SagaId=e33787cf9c0c4593b7c8ec1f71fa9940 CorrelationId=null
+12:00:37.635 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: each
+12:00:37.636 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.636 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 500
+12:00:37.636 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Foreach completed. Success=false Compensated=0
+12:00:37.637 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Foreach SagaId=78468d8310e147cc8eb8b42ab81a8746 CorrelationId=null
+12:00:37.637 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: each
+12:00:37.637 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Foreach each has no items; continuing
+12:00:37.637 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Foreach completed. Success=true Compensated=0
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Saga SagaId=4157984e0cfa43889d51fe59d61980f2 CorrelationId=null
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: reserve
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Registered compensate release for step reserve
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: charge
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Registered compensate refund for step charge
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: ship
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step ship reached terminal action success
+12:00:37.639 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Saga completed. Success=true Compensated=0
+12:00:37.641 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=fd411dd3746b4dde933e76559a3112c3 CorrelationId=0ada91f3e3cd436d9931eea08a26b5e8
+12:00:37.641 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.641 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action success
+12:00:37.642 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=true Compensated=0
+12:00:37.643 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=13498ffa6acd4733a920bff49c2045b0 CorrelationId=37c80e0be746428fa039a0f62bf22718
+12:00:37.643 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.643 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action success
+12:00:37.643 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=true Compensated=0
+12:00:37.645 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=52312a3669e347a9b72369d61d0eabaa CorrelationId=1e332b2b24b44a24b23fe0bc12fff2ff
+12:00:37.645 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.645 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action success
+12:00:37.645 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=true Compensated=0
+12:00:37.647 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Foreach SagaId=b3751920f2ce42f9af42dcc72fb3b115 CorrelationId=null
+12:00:37.647 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: each
+12:00:37.648 [virtual-59] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.648 [virtual-60] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.648 [virtual-69] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.648 [virtual-61] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.648 [virtual-64] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.649 [virtual-65] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.649 [virtual-70] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.649 [virtual-71] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.649 [virtual-73] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.649 [virtual-74] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.649 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Foreach completed. Success=true Compensated=0
+12:00:37.650 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=c29499d57d0249b4a5842a25f283d744 CorrelationId=corr-1
+12:00:37.650 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.650 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action success
+12:00:37.650 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=true Compensated=0
+12:00:37.652 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Repeat SagaId=3e0afaec0fdb4519bc13df4684948cc1 CorrelationId=null
+12:00:37.652 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.652 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.652 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step flaky completed with status code 503
+12:00:37.654 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.654 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step flaky completed with status code 503
+12:00:37.655 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.655 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step flaky completed with status code 200
+12:00:37.655 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Repeat completed. Success=true Compensated=0
+12:00:37.657 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=767b0d5929744013a0d5dee4f89b30ee CorrelationId=2683cb6d799c43a3a7b50a4e51d23e29
+12:00:37.657 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.657 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action success
+12:00:37.657 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=true Compensated=0
+12:00:37.658 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=638dd407183742c1b6e7aba7609a212a CorrelationId=6645f8520e0446f38adec6e01ef3a78b
+12:00:37.658 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.658 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action success
+12:00:37.658 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=true Compensated=0
+12:00:37.660 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Saga SagaId=ee5730823bf0405ba7fe64c34f7f0ee2 CorrelationId=7c1eba08d9754bf9bfaca0303a81defc
+12:00:37.660 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: reserve
+12:00:37.660 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Registered compensate release for step reserve
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: charge
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Registered compensate refund for step charge
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: ship
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step ship reached terminal action fail
+12:00:37.661 [Test worker] WARN com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Running 2 compensation(s) for saga ee5730823bf0405ba7fe64c34f7f0ee2. Reason=workflow failed
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Compensating charge via refund
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step refund completed with status code 200
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Compensating reserve via release
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step release completed with status code 200
+12:00:37.661 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Saga completed. Success=false Compensated=2
+12:00:37.669 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Foreach SagaId=f43ab59ad49d4dbc8fd41e7bbd1f5837 CorrelationId=null
+12:00:37.669 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: each
+12:00:37.669 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.669 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.669 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetchOne completed with status code 200
+12:00:37.669 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Foreach completed. Success=true Compensated=0
+12:00:37.671 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=d04c463fbe104017a25ab1521ee27ac0 CorrelationId=corr-2
+12:00:37.672 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.672 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action fail
+12:00:37.672 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=false Compensated=0
+12:00:37.673 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Get order SagaId=96ab22e3fe47481ba0884e84bdb50f14 CorrelationId=47611a0028024728a9730addd9036ce9
+12:00:37.673 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fetch
+12:00:37.673 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step fetch reached terminal action fail
+12:00:37.673 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Get order completed. Success=false Compensated=0
+12:00:37.675 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Repeat SagaId=1f793389183f4bd5b656632f55658855 CorrelationId=null
+12:00:37.675 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.675 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.675 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step flaky completed with status code 503
+12:00:37.677 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: flaky
+12:00:37.677 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step flaky completed with status code 503
+12:00:37.678 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Repeat completed. Success=false Compensated=0
+12:00:37.679 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Parallel SagaId=6bd49ee269164d778c7bbb66aaf848ba CorrelationId=null
+12:00:37.679 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fanOut
+12:00:37.679 [virtual-75] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step a completed with status code 200
+12:00:37.679 [virtual-76] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step b completed with status code 500
+12:00:37.679 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Parallel completed. Success=false Compensated=0
+12:00:37.680 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Parallel SagaId=75baded8074549cd9727207632bd2ece CorrelationId=null
+12:00:37.680 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: fanOut
+12:00:37.680 [virtual-77] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step a completed with status code 200
+12:00:37.680 [virtual-78] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step b completed with status code 500
+12:00:37.680 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Parallel completed. Success=true Compensated=0
+12:00:37.682 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Starting workflow: Saga SagaId=7ff0c856b8cd4b7cbb3cea0677c8ca3b CorrelationId=corr
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: reserve
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Registered compensate release for step reserve
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: charge
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Registered compensate refund for step charge
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Executing step: ship
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step ship reached terminal action fail
+12:00:37.683 [Test worker] WARN com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Running 2 compensation(s) for saga 7ff0c856b8cd4b7cbb3cea0677c8ca3b. Reason=workflow failed
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Compensating charge via refund
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step refund completed with status code 200
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Compensating reserve via release
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Step release completed with status code 200
+12:00:37.683 [Test worker] INFO com.quickcode.module.platform.workflows.EndpointWorkflowExecutor -- Workflow Saga completed. Success=false Compensated=2
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

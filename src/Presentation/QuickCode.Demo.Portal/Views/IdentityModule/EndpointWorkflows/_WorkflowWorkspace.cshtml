@@ -1,0 +1,89 @@
+@using QuickCode.Demo.Portal.Models.IdentityModule
+@using QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts
+@model IdentityModule.EndpointWorkflowData
+@{
+    var item = Model.SelectedItem ?? new EndpointWorkflowDto();
+    var workflowId = item.Id;
+    var hasSavedWorkflow = workflowId > 0;
+    var yamlTabId = $"ewf-yaml-tab-{workflowId}";
+    var umlDiagramTabId = $"ewf-uml-diagram-tab-{workflowId}";
+    var umlTabId = $"ewf-uml-tab-{workflowId}";
+    var yamlPaneId = $"ewf-yaml-{workflowId}";
+    var umlDiagramPaneId = $"ewf-uml-diagram-{workflowId}";
+    var umlPaneId = $"ewf-uml-{workflowId}";
+    var diagramHash = (item.WorkflowContent ?? string.Empty).GetHashCode().ToString("x8");
+    var defaultDiagram = hasSavedWorkflow;
+}
+
+<section class="ewf-editor-workspace" id="ewfWorkflowWorkspace" data-workflow-id="@workflowId">
+    <ul class="nav nav-tabs ewf-editor-tabs" id="ewfWorkflowTabs-@workflowId" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link @(defaultDiagram ? "" : "active")"
+               id="@yamlTabId"
+               data-bs-toggle="tab"
+               data-bs-target="#@yamlPaneId"
+               href="#@yamlPaneId"
+               role="tab"
+               aria-controls="@yamlPaneId"
+               aria-selected="@((!defaultDiagram).ToString().ToLowerInvariant())">Workflow Yaml</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link @(defaultDiagram ? "active" : "") @(hasSavedWorkflow ? "" : "disabled")"
+               id="@umlDiagramTabId"
+               data-bs-toggle="@(hasSavedWorkflow ? "tab" : null)"
+               data-bs-target="#@umlDiagramPaneId"
+               href="#@umlDiagramPaneId"
+               role="tab"
+               aria-controls="@umlDiagramPaneId"
+               aria-selected="@defaultDiagram.ToString().ToLowerInvariant()">Uml Diagram</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link @(hasSavedWorkflow ? "" : "disabled")"
+               id="@umlTabId"
+               data-bs-toggle="@(hasSavedWorkflow ? "tab" : null)"
+               data-bs-target="#@umlPaneId"
+               href="#@umlPaneId"
+               role="tab"
+               aria-controls="@umlPaneId"
+               aria-selected="false">Uml Code</a>
+        </li>
+    </ul>
+    <div class="tab-content topic-workflow-tab-content ewf-editor-tab-content" id="ewfWorkflowTabContent-@workflowId">
+        <div class="tab-pane fade @(defaultDiagram ? "" : "show active")" id="@yamlPaneId" role="tabpanel" aria-labelledby="@yamlTabId">
+            <div class="topic-workflow-pane-body">
+                <div id="yamlEditor_SelectedItem_WorkflowContent"
+                     class="yamleditor-class topic-workflow-pane-editor"
+                     style="white-space: pre-wrap;">@item.WorkflowContent</div>
+            </div>
+        </div>
+        <div class="tab-pane fade @(defaultDiagram ? "show active" : "")" id="@umlDiagramPaneId" role="tabpanel" aria-labelledby="@umlDiagramTabId">
+            <div class="topic-workflow-pane-body topic-workflow-diagram">
+                @if (hasSavedWorkflow)
+                {
+                    <img src="/IdentityModuleEndpointWorkflows/GetUmlDiagram/@workflowId?v=@diagramHash"
+                         data-src="/IdentityModuleEndpointWorkflows/GetUmlDiagram/@workflowId?v=@diagramHash"
+                         class="preview-image topic-workflow-diagram__img"
+                         alt="UML Diagram" />
+                }
+                else
+                {
+                    <div class="ewf-editor-empty">Save the workflow to generate a sequence diagram.</div>
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade" id="@umlPaneId" role="tabpanel" aria-labelledby="@umlTabId">
+            <div class="topic-workflow-pane-body">
+                @if (hasSavedWorkflow)
+                {
+                    <div id="umlEditorRO_WorkflowContent_@workflowId"
+                         class="umleditor-class uml-content topic-workflow-pane-editor"
+                         data-item-id="@workflowId"></div>
+                }
+                else
+                {
+                    <div class="ewf-editor-empty">Save the workflow to generate PlantUML.</div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

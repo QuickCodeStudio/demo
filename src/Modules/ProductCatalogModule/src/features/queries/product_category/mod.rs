@@ -1,0 +1,10 @@
+#[path = "list_product_category_query.g.rs"]
+pub mod list_product_category_query;
+#[path = "get_item_product_category_query.g.rs"]
+pub mod get_item_product_category_query;
+#[path = "total_item_count_product_category_query.g.rs"]
+pub mod total_item_count_product_category_query;
+#[path = "get_by_product_id_product_category_query.g.rs"]
+pub mod get_by_product_id_product_category_query;
+#[path = "get_by_category_id_product_category_query.g.rs"]
+pub mod get_by_category_id_product_category_query;

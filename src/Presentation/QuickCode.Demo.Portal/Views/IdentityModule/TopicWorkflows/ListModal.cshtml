@@ -1,0 +1,91 @@
+@using QuickCode.Demo.Portal.Models.IdentityModule
+@model IdentityModule.TopicWorkflowData
+@{
+    string title = "IdentityModule.TopicWorkflows List".SplitCamelCaseToString();
+    TempData["Title"] = title;
+    var topicName = ViewContext.RouteData.Values["kafkaEventsTopicName"]?.ToString()
+                    ?? Model.List?.FirstOrDefault()?.KafkaEventsTopicName
+                    ?? string.Empty;
+    var encodedTopic = Uri.EscapeDataString(topicName);
+    var listUrl = $"/IdentityModuleTopicWorkflows/List/{encodedTopic}";
+    var listPartialUrl = $"/IdentityModuleTopicWorkflows/ListPartial/{encodedTopic}";
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Kafka Events - Topic Workflows</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid" IsPageAvailable="true">
+            <form method="post" id="formList" action="@listUrl" data-list-partial-url="@listPartialUrl">
+                @Html.AntiForgeryToken()
+                <div class="card text shadow mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">@title</h2>
+                        <p class="card-text">You can manage your IdentityModule.TopicWorkflows table.</p>
+                        <vc:insert-button controller-name="" action-name=""></vc:insert-button>
+                        <div id="list-region" class="portal-list-region">
+                            @await Html.PartialAsync("_ListModalTable", Model)
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" asp-for="CurrentPage" />
+                <input type="hidden" asp-for="SelectedKey" />
+            </form>
+        </div>
+        <div class="container-fluid" IsPageAvailable="false">
+            @await Html.PartialAsync("_NotAuthorized")
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    window.initTopicWorkflowListRegion = function (root) {
+        var $root = root ? $(root) : $(document);
+        $root.find('img.lazyload').lazyload();
+        $root.find('.uml-content').each(function () {
+            var itemId = $(this).data('item-id');
+            if (itemId === undefined || itemId === null || itemId === '') {
+                return;
+            }
+            var elementId = this.id;
+            $.ajax({
+                url: '/IdentityModuleTopicWorkflows/GetUml/' + itemId,
+                type: 'GET',
+                success: function (data) {
+                    if (typeof ensureAceLoaded === 'function') {
+                        ensureAceLoaded(function () {
+                            ace.edit(elementId).session.setValue(data);
+                        });
+                    } else if (typeof ace !== 'undefined') {
+                        ace.edit(elementId).session.setValue(data);
+                    }
+                },
+                error: function () {
+                    var el = document.getElementById(elementId);
+                    if (el) {
+                        el.textContent = 'UML content failed to load.';
+                    }
+                }
+            });
+        });
+        if (typeof loadYamlAllEditors === 'function') {
+            loadYamlAllEditors(root || document.getElementById('itemListContainer') || document);
+        }
+    };
+
+    if (!window._topicWorkflowListSwapHooked) {
+        window._topicWorkflowListSwapHooked = true;
+        var prevSwap = window.onPortalRegionSwapped;
+        window.onPortalRegionSwapped = function (region) {
+            if (typeof prevSwap === 'function') {
+                prevSwap(region);
+            }
+            var modal = document.getElementById('itemListModal');
+            if (region && modal && modal.contains(region) && typeof window.initTopicWorkflowListRegion === 'function') {
+                window.initTopicWorkflowListRegion(region);
+            }
+        };
+    }
+
+    window.initTopicWorkflowListRegion(document.getElementById('itemListContainer') || document.getElementById('list-region'));
+</script>

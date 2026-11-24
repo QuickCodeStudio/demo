@@ -1,0 +1,135 @@
+name: quickcode-demo-container
+
+services:
+  quickcode-demo-gateway-api:
+    container_name: "quickcode-demo-gateway-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-gateway-api
+    build:
+      context: .
+      dockerfile: Presentation/QuickCode.Demo.Gateway/Dockerfile
+
+  quickcode-demo-finance-settlement-api:
+    container_name: "quickcode-demo-finance-settlement-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-finance-settlement-api
+    build:
+      context: ..
+      dockerfile: src/Modules/FinanceSettlementModule/Dockerfile
+      args:
+        MODULE_NAME: FinanceSettlementModule
+    environment:
+      - PORT=80
+      - RUN_MIGRATION=yes
+      - MODULE_NAME=FinanceSettlementModule
+      - DB_TYPE=mssql
+      - DB_HOST=quickcode-sql-data
+      - DB_PORT=1433
+      - DB_USERNAME=sa
+      - DB_PASSWORD=Pass@word
+      - DB_DATABASE=demo__finance_settlement
+      - GATEWAY_JWT_PUBLIC_KEY=${GATEWAY_JWT_PUBLIC_KEY}
+      - GATEWAY_JWT_PRIVATE_KEY=${GATEWAY_JWT_PRIVATE_KEY}
+      - KAFKA_BOOTSTRAP_SERVERS=quickcode-kafka:9092
+      - IDENTITY_MODULE_API=http://quickcode-demo-identity-api/
+      - CORS_ALLOW_ORIGINS=http://localhost:3000,http://localhost:${GATEWAY_PORT:-6060},http://quickcode-demo-gateway-api,https://*.quickcode.net,https://*.europe-west1.run.app
+      - ELASTIC_CONNECTION_STRING=${ELASTIC_CONNECTION_STRING:-}
+      - Otlp__Endpoint=${Otlp__Endpoint:-http://localhost:4317}
+
+  quickcode-demo-order-management-api:
+    container_name: "quickcode-demo-order-management-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-order-management-api
+    build:
+      context: . 
+      dockerfile: Modules/OrderManagementModule/Presentation/QuickCode.Demo.OrderManagementModule.Api/Dockerfile
+
+  quickcode-demo-pricing-engine-api:
+    container_name: "quickcode-demo-pricing-engine-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-pricing-engine-api
+    build:
+      context: ..
+      dockerfile: src/Modules/PricingEngineModule/Dockerfile
+      args:
+        MODULE_NAME: PricingEngineModule
+    environment:
+      - NODE_ENV=production
+      - PORT=80
+      - RUN_MIGRATION=yes
+      - MODULE_NAME=PricingEngineModule
+      - DB_TYPE=mssql
+      - DB_HOST=quickcode-sql-data
+      - DB_PORT=1433
+      - DB_USERNAME=sa
+      - DB_PASSWORD=Pass@word
+      - DB_DATABASE=demo__pricing_engine
+      - GATEWAY_JWT_PUBLIC_KEY=${GATEWAY_JWT_PUBLIC_KEY}
+      - GATEWAY_JWT_PRIVATE_KEY=${GATEWAY_JWT_PRIVATE_KEY}
+      - KAFKA_BOOTSTRAP_SERVERS=quickcode-kafka:9092
+      - IDENTITY_MODULE_API=http://quickcode-demo-identity-api/
+      - CORS_ALLOW_ORIGINS=http://localhost:3000,http://localhost:${GATEWAY_PORT:-6060},http://quickcode-demo-gateway-api,https://*.quickcode.net,https://*.europe-west1.run.app
+      - ELASTIC_CONNECTION_STRING=${ELASTIC_CONNECTION_STRING:-}
+      - Otlp__Endpoint=${Otlp__Endpoint:-http://localhost:4317}
+
+  quickcode-demo-product-catalog-api:
+    container_name: "quickcode-demo-product-catalog-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-product-catalog-api
+    build:
+      context: ..
+      dockerfile: src/Modules/ProductCatalogModule/Dockerfile
+      args:
+        MODULE_NAME: ProductCatalogModule
+    environment:
+      - RUST_LOG=info
+      - PORT=80
+      - RUN_MIGRATION=yes
+      - MODULE_NAME=ProductCatalogModule
+      - DB_TYPE=mssql
+      - DB_HOST=quickcode-sql-data
+      - DB_PORT=1433
+      - DB_USERNAME=sa
+      - DB_PASSWORD=Pass@word
+      - DB_DATABASE=demo__product_catalog
+      - GATEWAY_JWT_PUBLIC_KEY=${GATEWAY_JWT_PUBLIC_KEY}
+      - GATEWAY_JWT_PRIVATE_KEY=${GATEWAY_JWT_PRIVATE_KEY}
+      - KAFKA_BOOTSTRAP_SERVERS=quickcode-kafka:9092
+      - IDENTITY_MODULE_API=http://quickcode-demo-identity-api/
+      - CORS_ALLOW_ORIGINS=http://localhost:3000,http://localhost:${GATEWAY_PORT:-6060},http://quickcode-demo-gateway-api,https://*.quickcode.net,https://*.europe-west1.run.app
+      - ELASTIC_CONNECTION_STRING=${ELASTIC_CONNECTION_STRING:-}
+      - Otlp__Endpoint=${Otlp__Endpoint:-http://localhost:4317}
+
+  quickcode-demo-seller-management-api:
+    container_name: "quickcode-demo-seller-management-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-seller-management-api
+    build:
+      context: . 
+      dockerfile: Modules/SellerManagementModule/Presentation/QuickCode.Demo.SellerManagementModule.Api/Dockerfile
+
+  quickcode-demo-identity-api:
+    container_name: "quickcode-demo-identity-api"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-identity-api
+    build:
+      context: . 
+      dockerfile: Modules/IdentityModule/Presentation/QuickCode.Demo.IdentityModule.Api/Dockerfile
+
+#[-WEB-]
+        
+  quickcode-demo-portal:
+    container_name: "quickcode-demo-portal"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-portal
+    build:
+      context: .
+      dockerfile: Presentation/QuickCode.Demo.Portal/Dockerfile
+      
+  quickcode-demo-event-listener-service:
+    container_name: "quickcode-demo-event-listener-service"
+    image: ${DOCKER_REGISTRY-}quickcode-demo-event-listener-service
+    build:
+      context: .
+      dockerfile: Services/QuickCode.Demo.EventListenerService/Dockerfile
+
+
+# Shared local infra (SQL/Kafka/Elastic) lives in docker-compose.infra.yml
+# (`./scripts/docker-compose-infra-up.sh` / `docker-compose-up.sh`).
+# Apps join that stack's network; they do not create it.
+networks:
+  default:
+    name: ${COMPOSE_NETWORK_NAME:-quickcode-local}
+    external: true

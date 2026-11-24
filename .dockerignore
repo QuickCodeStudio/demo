@@ -1,0 +1,25 @@
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/*.*proj.user
+**/azds.yaml
+**/charts
+# .NET build outputs — keep Rust Cargo [[bin]] sources under Modules/*/src/bin/
+**/bin
+!**/src/bin
+!**/src/bin/**
+**/obj
+**/target
+**/node_modules
+**/Dockerfile
+**/Dockerfile.develop
+**/docker-compose.yml
+**/docker-compose.*.yml
+**/*.dbmdl
+**/*.jfm
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/.toolstarget

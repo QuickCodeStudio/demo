@@ -1,0 +1,51 @@
+{
+  "ApiKeyUsageLogs": [
+    {
+      "ApiKeyId": "0c91e9c3-f0bd-90c2-4ccf-cfff43ca6904",
+      "HttpMethod": "Patch",
+      "UrlPath": "Verified Template 1",
+      "StatusCode": 883,
+      "IpAddress": "4986 Sherman Pass",
+      "CreatedDate": "2024-07-07T02:51:31.0332623Z"
+    },
+    {
+      "ApiKeyId": "a95840f5-a225-83a2-2310-edf496afac75",
+      "HttpMethod": "Get",
+      "UrlPath": "Regional Role 2",
+      "StatusCode": 454,
+      "IpAddress": "900 First Square",
+      "CreatedDate": "2024-09-26T16:14:50.5215163Z"
+    },
+    {
+      "ApiKeyId": "51d82392-d190-af09-978b-17164cb6d000",
+      "HttpMethod": "Patch",
+      "UrlPath": "Custom State 3",
+      "StatusCode": 77,
+      "CreatedDate": "2022-12-28T11:00:46.793743Z"
+    },
+    {
+      "ApiKeyId": "a98cb91f-1ade-b8a3-292b-d66ee8dc71ab",
+      "HttpMethod": "Patch",
+      "UrlPath": "Preferred Theme 4",
+      "StatusCode": 304,
+      "IpAddress": "8754 Second Boulevard",
+      "CreatedDate": "2024-10-14T14:22:33.9380165Z"
+    },
+    {
+      "ApiKeyId": "a98cb91f-1ade-b8a3-292b-d66ee8dc71ab",
+      "HttpMethod": "Delete",
+      "UrlPath": "Basic Status 5",
+      "StatusCode": 42,
+      "IpAddress": "6888 Dale Circle",
+      "CreatedDate": "2022-06-25T22:43:24.8866399Z"
+    },
+    {
+      "ApiKeyId": "a98cb91f-1ade-b8a3-292b-d66ee8dc71ab",
+      "HttpMethod": "Patch",
+      "UrlPath": "Preferred Revision 6",
+      "StatusCode": 862,
+      "IpAddress": "9790 Dogwood Road",
+      "CreatedDate": "2023-11-22T04:51:47.5936398Z"
+    }
+  ]
+}

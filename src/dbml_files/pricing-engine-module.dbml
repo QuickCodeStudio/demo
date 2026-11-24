@@ -1,0 +1,91 @@
+Enum "COMMISSION_TYPE" {
+  PERCENTAGE [note: "A percentage of the transaction value"]
+  FIXED_AMOUNT [note: "A flat fee per transaction"]
+  MIXED [note: "A combination of percentage and fixed amount"]
+}
+
+Enum "RULE_SCOPE" {
+  GLOBAL [note: "Applies to all sellers and products"]
+  SELLER_TIER [note: "Applies to a specific seller tier"]
+  CATEGORY [note: "Applies to a specific product category"]
+  SELLER [note: "Applies to a specific seller"]
+}
+
+Table "COMMISSION_MODELS" {
+  "ID" INTEGER [pk, increment]
+  "NAME" STRING [not null]
+  "IS_ACTIVE" BOOLEAN [not null, default: 'true']
+  "DESCRIPTION" BIG_STRING
+  Note: '''
+    Query:GET_ACTIVE[P] Where:IS_ACTIVE[true] Select:ID,NAME,DESCRIPTION
+    Query:GET_BY_NAME[1] Where:NAME Select:ID,IS_ACTIVE
+    Update:DEACTIVATE Where:ID Set:IS_ACTIVE[false]
+  '''
+}
+
+Table "COMMISSION_RULES" {
+  "ID" INTEGER [pk, increment]
+  "COMMISSION_MODEL_ID" INTEGER [not null]
+  "SCOPE" RULE_SCOPE [not null]
+  "SCOPE_ID" INTEGER
+  "COMMISSION_TYPE" COMMISSION_TYPE [not null]
+  "PERCENTAGE_RATE" DECIMAL_18_8
+  "FIXED_AMOUNT" MONEY
+  "IS_ACTIVE" BOOLEAN [not null, default: 'true']
+  Note: '''
+    Query:GET_BY_MODEL_ID[P] Where:COMMISSION_MODEL_ID Select:ID,SCOPE,SCOPE_ID,COMMISSION_TYPE,PERCENTAGE_RATE,FIXED_AMOUNT
+    Query:GET_ACTIVE_RULES_BY_MODEL[P] Where:COMMISSION_MODEL_ID,IS_ACTIVE[true] Select:ID,SCOPE,SCOPE_ID,COMMISSION_TYPE
+    Update:DEACTIVATE Where:ID Set:IS_ACTIVE[false]
+  '''
+}
+
+Table "SELLER_COMMISSION_ASSIGNMENTS" {
+  "SELLER_ID" INTEGER [pk]
+  "COMMISSION_MODEL_ID" INTEGER [not null]
+  "EFFECTIVE_DATE" DATE [not null]
+  Note: '''
+    Query:GET_BY_SELLER_ID[1] Where:SELLER_ID Select:COMMISSION_MODEL_ID,EFFECTIVE_DATE
+    Query:GET_BY_MODEL_ID[P] Where:COMMISSION_MODEL_ID Select:SELLER_ID,EFFECTIVE_DATE
+    Delete:REMOVE_ASSIGNMENT Where:SELLER_ID
+  '''
+}
+
+Table "CATEGORY_COMMISSION_OVERRIDES" {
+  "ID" INTEGER [pk, increment]
+  "CATEGORY_ID" INTEGER [not null]
+  "COMMISSION_MODEL_ID" INTEGER [not null]
+  "EFFECTIVE_DATE" DATE [not null]
+  Note: '''
+  Query:GET_BY_CATEGORY_ID[1] Where:CATEGORY_ID Select:COMMISSION_MODEL_ID,EFFECTIVE_DATE
+  Delete:REMOVE_OVERRIDE Where:ID
+'''
+}
+
+Table "PROMOTIONAL_CAMPAIGNS" {
+  "ID" INTEGER [pk, increment]
+  "NAME" STRING [not null]
+  "START_DATE" DATETIME [not null]
+  "END_DATE" DATETIME [not null]
+  "DISCOUNT_PERCENTAGE" DECIMAL_18_8
+  "IS_ACTIVE" BOOLEAN [not null, default: 'true']
+  Note: '''
+    Query:GET_ACTIVE_CAMPAIGNS[P] Where:IS_ACTIVE[true] Select:ID,NAME,START_DATE,END_DATE
+    Query:GET_CAMPAIGNS_IN_DATE_RANGE[P] Where:START_DATE[Between] Select:ID,NAME,DISCOUNT_PERCENTAGE
+    Update:DEACTIVATE Where:ID Set:IS_ACTIVE[false]
+  '''
+}
+
+Table "CAMPAIGN_APPLICABILITY" {
+  "CAMPAIGN_ID" INTEGER [pk]
+  "SCOPE" RULE_SCOPE [pk]
+  "SCOPE_ID" INTEGER [pk]
+  Note: '''
+    Query:GET_BY_CAMPAIGN_ID[] Where:CAMPAIGN_ID Select:SCOPE,SCOPE_ID
+    Delete:REMOVE_APPLICABILITY Where:CAMPAIGN_ID,SCOPE,SCOPE_ID
+  '''
+}
+
+Ref: "COMMISSION_RULES"."COMMISSION_MODEL_ID" > "COMMISSION_MODELS"."ID"
+Ref: "SELLER_COMMISSION_ASSIGNMENTS"."COMMISSION_MODEL_ID" > "COMMISSION_MODELS"."ID"
+Ref: "CATEGORY_COMMISSION_OVERRIDES"."COMMISSION_MODEL_ID" > "COMMISSION_MODELS"."ID"
+Ref: "CAMPAIGN_APPLICABILITY"."CAMPAIGN_ID" > "PROMOTIONAL_CAMPAIGNS"."ID"

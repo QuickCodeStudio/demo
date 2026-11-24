@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="QuickCode Docker Compose" type="CompoundRunConfigurationType">
+    <toRun name="Docker Infra Only (CLI)" type="ShConfigurationType" />
+    <toRun name="QuickCode Docker Apps" type="docker-deploy" factoryName="docker-compose.yml" />
+    <method v="2" />
+  </configuration>
+</component>

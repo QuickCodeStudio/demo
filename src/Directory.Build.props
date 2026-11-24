@@ -1,0 +1,7 @@
+<Project>
+ <PropertyGroup>
+    <SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
+    <!-- SDK 11 registers a Blazor hot-reload script whose endpoint is never created, so dotnet build fails. -->
+    <EnableHotReloadInRuntimeConfigDevFile>false</EnableHotReloadInRuntimeConfigDevFile>
+ </PropertyGroup>
+</Project>

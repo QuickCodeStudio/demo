@@ -1,0 +1,12 @@
+#[path = "list_category_query.g.rs"]
+pub mod list_category_query;
+#[path = "get_item_category_query.g.rs"]
+pub mod get_item_category_query;
+#[path = "total_item_count_category_query.g.rs"]
+pub mod total_item_count_category_query;
+#[path = "get_active_category_query.g.rs"]
+pub mod get_active_category_query;
+#[path = "get_sub_categories_category_query.g.rs"]
+pub mod get_sub_categories_category_query;
+#[path = "get_by_slug_category_query.g.rs"]
+pub mod get_by_slug_category_query;

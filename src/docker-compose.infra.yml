@@ -1,0 +1,137 @@
+# Shared local infrastructure for every generated site on this machine.
+# Start once:  docker compose -p quickcode-local-infra -f docker-compose.infra.yml --env-file .env up -d
+# Or:          ./scripts/docker-compose-infra-up.sh
+#
+# Container names and host ports are global (not per project).
+# Each site uses its own catalogs (demo__identity) and Kafka topics (demo.*).
+
+services:
+  quickcode-pg-data:
+    container_name: "quickcode-pg-data"
+    image: postgres:18
+    ports:
+      - "${PGSQL_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=dockerf
+    volumes:
+      - quickcode-local-pg-data:/var/lib/postgresql
+
+  quickcode-mysql-data:
+    container_name: "quickcode-mysql-data"
+    image: mysql:8.3
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - quickcode-local-mysql-data:/var/lib/mysql
+      - "~/sql-scripts/setup.sql:/docker-entrypoint-initdb.d/1.sql"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=RootDocker!
+      - MYSQL_USER=docker
+      - MYSQL_PASSWORD=dockerf
+
+  quickcode-sql-data:
+    container_name: "quickcode-sql-data"
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      - MSSQL_SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+    ports:
+      - "${SQL_PORT:-5433}:1433"
+    volumes:
+      - quickcode-local-sql-data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  quickcode-elasticsearch:
+    container_name: quickcode-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+    ports:
+      - "${ELASTIC_PORT:-9200}:9200"
+    volumes:
+      - quickcode-local-elasticsearch-data:/usr/share/elasticsearch/data
+    restart: always
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: curl -s http://quickcode-elasticsearch:9200 >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  quickcode-kibana:
+    container_name: quickcode-kibana
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://quickcode-elasticsearch:9200
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    volumes:
+      - quickcode-local-kibana-data:/usr/share/kibana/data
+    restart: always
+    depends_on:
+      - quickcode-elasticsearch
+
+  quickcode-zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: quickcode-zookeeper
+    ports:
+      - "${ZOOKEEPER_PORT:-2181}:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  quickcode-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: quickcode-kafka
+    depends_on:
+      - quickcode-zookeeper
+    ports:
+      - "${KAFKA_PORT:-9092}:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: quickcode-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://quickcode-kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  quickcode-kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: quickcode-kafdrop
+    ports:
+      - "${KAFDROP_PORT:-9000}:9000"
+    depends_on:
+      - quickcode-kafka
+    environment:
+      KAFKA_BROKERCONNECT: quickcode-kafka:9092
+
+volumes:
+  quickcode-local-pg-data:
+    external: false
+  quickcode-local-mysql-data:
+    external: false
+  quickcode-local-sql-data:
+    external: false
+  quickcode-local-elasticsearch-data:
+    external: false
+  quickcode-local-kibana-data:
+    external: false
+
+networks:
+  default:
+    name: ${COMPOSE_NETWORK_NAME:-quickcode-local}

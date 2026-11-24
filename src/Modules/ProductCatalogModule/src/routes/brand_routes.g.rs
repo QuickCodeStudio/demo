@@ -1,0 +1,148 @@
+use axum::extract::{Path, Query, State};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::routing::{get, post, put, delete};
+use axum::{Json, Router};
+use serde::Deserialize;
+use serde_json::{json, Value};
+use std::collections::HashMap;
+use crate::cqrs::send;
+use crate::features::queries::brand::list_brand_query::{ListBrandQuery, ListBrandHandler};
+use crate::features::queries::brand::get_item_brand_query::{GetItemBrandQuery, GetItemBrandHandler};
+use crate::features::queries::brand::total_item_count_brand_query::{TotalItemCountBrandQuery, TotalItemCountBrandHandler};
+use crate::features::commands::brand::insert_brand_command::{InsertBrandCommand, InsertBrandHandler};
+use crate::features::commands::brand::update_brand_command::{UpdateBrandCommand, UpdateBrandHandler};
+use crate::features::commands::brand::delete_item_brand_command::{DeleteItemBrandCommand, DeleteItemBrandHandler};
+use crate::features::queries::brand::get_active_brand_query::{GetActiveBrandQuery, GetActiveBrandHandler};
+use crate::features::queries::brand::search_by_name_brand_query::{SearchByNameBrandQuery, SearchByNameBrandHandler};
+use crate::features::commands::brand::deactivate_brand_command::{DeactivateBrandCommand, DeactivateBrandHandler};
+use crate::platform::{problem_json, AppState};
+
+#[derive(Debug, Deserialize)]
+pub struct PageQuery {
+    #[serde(default = "default_page")]
+    pub page: i64,
+    /// Portal/NSwag send <c>size</c>; Nest also accepts <c>pageSize</c>.
+    #[serde(default = "default_size", alias = "pageSize")]
+    pub size: i64,
+    #[serde(default, rename = "includeCount")]
+    pub include_count: bool,
+}
+
+fn default_page() -> i64 { 1 }
+fn default_size() -> i64 { 20 }
+
+async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl IntoResponse {
+    match send::<ListBrandHandler, _>(&state.pool, ListBrandQuery {
+        page: q.page,
+        size: q.size,
+        include_count: q.include_count,
+    }).await {
+        Ok(result) => {
+            let items = crate::db::rows_to_api(result.items);
+            let total_count = match result.total_count {
+                Some(n) => Value::from(n),
+                None => Value::Null,
+            };
+            (StatusCode::OK, Json(json!({ "items": items, "totalCount": total_count }))).into_response()
+        }
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "items": [], "totalCount": Value::Null, "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn count(State(state): State<AppState>) -> impl IntoResponse {
+    match send::<TotalItemCountBrandHandler, _>(&state.pool, TotalItemCountBrandQuery).await {
+        Ok(n) => (StatusCode::OK, Json(json!(n))).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
+    match send::<GetItemBrandHandler, _>(&state.pool, GetItemBrandQuery { id: json!(id) }).await {
+        Ok(Some(row)) => (StatusCode::OK, Json(crate::db::row_to_api(row))).into_response(),
+        Ok(None) => problem_json(StatusCode::NOT_FOUND, "Not found"),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
+    match send::<InsertBrandHandler, _>(&state.pool, InsertBrandCommand { body }).await {
+        Ok(rows) => (
+            StatusCode::CREATED,
+            Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null)),
+        ).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn update(State(state): State<AppState>, Path(id): Path<String>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
+    match send::<GetItemBrandHandler, _>(&state.pool, GetItemBrandQuery { id: json!(id) }).await {
+        Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
+        Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+        Ok(Some(_)) => {}
+    }
+    match send::<UpdateBrandHandler, _>(&state.pool, UpdateBrandCommand { id: json!(id), body }).await {
+        Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn delete_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
+    match send::<GetItemBrandHandler, _>(&state.pool, GetItemBrandQuery { id: json!(id) }).await {
+        Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
+        Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+        Ok(Some(_)) => {}
+    }
+    match send::<DeleteItemBrandHandler, _>(&state.pool, DeleteItemBrandCommand { id: json!(id) }).await {
+        Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn get_active(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
+    let mut values: Vec<Value> = Vec::new();
+    let page: i64 = q.get("pageNumber").or_else(|| q.get("page")).and_then(|s| s.parse().ok()).unwrap_or(1);
+    let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
+    values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
+    values.push(json!(size.max(1)));
+    match send::<GetActiveBrandHandler, _>(&state.pool, GetActiveBrandQuery { values }).await {
+        Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn search_by_name(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
+    let mut values: Vec<Value> = Vec::new();
+    values.push(json!(q.get("brandName").or_else(|| q.get("brand_name")).cloned().unwrap_or_default()));
+    let page: i64 = q.get("pageNumber").or_else(|| q.get("page")).and_then(|s| s.parse().ok()).unwrap_or(1);
+    let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
+    values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
+    values.push(json!(size.max(1)));
+    match send::<SearchByNameBrandHandler, _>(&state.pool, SearchByNameBrandQuery { values }).await {
+        Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+async fn deactivate(State(state): State<AppState>, Path(brandId): Path<String>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
+    let mut values: Vec<Value> = Vec::new();
+    values.push(json!(brandId));
+
+    match send::<DeactivateBrandHandler, _>(&state.pool, DeactivateBrandCommand { values }).await {
+        Ok(rows) => {
+            let n = crate::db::scalar_number(&rows);
+            (StatusCode::OK, Json(json!(if n == 0 { 1 } else { n }))).into_response()
+        }
+        Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
+    }
+}
+
+pub fn brand_routes() -> Router<AppState> {
+    Router::new()
+        .route("/api/product-catalog-module/brands/count", get(count))
+        .route("/api/product-catalog-module/brands", get(list).post(insert))
+        .route("/api/product-catalog-module/brands/get-active", get(get_active))
+        .route("/api/product-catalog-module/brands/search-by-name", get(search_by_name))
+        .route("/api/product-catalog-module/brands/deactivate/{brandId}", axum::routing::patch(deactivate))
+        .route("/api/product-catalog-module/brands/{id}", get(get_item).put(update).delete(delete_item))
+}

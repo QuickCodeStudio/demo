@@ -1,0 +1,94 @@
+import SwiftUI
+import QuickCodeHTTP
+import ProductCatalogModuleClient
+
+struct ProductCatalogModuleProductCategoryFormView: View {
+    @Environment(SessionStore.self) private var session
+    @Environment(PortalToast.self) private var toast
+    @Environment(\.dismiss) private var dismiss
+    var keys: [String] = []
+    @State private var loaded = false
+    @State private var productId = ""
+    @State private var categoryId = ""
+    @State private var busy = false
+    @State private var failure: String?
+
+    private var ready: Bool { true }
+
+    var body: some View {
+                Group {
+            if !keys.isEmpty, !loaded {
+                LoadingState()
+            } else {ScreenCanvas {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    PortalForeignKeyField(label: "product", module: "product-catalog-module", model: "products", text: $productId)
+                        .disabled(!keys.isEmpty)
+                    PortalForeignKeyField(label: "category", module: "product-catalog-module", model: "categories", text: $categoryId)
+                        .disabled(!keys.isEmpty)
+                    if let failure {
+                        Text(failure).foregroundStyle(.red)
+                    }
+                    if keys.isEmpty {
+                        PrimaryButton(title: busy ? "Saving…" : "Save") { Task { await save() } }
+                            .disabled(busy || !ready)
+                    } else {
+                        Text("These fields identify the record and can’t be changed. Delete this link and create a new one to pick different values.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(ShellMetrics.screenPadding)
+            }
+        }
+            }
+        }
+        .navigationTitle(keys.isEmpty ? "Product Categories" : "Edit")
+        .task { await loadExisting() }
+    }
+
+    private func save() async {
+        busy = true
+        failure = nil
+        do {
+            if keys.isEmpty {
+            let client = makeClient(authorizer: SessionAuthorizer(session: session))
+            let output = try await client.ProductCategoriesInsert(body: .json(.init(
+                productId: Int32(productId) ?? 0,
+                categoryId: Int32(categoryId) ?? 0
+            )))
+            guard case .created = output else { throw APIFailure.from(status: 0) }
+            } else {
+            let client = makeClient(authorizer: SessionAuthorizer(session: session))
+            let output = try await client.ProductCategoriesUpdate(path: .init(productId: Int32(keys[0]) ?? 0, categoryId: Int32(keys[1]) ?? 0), body: .json(.init(
+                productId: Int32(keys[0]) ?? 0,
+                categoryId: Int32(keys[1]) ?? 0
+            )))
+            guard case .ok = output else { throw APIFailure.from(status: 0) }
+            }
+            toast.show("Saved")
+            dismiss()
+        } catch {
+            failure = PortalErrors.record(error)
+        }
+        busy = false
+    }
+
+    private func loadExisting() async {
+        guard !keys.isEmpty, !loaded else {
+            loaded = true
+            return
+        }
+        do {
+            let client = makeClient(authorizer: SessionAuthorizer(session: session))
+            let output = try await client.ProductCategoriesGetItem(path: .init(productId: Int32(keys[0]) ?? 0, categoryId: Int32(keys[1]) ?? 0))
+            guard case .ok(let ok) = output else { throw APIFailure.from(status: 0) }
+            let item = try ok.body.json
+            productId = PortalNumber.integer(item.productId)
+            categoryId = PortalNumber.integer(item.categoryId)
+        } catch {
+            failure = PortalErrors.record(error)
+        }
+        loaded = true
+    }}

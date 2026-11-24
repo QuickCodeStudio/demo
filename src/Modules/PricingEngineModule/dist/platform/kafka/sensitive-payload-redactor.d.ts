@@ -1,0 +1,12 @@
+export declare const SENSITIVE_PAYLOAD_MASK = "***";
+export declare const ADDITIONAL_FIELDS_ENV_VAR = "KAFKA_SENSITIVE_FIELDS";
+export declare const DEFAULT_SENSITIVE_FIELD_NAMES: readonly ["password", "passwd", "passphrase", "parola", "şifre", "sifre", "oldpassword", "newpassword", "confirmpassword", "currentpassword", "passwordhash", "hashedpassword", "passwordconfirmation", "token", "accesstoken", "refreshtoken", "idtoken", "bearertoken", "authtoken", "csrftoken", "sessiontoken", "secret", "clientsecret", "appsecret", "apisecret", "apikey", "privatekey", "resetcode", "resetpasswordcode", "twofactorcode", "twofactorrecoverycode", "otp", "pin"];
+export declare const DEFAULT_SENSITIVE_HEADER_NAMES: readonly ["authorization", "cookie", "setcookie", "xapikey", "xauthtoken", "xaccesstoken"];
+export declare const SENSITIVE_NAME_CONTAINS_TOKENS: readonly ["password", "passwd", "şifre", "sifre", "parola", "apikey"];
+export declare const SENSITIVE_NAME_SUFFIX_TOKENS: readonly ["password", "token", "secret"];
+export declare function normalizeSensitiveName(name: string | undefined | null): string;
+export declare function isSensitiveName(name: string | undefined | null, additionalNames?: readonly string[]): boolean;
+export declare function parseSensitiveCsv(value: string | undefined | null): string[];
+export declare function additionalSensitiveNamesFromEnv(): string[];
+export declare function redactSensitivePayload(value: unknown, additionalNames?: readonly string[]): unknown;
+export declare function redactSensitiveHeaders(headers: Record<string, unknown> | undefined | null, additionalNames?: readonly string[]): Record<string, string>;

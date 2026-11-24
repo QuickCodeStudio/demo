@@ -1,0 +1,120 @@
+@model QuickCode.Demo.Portal.Helpers.EndpointWorkflowCardVm
+@{
+    var item = Model;
+    var yamlTabId = $"yaml-tab-{item.Id}";
+    var umlDiagramTabId = $"uml-diagram-tab-{item.Id}";
+    var umlTabId = $"uml-tab-{item.Id}";
+    var yamlPaneId = $"yaml-{item.Id}";
+    var umlDiagramPaneId = $"uml-diagram-{item.Id}";
+    var umlPaneId = $"uml-{item.Id}";
+    var diagramHash = (item.WorkflowContent ?? string.Empty).GetHashCode().ToString("x8");
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Endpoint Workflow - @item.Name</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <div class="card text shadow mb-4">
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted d-block mb-1" style="font-weight: 600;">Module</small>
+                            <code style="color: #667eea; background: #f8f9fa; padding: 6px 10px; border-radius: 4px;">@item.ModuleName</code>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted d-block mb-1" style="font-weight: 600;">Http Method / Path</small>
+                            <div class="d-flex align-items-center flex-wrap">
+                                <span class="badge bg-primary text-white me-2">@item.HttpMethod</span>
+                                <code style="color: #667eea; background: #f8f9fa; padding: 6px 10px; border-radius: 4px; word-break: break-all;">@item.EndpointPath</code>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <div class="col-12 mb-2">
+                                <small class="text-muted d-block mb-1" style="font-weight: 600;">Description</small>
+                                <div>@item.Description</div>
+                            </div>
+                        }
+                    </div>
+
+                    <ul class="nav nav-tabs" id="workflowTabs-@item.Id" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="@yamlTabId" data-bs-toggle="tab" data-bs-target="#@yamlPaneId" href="#@yamlPaneId" role="tab" aria-controls="@yamlPaneId" aria-selected="true">Workflow Yaml</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="@umlDiagramTabId" data-bs-toggle="tab" data-bs-target="#@umlDiagramPaneId" href="#@umlDiagramPaneId" role="tab" aria-controls="@umlDiagramPaneId" aria-selected="false">Uml Diagram</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="@umlTabId" data-bs-toggle="tab" data-bs-target="#@umlPaneId" href="#@umlPaneId" role="tab" aria-controls="@umlPaneId" aria-selected="false">Uml Code</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content topic-workflow-tab-content" id="workflowTabContent-@item.Id">
+                        <div class="tab-pane fade show active" id="@yamlPaneId" role="tabpanel" aria-labelledby="@yamlTabId">
+                            <div class="topic-workflow-pane-body">
+                                <div id="yamlEditorRO_WorkflowContent_@item.Id" class="yamleditor-class topic-workflow-pane-editor" style="white-space: pre-wrap;">@item.WorkflowContent</div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="@umlDiagramPaneId" role="tabpanel" aria-labelledby="@umlDiagramTabId">
+                            <div class="topic-workflow-pane-body topic-workflow-diagram">
+                                <img src="/IdentityModuleEndpointWorkflows/GetUmlDiagram/@item.Id?v=@diagramHash"
+                                     data-src="/IdentityModuleEndpointWorkflows/GetUmlDiagram/@item.Id?v=@diagramHash"
+                                     class="preview-image topic-workflow-diagram__img"
+                                     alt="UML Diagram"
+                                     style="max-width: 100%; height: auto;" />
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="@umlPaneId" role="tabpanel" aria-labelledby="@umlTabId">
+                            <div class="topic-workflow-pane-body">
+                                <div id="umlEditorRO_WorkflowContent_@item.Id"
+                                     class="umleditor-class uml-content topic-workflow-pane-editor"
+                                     data-item-id="@item.Id"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    window.initEndpointWorkflowEditRegion = function (root) {
+        var $root = root ? $(root) : $(document);
+        $root.find('img.lazyload').lazyload();
+        $root.find('.uml-content').each(function () {
+            var itemId = $(this).data('item-id');
+            if (itemId === undefined || itemId === null || itemId === '') {
+                return;
+            }
+            var elementId = this.id;
+            $.ajax({
+                url: '/IdentityModuleEndpointWorkflows/GetUml/' + encodeURIComponent(itemId),
+                type: 'GET',
+                success: function (data) {
+                    if (typeof ensureAceLoaded === 'function') {
+                        ensureAceLoaded(function () {
+                            ace.edit(elementId).session.setValue(data);
+                        });
+                    } else if (typeof ace !== 'undefined') {
+                        ace.edit(elementId).session.setValue(data);
+                    }
+                },
+                error: function () {
+                    var el = document.getElementById(elementId);
+                    if (el) {
+                        el.textContent = 'UML content failed to load.';
+                    }
+                }
+            });
+        });
+        if (typeof loadYamlAllEditors === 'function') {
+            loadYamlAllEditors(root || document.getElementById('itemListContainer') || document);
+        }
+        if (typeof loadUmlAllEditors === 'function') {
+            loadUmlAllEditors();
+        }
+    };
+
+    window.initEndpointWorkflowEditRegion(document.getElementById('itemListContainer') || document);
+</script>

@@ -1,0 +1,136 @@
+Enum "ORDER_STATUS" {
+  PENDING_PAYMENT [note: "Awaiting payment confirmation"]
+  PROCESSING [note: "Payment received, order is being prepared by the seller"]
+  SHIPPED [note: "Order has been shipped to the customer"]
+  DELIVERED [note: "Order has been delivered to the customer"]
+  COMPLETED [note: "Order fulfilled and transaction is complete"]
+  CANCELLED [note: "Order has been cancelled"]
+  RETURN_REQUESTED [note: "Customer has requested a return"]
+}
+
+Enum "SHIPMENT_STATUS" {
+  PENDING [note: "Shipment created, awaiting pickup"]
+  IN_TRANSIT [note: "Shipment is on its way to the customer"]
+  DELIVERED [note: "Shipment has been delivered"]
+  FAILED_DELIVERY [note: "Delivery attempt failed"]
+}
+
+Enum "RETURN_STATUS" {
+  REQUESTED [note: "Return request submitted"]
+  APPROVED [note: "Return request approved"]
+  REJECTED [note: "Return request rejected"]
+  SHIPPED_BY_CUSTOMER [note: "Item shipped back by customer"]
+  RECEIVED [note: "Returned item received by seller"]
+  COMPLETED [note: "Return process is complete"]
+}
+
+Table "ORDERS" {
+  "ID" INTEGER [pk, increment]
+  "CUSTOMER_ID" INTEGER [not null]
+  "SELLER_ID" INTEGER [not null]
+  "ORDER_NUMBER" SHORT_STRING [not null]
+  "TOTAL_AMOUNT" MONEY [not null]
+  "SHIPPING_ADDRESS" ADDRESS
+  "STATUS" ORDER_STATUS [not null, default: 'PENDING_PAYMENT']
+  "ORDER_DATE" DATETIME [not null]
+  Note: '''
+    Query:GET_BY_ORDER_NUMBER[1] Where:ORDER_NUMBER Select:ID,STATUS,TOTAL_AMOUNT
+    Query:GET_BY_CUSTOMER_ID[P] Where:CUSTOMER_ID Order:ORDER_DATE[Desc] Select:ID,ORDER_NUMBER,STATUS,TOTAL_AMOUNT,ORDER_DATE
+    Query:GET_BY_SELLER_ID[P] Where:SELLER_ID Order:ORDER_DATE[Desc] Select:ID,ORDER_NUMBER,STATUS,TOTAL_AMOUNT,ORDER_DATE
+    Query:GET_BY_STATUS[P] Where:STATUS Order:ORDER_DATE[Desc] Select:ID,ORDER_NUMBER,CUSTOMER_ID,SELLER_ID,TOTAL_AMOUNT
+    Query:GET_BY_DATE_RANGE[P] Where:ORDER_DATE[Between] Select:ID,ORDER_NUMBER,STATUS,TOTAL_AMOUNT,ORDER_DATE
+    Query:GET_ORDERS_FOR_SETTLEMENT[P] Where:SELLER_ID,STATUS[COMPLETED] Select:ID,ORDER_NUMBER,TOTAL_AMOUNT,ORDER_DATE
+    Update:UPDATE_STATUS Where:ID Set:STATUS
+    Update:CANCEL_ORDER Where:ID Set:STATUS[CANCELLED]
+    Query:GET_MONTHLY_REVENUE_BY_SELLER[1] Where:SELLER_ID,ORDER_DATE[>|NowRemoveDays30] Select:SUM(TOTAL_AMOUNT) TOTAL_REVENUE,COUNT(*) ORDER_COUNT
+  '''
+}
+
+Table "ORDER_ITEMS" {
+  "ID" INTEGER [pk, increment]
+  "ORDER_ID" INTEGER [not null]
+  "PRODUCT_VARIANT_ID" INTEGER [not null]
+  "PRODUCT_NAME" STRING [not null]
+  "SKU" SHORT_STRING [not null]
+  "QUANTITY" INTEGER [not null]
+  "UNIT_PRICE" MONEY [not null]
+  "TOTAL_PRICE" MONEY [not null]
+  Note: '''
+    Query:GET_BY_ORDER_ID[P] Where:ORDER_ID Select:ID,PRODUCT_NAME,SKU,QUANTITY,UNIT_PRICE,TOTAL_PRICE
+  '''
+}
+
+Table "SHIPMENTS" {
+  "ID" INTEGER [pk, increment]
+  "ORDER_ID" INTEGER [not null]
+  "SHIPPING_METHOD_ID" INTEGER [not null]
+  "TRACKING_NUMBER" SHORT_STRING
+  "STATUS" SHIPMENT_STATUS [not null, default: 'PENDING']
+  "SHIPPED_DATE" DATETIME
+  "DELIVERED_DATE" DATETIME
+  Note: '''
+    Query:GET_BY_ORDER_ID[P] Where:ORDER_ID Select:ID,TRACKING_NUMBER,STATUS,SHIPPED_DATE
+    Query:GET_BY_TRACKING_NUMBER[1] Where:TRACKING_NUMBER Select:ID,ORDER_ID,STATUS
+    Update:MARK_AS_SHIPPED Where:ID Set:STATUS[IN_TRANSIT],SHIPPED_DATE[Now],TRACKING_NUMBER
+    Update:MARK_AS_DELIVERED Where:ID Set:STATUS[DELIVERED],DELIVERED_DATE[Now]
+  '''
+}
+
+Table "SHIPPING_METHODS" {
+  "ID" INTEGER [pk, increment]
+  "NAME" STRING [not null]
+  "COST" MONEY [not null, default: 0]
+  "IS_ACTIVE" BOOLEAN [not null, default: 'true']
+  Note: '''
+    Query:GET_ACTIVE[P] Where:IS_ACTIVE[true] Select:ID,NAME,COST
+    Update:DEACTIVATE Where:ID Set:IS_ACTIVE[false]
+  '''
+}
+
+Table "ORDER_STATUS_HISTORY" {
+  "ID" INTEGER [pk, increment]
+  "ORDER_ID" INTEGER [not null]
+  "PREVIOUS_STATUS" ORDER_STATUS
+  "NEW_STATUS" ORDER_STATUS [not null]
+  "CHANGED_BY_USER_ID" INTEGER
+  "CHANGE_DATE" DATETIME [not null]
+  "NOTES" BIG_STRING
+  Note: '''
+    Query:GET_BY_ORDER_ID[P] Where:ORDER_ID Order:CHANGE_DATE[Desc] Select:ID,NEW_STATUS,CHANGE_DATE,NOTES
+  '''
+}
+
+Table "ORDER_STATUS_MANAGER" {
+  "ID" INTEGER [pk, increment]
+  "ORDER_ID" INTEGER [not null]
+  "PREVIOUS_STATUS" ORDER_STATUS
+  "NEW_STATUS" ORDER_STATUS [not null]
+  "CHANGED_BY_USER_ID" INTEGER
+  "CHANGE_DATE" DATETIME [not null]
+  "NOTES" BIG_STRING
+}
+
+
+Table "RETURN_REQUESTS" {
+  "ID" INTEGER [pk, increment]
+  "ORDER_ID" INTEGER [not null]
+  "ORDER_ITEM_ID" INTEGER [not null]
+  "REASON" BIG_STRING [not null]
+  "STATUS" RETURN_STATUS [not null, default: 'REQUESTED']
+  "REQUESTED_DATE" DATETIME [not null]
+  "UPDATED_DATE" DATETIME
+  Note: '''
+    Query:GET_BY_ORDER_ID[P] Where:ORDER_ID Select:ID,STATUS,REASON,REQUESTED_DATE
+    Query:GET_PENDING_RETURNS_BY_SELLER[P] Tables:RETURN_REQUESTS R,ORDERS O Where:O.SELLER_ID,R.STATUS[REQUESTED] Select:R.ID,R.ORDER_ID,R.REASON,R.REQUESTED_DATE
+    Update:APPROVE Where:ID Set:STATUS[APPROVED],UPDATED_DATE[Now]
+    Update:REJECT Where:ID Set:STATUS[REJECTED],UPDATED_DATE[Now]
+    Update:COMPLETE Where:ID Set:STATUS[COMPLETED],UPDATED_DATE[Now]
+  '''
+}
+
+Ref: "ORDER_ITEMS"."ORDER_ID" > "ORDERS"."ID"
+Ref: "SHIPMENTS"."ORDER_ID" > "ORDERS"."ID"
+Ref: "SHIPMENTS"."SHIPPING_METHOD_ID" > "SHIPPING_METHODS"."ID"
+Ref: "ORDER_STATUS_HISTORY"."ORDER_ID" > "ORDERS"."ID"
+Ref: "RETURN_REQUESTS"."ORDER_ID" > "ORDERS"."ID"
+Ref: "RETURN_REQUESTS"."ORDER_ITEM_ID" > "ORDER_ITEMS"."ID"

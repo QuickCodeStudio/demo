@@ -1,0 +1,119 @@
+Enum "SELLER_STATUS" {
+  PENDING_VERIFICATION [note: "New seller, awaiting document verification"]
+  ACTIVE [note: "Seller is approved and can sell on the platform"]
+  SUSPENDED [note: "Seller's account is temporarily disabled"]
+  REJECTED [note: "Seller application was rejected"]
+  CLOSED [note: "Seller has closed their account"]
+}
+
+Enum "DOCUMENT_TYPE" {
+  IDENTITY [note: "National ID or Passport"]
+  BUSINESS_REGISTRATION [note: "Official business registration document"]
+  TAX_ID [note: "Tax identification document"]
+  BANK_STATEMENT [note: "Bank account ownership proof"]
+}
+
+Enum "VERIFICATION_STATUS" {
+  PENDING [note: "Document uploaded, awaiting review"]
+  VERIFIED [note: "Document has been verified"]
+  REJECTED [note: "Document was rejected"]
+}
+
+Table "SELLERS" {
+  "ID" INTEGER [pk, increment]
+  "USER_ID" INTEGER [not null]
+  "COMPANY_NAME" STRING [not null]
+  "CONTACT_EMAIL" EMAIL [not null]
+  "CONTACT_PHONE" PHONE
+  "STATUS" SELLER_STATUS [not null, default: 'PENDING_VERIFICATION']
+  "SELLER_TIER_ID" INTEGER
+  "JOINED_DATE" DATETIME [not null]
+  Note: '''
+    Query:GET_BY_USER_ID[1] Where:USER_ID Select:ID,COMPANY_NAME,STATUS
+    Query:GET_BY_STATUS[P] Where:STATUS Select:ID,COMPANY_NAME,CONTACT_EMAIL,JOINED_DATE
+    Query:SEARCH_BY_COMPANY_NAME[P] Where:COMPANY_NAME[Contains] Select:ID,COMPANY_NAME,STATUS
+    Update:APPROVE Where:ID Set:STATUS[ACTIVE]
+    Update:SUSPEND Where:ID Set:STATUS[SUSPENDED]
+    Update:REJECT Where:ID Set:STATUS[REJECTED]
+    Update:UPDATE_TIER Where:ID Set:SELLER_TIER_ID
+    Query:GET_PENDING_VERIFICATION_COUNT[*] Where:STATUS[PENDING_VERIFICATION]
+  '''
+}
+
+Table "STORES" {
+  "ID" INTEGER [pk, increment]
+  "SELLER_ID" INTEGER [not null]
+  "NAME" STRING [not null]
+  "SLUG" SHORT_STRING [not null]
+  "DESCRIPTION" BIG_STRING
+  "LOGO_URL" BLOB_IMAGE
+  "IS_ACTIVE" BOOLEAN [not null, default: 'true']
+  Note: '''
+    Query:GET_BY_SELLER_ID[1] Where:SELLER_ID Select:ID,NAME,SLUG,IS_ACTIVE
+    Query:GET_BY_SLUG[1] Where:SLUG Select:ID,SELLER_ID,NAME
+    Update:UPDATE_PROFILE Where:ID Set:NAME,DESCRIPTION,LOGO_URL
+    Update:DEACTIVATE Where:ID Set:IS_ACTIVE[false]
+  '''
+}
+
+Table "SELLER_DOCUMENTS" {
+  "ID" INTEGER [pk, increment]
+  "SELLER_ID" INTEGER [not null]
+  "DOCUMENT_TYPE" DOCUMENT_TYPE [not null]
+  "FILE_URL" URL [not null]
+  "STATUS" VERIFICATION_STATUS [not null, default: 'PENDING']
+  "UPLOADED_DATE" DATETIME [not null]
+  "REVIEWED_DATE" DATETIME
+  "REJECTION_REASON" BIG_STRING
+  Note: '''
+    Query:GET_BY_SELLER_ID[P] Where:SELLER_ID Select:ID,DOCUMENT_TYPE,STATUS,UPLOADED_DATE
+    Query:GET_PENDING_DOCUMENTS[P] Where:STATUS[PENDING] Select:ID,SELLER_ID,DOCUMENT_TYPE,UPLOADED_DATE
+    Update:VERIFY Where:ID Set:STATUS[VERIFIED],REVIEWED_DATE[Now]
+    Update:REJECT Where:ID Set:STATUS[REJECTED],REVIEWED_DATE[Now],REJECTION_REASON
+  '''
+}
+
+Table "SELLER_BANK_ACCOUNTS" {
+  "ID" INTEGER [pk, increment]
+  "SELLER_ID" INTEGER [not null]
+  "BANK_NAME" STRING [not null]
+  "ACCOUNT_HOLDER_NAME" STRING [not null]
+  "IBAN" SHORT_STRING [not null]
+  "IS_DEFAULT" BOOLEAN [not null, default: 'false']
+  "IS_VERIFIED" BOOLEAN [not null, default: 'false']
+  Note: '''
+    Query:GET_BY_SELLER_ID[P] Where:SELLER_ID Select:ID,BANK_NAME,ACCOUNT_HOLDER_NAME,IBAN,IS_DEFAULT,IS_VERIFIED
+    Query:GET_DEFAULT_BY_SELLER_ID[1] Where:SELLER_ID,IS_DEFAULT[true] Select:ID,IBAN,IS_VERIFIED
+    Update:SET_AS_DEFAULT Where:SELLER_ID Set:IS_DEFAULT[false]
+    Update:SET_DEFAULT_ACCOUNT Where:ID Set:IS_DEFAULT[true]
+  '''
+}
+
+Table "SELLER_TIERS" {
+  "ID" INTEGER [pk, increment]
+  "NAME" STRING [not null]
+  "MIN_SALES_VOLUME" MONEY
+  "BENEFITS_DESCRIPTION" BIG_STRING
+  Note: '''
+  Query:GET_BY_NAME[1] Where:NAME Select:ID,BENEFITS_DESCRIPTION
+'''
+}
+
+Table "SELLER_PERFORMANCE_REVIEWS" {
+  "ID" INTEGER [pk, increment]
+  "SELLER_ID" INTEGER [not null]
+  "REVIEWER_ID" INTEGER [not null]
+  "RATING" SMALL_INTEGER [not null]
+  "COMMENT" BIG_STRING
+  "REVIEW_DATE" DATETIME [not null]
+  Note: '''
+    Query:GET_BY_SELLER_ID[P] Where:SELLER_ID Order:REVIEW_DATE[Desc] Select:ID,RATING,COMMENT,REVIEW_DATE
+    Query:GET_SELLER_AVERAGE_RATING[1] Where:SELLER_ID Select:AVG(RATING) AVERAGE_RATING,COUNT(*) REVIEW_COUNT
+  '''
+}
+
+Ref: "STORES"."SELLER_ID" > "SELLERS"."ID"
+Ref: "SELLERS"."SELLER_TIER_ID" > "SELLER_TIERS"."ID"
+Ref: "SELLER_DOCUMENTS"."SELLER_ID" > "SELLERS"."ID"
+Ref: "SELLER_BANK_ACCOUNTS"."SELLER_ID" > "SELLERS"."ID"
+Ref: "SELLER_PERFORMANCE_REVIEWS"."SELLER_ID" > "SELLERS"."ID"

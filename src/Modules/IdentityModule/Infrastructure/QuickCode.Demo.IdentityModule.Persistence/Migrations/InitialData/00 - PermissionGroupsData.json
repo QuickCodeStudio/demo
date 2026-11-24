@@ -1,0 +1,15 @@
+{
+"PermissionGroups": [
+	{
+		"Name" : "Admin",
+		"Description" : "Admin"
+	},
+	{
+		"Name" : "Viewer",
+		"Description" : "Viewer"
+	},
+	{
+		"Name" : "Public",
+		"Description" : "Storefront anonymous — assign only selected catalog GET methods; Gateway hard-denies identity-module and auth management"
+	}
+]}

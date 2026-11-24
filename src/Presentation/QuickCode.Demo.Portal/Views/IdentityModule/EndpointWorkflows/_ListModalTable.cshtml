@@ -1,0 +1,109 @@
+@using QuickCode.Demo.Portal.Models.IdentityModule
+@inject IPortalPagePermissionManager PortalPagePermissions
+@model IdentityModule.EndpointWorkflowData
+@{
+    int startIndex = ((Model.CurrentPage - 1) * Model.PageSize) + 1;
+    int endIndex = Model.CurrentPage * Model.PageSize;
+    if (endIndex > Model.NumberOfRecord)
+    {
+        endIndex = Model.NumberOfRecord;
+    }
+
+    var pagerData = new PagerData() { CurrentPage = Model.CurrentPage, NumberOfRecord = Model.NumberOfRecord, PageSize = Model.PageSize, TotalPage = Model.TotalPage, StartIndex = startIndex, EndIndex = endIndex };
+    var areaName = ViewContext.RouteData.Values["Area"]?.ToString() ?? string.Empty;
+    var controllerName = ViewContext.RouteData.Values["Controller"]?.ToString() ?? string.Empty;
+    var actionName = ViewContext.RouteData.Values["Action"]?.ToString() ?? string.Empty;
+    var ops = await PortalPagePermissions.GetPagePermission($"{areaName}{controllerName}", actionName);
+    var headerKey = "Header";
+}
+@if (Model.List == null || Model.List.Count == 0)
+{
+    <div class="alert alert-danger" role="alert">
+        No Data available in IdentityModule.EndpointWorkflows table.
+    </div>
+}
+else
+{
+    <vc:pager pager-data=pagerData></vc:pager>
+    <div class="portal-table-scroll portal-table-scroll--fill">
+        <table bc-border="Bordered" bc-striped="true" bc-hover="true" class="table" bc-theme="Light">
+            <thead bc-theme="Dark">
+            <tr>
+                @PortalOperationButtonsHtml.Cell(ops, headerKey, areaName, controllerName)
+                <th data-col-type="id">Id</th>
+                <th>Name</th>
+                <th>Http</th>
+                <th style="width: 16rem;">Endpoint Path</th>
+                <th>Active</th>
+                <th class="topic-workflow-content-col">Workflow Content</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.List)
+            {
+                <tr>
+                    @PortalOperationButtonsHtml.Cell(ops, item.GetKey(), areaName, controllerName)
+                    <td data-col-type="id">@item.Id</td>
+                    <td>@item.Name</td>
+                    <td><span class="badge bg-primary">@item.HttpMethod</span></td>
+                    <td style="width: 16rem; white-space: normal; word-break: break-word;"><code>@item.EndpointPath</code></td>
+                    <td>@(item.IsActive ? "Yes" : "No")</td>
+                    <td class="topic-workflow-content-col">
+                        @{
+                            var yamlTabId = $"yaml-tab-{item.Id}";
+                            var umlDiagramTabId = $"uml-diagram-tab-{item.Id}";
+                            var umlTabId = $"uml-tab-{item.Id}";
+                            var yamlPaneId = $"yaml-{item.Id}";
+                            var umlDiagramPaneId = $"uml-diagram-{item.Id}";
+                            var umlPaneId = $"uml-{item.Id}";
+                        }
+                        <div class="wf-seg" id="workflowTabs-@item.Id" role="tablist">
+                            <button type="button"
+                                    class="wf-seg__btn is-active"
+                                    id="@yamlTabId"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#@yamlPaneId"
+                                    role="tab"
+                                    aria-controls="@yamlPaneId"
+                                    aria-selected="true">YAML</button>
+                            <button type="button"
+                                    class="wf-seg__btn"
+                                    id="@umlDiagramTabId"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#@umlDiagramPaneId"
+                                    role="tab"
+                                    aria-controls="@umlDiagramPaneId"
+                                    aria-selected="false">UML Diagram</button>
+                            <button type="button"
+                                    class="wf-seg__btn"
+                                    id="@umlTabId"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#@umlPaneId"
+                                    role="tab"
+                                    aria-controls="@umlPaneId"
+                                    aria-selected="false">PlantUML</button>
+                        </div>
+                        <div class="tab-content topic-workflow-tab-content" id="workflowTabContent-@item.Id">
+                            <div class="tab-pane fade show active" id="@yamlPaneId" role="tabpanel" aria-labelledby="@yamlTabId">
+                                <div class="topic-workflow-pane-body">
+                                    <div id="yamlEditorRO_WorkflowContent_@item.Id" class="yamleditor-class topic-workflow-pane-editor" style="white-space: pre-wrap;">@item.WorkflowContent</div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="@umlDiagramPaneId" role="tabpanel" aria-labelledby="@umlDiagramTabId">
+                                <div class="topic-workflow-pane-body topic-workflow-diagram">
+                                    <img src="" data-src="@string.Format("/IdentityModuleEndpointWorkflows/GetUmlDiagram/{0}?v={1}", item.Id, (item.WorkflowContent ?? string.Empty).GetHashCode().ToString("x8"))" class="lazyload preview-image topic-workflow-diagram__img" alt="UML Diagram" />
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="@umlPaneId" role="tabpanel" aria-labelledby="@umlTabId">
+                                <div class="topic-workflow-pane-body">
+                                    <div id="umlEditorRO_WorkflowContent_@item.Id" class="umleditor-class uml-content topic-workflow-pane-editor" data-item-id="@item.Id"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

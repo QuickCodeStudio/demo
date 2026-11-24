@@ -1,0 +1,40 @@
+{
+  "RefreshTokens": [
+    {
+      "Token": "Enterprise Region 1",
+      "ExpiryDate": "2024-03-27T03:10:40.0676259Z",
+      "CreatedDate": "2022-08-10T07:46:27.6622479Z",
+      "IsRevoked": true
+    },
+    {
+      "Token": "Enterprise Preference 2",
+      "ExpiryDate": "2025-03-30T00:10:53.0066776Z",
+      "CreatedDate": "2022-12-25T02:33:06.34724Z",
+      "IsRevoked": false
+    },
+    {
+      "Token": "Verified Tier 3",
+      "ExpiryDate": "2025-03-29T09:52:55.1218007Z",
+      "CreatedDate": "2023-02-28T03:09:06.6762997Z",
+      "IsRevoked": false
+    },
+    {
+      "Token": "Compact Lot 4",
+      "ExpiryDate": "2024-12-03T22:11:19.7976642Z",
+      "CreatedDate": "2022-10-31T21:10:43.5289127Z",
+      "IsRevoked": false
+    },
+    {
+      "Token": "Legacy Batch 5",
+      "ExpiryDate": "2025-01-17T21:33:58.7021947Z",
+      "CreatedDate": "2022-12-31T08:06:17.4151595Z",
+      "IsRevoked": false
+    },
+    {
+      "Token": "Regional Series 6",
+      "ExpiryDate": "2024-09-07T11:59:21.4173687Z",
+      "CreatedDate": "2024-10-05T00:00:32.4419483Z",
+      "IsRevoked": false
+    }
+  ]
+}

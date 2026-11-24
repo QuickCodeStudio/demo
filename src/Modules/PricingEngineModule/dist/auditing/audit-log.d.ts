@@ -1,0 +1,26 @@
+export interface AuditLogPayload {
+    id: string;
+    entityName: string;
+    entityId: string;
+    action: string;
+    userId?: string | null;
+    userName?: string | null;
+    userGroup?: string | null;
+    timestamp: Date;
+    durationMs?: number | null;
+    statusCode?: number | null;
+    requestModule?: string | null;
+    requestPath?: string | null;
+    oldValues?: string | null;
+    newValues?: string | null;
+    changedColumns?: string | null;
+    isChanged: boolean;
+    changeSummary?: string | null;
+    ipAddress?: string | null;
+    userAgent?: string | null;
+    correlationId?: string | null;
+    isSuccess: boolean;
+    errorMessage?: string | null;
+    hash?: string | null;
+}
+export declare function createAuditLog(partial: Partial<AuditLogPayload> & Pick<AuditLogPayload, 'entityName' | 'entityId' | 'action' | 'timestamp'>): AuditLogPayload;

@@ -1,0 +1,10 @@
+#[path = "list_brand_query.g.rs"]
+pub mod list_brand_query;
+#[path = "get_item_brand_query.g.rs"]
+pub mod get_item_brand_query;
+#[path = "total_item_count_brand_query.g.rs"]
+pub mod total_item_count_brand_query;
+#[path = "get_active_brand_query.g.rs"]
+pub mod get_active_brand_query;
+#[path = "search_by_name_brand_query.g.rs"]
+pub mod search_by_name_brand_query;

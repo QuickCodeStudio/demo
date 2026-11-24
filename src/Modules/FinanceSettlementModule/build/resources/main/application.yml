@@ -1,0 +1,46 @@
+server:
+  port: ${PORT:80}
+  compression:
+    enabled: true
+    mime-types: application/json,application/problem+json,text/plain,text/html,application/javascript
+    min-response-size: 1024
+
+spring:
+  application:
+    name: ${MODULE_NAME:FinanceSettlementModule}
+  threads:
+    virtual:
+      enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger
+
+# Platform env (also read directly from System.getenv in filters/services):
+#   CORS_ALLOW_ORIGINS / CorsSettings__AllowOrigins — comma/semicolon list; *.domain wildcards; empty = permissive + warn
+#   RATE_LIMIT_ENABLED (default true), RATE_LIMIT_PERMIT (1000), RATE_LIMIT_AUTH_PERMIT (10),
+#   RATE_LIMIT_REFRESH_PERMIT (60), RATE_LIMIT_WINDOW_SECONDS (60)
+#   Otlp__Endpoint / OTLP_ENDPOINT — OTLP metrics push (:4317 gRPC → :4318/v1/metrics); OTEL_ENABLED=false to disable
+#   Optional OpenTelemetry Java agent: -javaagent:opentelemetry-javaagent.jar (traces + auto-instrumentation)
+#   ELASTIC_CONNECTION_STRING / Logging__ElasticConfiguration__Uri — optional API log sink
+#   MODULE_NAME — JWT audience + Kafka clientId + audit requestModule
+#   IDENTITY_MODULE_API — Kafka event catalog base URL (IdentityModule)
+#   GATEWAY_JWT_PUBLIC_KEY / GATEWAY_JWT_PRIVATE_KEY — RS256 gateway tokens (base64 DER or PEM)
+#   GATEWAY_JWT_ISSUER — default quickcode-gateway
+#   GATEWAY_JWT_EXPIRATION_SECONDS — mint TTL (default 60)
+#   KAFKA_BOOTSTRAP_SERVERS — comma-separated brokers; empty disables producer
+#   KAFKA_SENSITIVE_FIELDS — extra comma-separated redaction field names
+#   ENDPOINT_WORKFLOWS_PATH — endpoint workflow registry JSON (default ./workflows/generated-endpoint-workflows.json)
+#   QuickcodeClients__XApi — base URL for {{QuickcodeClients.XApi}} workflow tokens
+#   SWAGGER_DUMP=1 — skip background audit writer
+
+quickcode:
+  db-type: ${DB_TYPE:postgresql}
+  db-host: ${DB_HOST:localhost}
+  db-port: ${DB_PORT:}
+  db-username: ${DB_USERNAME:}
+  db-password: ${DB_PASSWORD:}
+  db-database: ${DB_DATABASE:demo}
+  run-migration: ${RUN_MIGRATION:yes}

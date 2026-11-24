@@ -1,0 +1,557 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using QuickCode.Demo.Portal.Models.IdentityModule
+@using QuickCode.Demo.Infrastructure.Integration.Nswag.Clients.IdentityModuleApi.Contracts
+@model IdentityModule.EndpointWorkflowData
+@{
+    var item = Model.SelectedItem ?? new EndpointWorkflowDto();
+    var moduleName = (item.ModuleName ?? string.Empty).Trim();
+    var endpointPath = (item.EndpointPath ?? string.Empty).Trim();
+    var domain = string.IsNullOrWhiteSpace(moduleName)
+        ? string.Empty
+        : System.Text.RegularExpressions.Regex.Replace(
+            System.Text.RegularExpressions.Regex.Replace(moduleName, @"([a-z0-9])([A-Z])", "$1-$2"),
+            @"[\s_]+", "-").ToLowerInvariant();
+    var apiPrefix = string.IsNullOrEmpty(domain) ? string.Empty : "/api/" + domain;
+    var bffPrefix = string.IsNullOrEmpty(domain) ? string.Empty : "/bff/" + domain;
+    var runOnBff = item.RunOnBff
+        || (!string.IsNullOrEmpty(bffPrefix) && endpointPath.StartsWith(bffPrefix, StringComparison.OrdinalIgnoreCase));
+    var prefix = runOnBff ? bffPrefix : apiPrefix;
+    var pathSuffix = endpointPath;
+    if (!string.IsNullOrEmpty(prefix) && endpointPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+    {
+        pathSuffix = endpointPath.Substring(prefix.Length).TrimStart('/');
+    }
+    else if (!string.IsNullOrEmpty(apiPrefix) && endpointPath.StartsWith(apiPrefix, StringComparison.OrdinalIgnoreCase))
+    {
+        pathSuffix = endpointPath.Substring(apiPrefix.Length).TrimStart('/');
+    }
+    else
+    {
+        pathSuffix = endpointPath.TrimStart('/');
+    }
+    var httpMethod = string.IsNullOrWhiteSpace(item.HttpMethod) ? "POST" : item.HttpMethod.Trim().ToUpperInvariant();
+    var modules = Model.ComboList != null && Model.ComboList.ContainsKey("Modules")
+        ? Model.GetComboBoxList("Modules", moduleName)
+        : Enumerable.Empty<SelectListItem>();
+    var httpMethods = Model.ComboList != null && Model.ComboList.ContainsKey("HttpMethods")
+        ? Model.GetComboBoxList("HttpMethods", httpMethod)
+        : new[]
+        {
+            new SelectListItem("GET", "GET"),
+            new SelectListItem("POST", "POST") { Selected = true },
+            new SelectListItem("PUT", "PUT"),
+            new SelectListItem("PATCH", "PATCH"),
+            new SelectListItem("DELETE", "DELETE")
+        };
+}
+<style>
+    .ewf-studio-fields {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 14px 16px;
+        margin-bottom: 0.75rem;
+    }
+    .ewf-studio-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+        margin: 0;
+    }
+    .ewf-studio-field--name { grid-column: span 4; }
+    .ewf-studio-field--module { grid-column: span 8; }
+    .ewf-studio-field--desc,
+    .ewf-studio-field--route,
+    .ewf-studio-field--workspace { grid-column: 1 / -1; }
+    .ewf-studio-field__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.01em;
+    }
+    .ewf-studio-field__label em {
+        color: #dc3545;
+        font-style: normal;
+    }
+    .ewf-studio-field .form-control,
+    .ewf-studio-field .form-select {
+        min-height: 38px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+    }
+    .ewf-route-row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 8px;
+        min-width: 0;
+        width: 100%;
+    }
+    .ewf-route-row .ewf-route-method {
+        flex: 0 0 118px;
+        max-width: 118px;
+    }
+    .ewf-route-bar {
+        display: flex;
+        align-items: stretch;
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 1px solid #dee2e6;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .ewf-route-bar:focus-within {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+    .ewf-route-bar__prefix {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 12px;
+        border-right: 1px solid #e9ecef;
+        background: #f8f9fa;
+        color: #6c757d;
+        font-size: 0.78rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        white-space: nowrap;
+    }
+    .ewf-route-bar__name {
+        flex: 1 1 auto;
+        min-width: 96px;
+        border: 0;
+        outline: none;
+        padding: 0 12px;
+        font-size: 0.875rem;
+        background: transparent;
+    }
+    .ewf-workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 0;
+    }
+    .ewf-workspace-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .ewf-workspace-toolbar .ewf-seg {
+        margin-bottom: 0;
+    }
+    .ewf-active-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+    }
+    .ewf-active-inline__label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #64748b;
+        white-space: nowrap;
+    }
+    .ewf-seg {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        width: fit-content;
+        max-width: 100%;
+        background: #e2e8f0;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+    }
+    .ewf-seg__btn {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 0 !important;
+        background: transparent !important;
+        color: #64748b !important;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        line-height: 1;
+        padding: 0.6rem 1rem;
+        border-radius: 999px;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: none !important;
+        transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ewf-seg__btn:hover {
+        color: #334155 !important;
+        background: rgba(255, 255, 255, 0.55) !important;
+    }
+    .ewf-seg__btn.is-active {
+        color: #fff !important;
+        background: #2f3d78 !important;
+        box-shadow: 0 1px 3px rgba(47, 61, 120, 0.35) !important;
+    }
+    .ewf-seg__btn:focus-visible {
+        outline: 2px solid #86b7fe;
+        outline-offset: 2px;
+    }
+    .ewf-pane {
+        display: none;
+        min-width: 0;
+    }
+    .ewf-pane.is-active {
+        display: block;
+    }
+    .ewf-studio-field .yamleditor-class,
+    .ewf-studio-field .umleditor-class {
+        width: 100%;
+        height: min(58vh, 560px);
+        min-height: 420px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .ewf-diagram-wrap {
+        height: min(58vh, 560px);
+        min-height: 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        overflow: auto;
+    }
+    .ewf-diagram-wrap img {
+        max-width: 100%;
+        height: auto;
+    }
+    .ewf-preview-status {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .ewf-preview-status.is-error {
+        color: #b42318;
+    }
+    @@media (max-width: 767.98px) {
+        .ewf-studio-field--name,
+        .ewf-studio-field--module { grid-column: 1 / -1; }
+        .ewf-route-row { flex-wrap: wrap; }
+        .ewf-route-row .ewf-route-method { flex: 1 1 100%; max-width: none; }
+        .ewf-seg { width: 100%; }
+        .ewf-seg__btn { flex: 1 1 auto; text-align: center; }
+        .ewf-studio-field .yamleditor-class,
+        .ewf-studio-field .umleditor-class,
+        .ewf-diagram-wrap {
+            height: 52vh;
+            min-height: 320px;
+        }
+    }
+</style>
+
+<div class="ewf-studio-fields" id="ewfStudioFields">
+    <label class="ewf-studio-field ewf-studio-field--name">
+        <span class="ewf-studio-field__label">Name <em>*</em></span>
+        <input asp-for="SelectedItem.Name" class="form-control" placeholder="Workflow name" required />
+    </label>
+
+    <label class="ewf-studio-field ewf-studio-field--bff">
+        <span class="ewf-studio-field__label">Run on BFF</span>
+        <input asp-for="SelectedItem.RunOnBff" id="ewfRunOnBff" type="checkbox" />
+        <span>Host at <code>/bff/{domain}</code> instead of the module API.</span>
+    </label>
+
+    <label class="ewf-studio-field ewf-studio-field--module">
+        <span class="ewf-studio-field__label">Module <em>*</em></span>
+        <select asp-for="SelectedItem.ModuleName"
+                class="form-select searchable-select ewf-module-select"
+                asp-items="@modules"
+                data-placeholder="Select module..."
+                required></select>
+    </label>
+
+    <label class="ewf-studio-field ewf-studio-field--desc">
+        <span class="ewf-studio-field__label">Description</span>
+        <input asp-for="SelectedItem.Description" class="form-control" placeholder="Short summary" />
+    </label>
+
+    <div class="ewf-studio-field ewf-studio-field--route">
+        <span class="ewf-studio-field__label">Route <em>*</em></span>
+        <div class="ewf-route-row">
+            <select asp-for="SelectedItem.HttpMethod"
+                    class="form-select ewf-route-method"
+                    asp-items="@httpMethods"
+                    required></select>
+            <div class="ewf-route-bar">
+                <span class="ewf-route-bar__prefix" id="ewfRoutePrefix" title="@(string.IsNullOrEmpty(prefix) ? "/api/{module}/" : prefix + "/")">
+                    @(string.IsNullOrEmpty(prefix) ? "/api/{module}/" : prefix + "/")
+                </span>
+                <input type="text"
+                       id="ewfPathSuffix"
+                       class="ewf-route-bar__name"
+                       value="@pathSuffix"
+                       placeholder="endpoint-name"
+                       autocomplete="off" />
+            </div>
+        </div>
+        <input type="hidden" asp-for="SelectedItem.EndpointPath" id="SelectedItem_EndpointPath" />
+    </div>
+
+    <div class="ewf-studio-field ewf-studio-field--workspace">
+        <span class="ewf-studio-field__label">Workflow <em>*</em></span>
+        <div class="ewf-workspace">
+            <div class="ewf-workspace-toolbar">
+                <div class="ewf-seg" role="tablist" aria-label="Workflow views">
+                    <button type="button" class="ewf-seg__btn is-active" data-ewf-pane="yaml" role="tab" aria-selected="true">YAML</button>
+                    <button type="button" class="ewf-seg__btn" data-ewf-pane="diagram" role="tab" aria-selected="false">UML Diagram</button>
+                    <button type="button" class="ewf-seg__btn" data-ewf-pane="plantuml" role="tab" aria-selected="false">PlantUML</button>
+                </div>
+                <div class="ewf-active-inline">
+                    <span class="ewf-active-inline__label">Is Active</span>
+                    @Html.HiddenFor(m => m.SelectedItem.IsActive)
+                    @if (item.IsActive)
+                    {
+                        <div class="ios-switch-wrapper checked">
+                            <input class="ios-switch" type="checkbox" onchange="checkBoxChanged(this);" id="cbox_SelectedItem_IsActive" checked />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ios-switch-wrapper">
+                            <input class="ios-switch" type="checkbox" onchange="checkBoxChanged(this);" id="cbox_SelectedItem_IsActive" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="ewf-pane is-active" data-ewf-pane="yaml" role="tabpanel">
+                <div id="yamlEditor_SelectedItem_WorkflowContent"
+                     class="yamleditor-class"
+                     style="white-space: pre-wrap; height: 520px; min-height: 420px;">@item.WorkflowContent</div>
+            </div>
+            <div class="ewf-pane" data-ewf-pane="diagram" role="tabpanel" hidden>
+                <div class="ewf-diagram-wrap" id="ewfDiagramWrap">
+                    <p class="ewf-preview-status" id="ewfDiagramStatus">Enter workflow YAML to preview.</p>
+                    <img id="ewfDiagramImg" alt="UML Diagram" style="display:none;" />
+                </div>
+            </div>
+            <div class="ewf-pane" data-ewf-pane="plantuml" role="tabpanel" hidden>
+                <p class="ewf-preview-status" id="ewfPlantUmlStatus" style="display:none;">Enter workflow YAML to preview.</p>
+                <div id="umlEditorRO_SelectedItem_PlantUml"
+                     class="umleditor-class"
+                     style="white-space: pre-wrap; height: 520px; min-height: 420px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    function toKebab(name) {
+        return String(name || '')
+            .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+            .replace(/[\s_]+/g, '-')
+            .toLowerCase();
+    }
+
+    function modulePrefix(moduleName) {
+        var name = String(moduleName || '').trim();
+        if (!name) return '';
+        var root = $('#ewfRunOnBff').is(':checked') ? '/bff/' : '/api/';
+        return root + toKebab(name);
+    }
+
+    function composePath(moduleName, suffix) {
+        var prefix = modulePrefix(moduleName);
+        var rest = String(suffix || '').replace(/^\/+/, '').replace(/\/+$/, '');
+        if (!prefix) return rest ? ('/' + rest) : '';
+        return rest ? (prefix + '/' + rest) : prefix;
+    }
+
+    function syncEndpointPath() {
+        var moduleName = ($('#SelectedItem_ModuleName').val() || '').toString();
+        var suffix = ($('#ewfPathSuffix').val() || '').toString();
+        var prefix = modulePrefix(moduleName);
+        $('#ewfRoutePrefix').text(prefix ? (prefix + '/') : '/api/{module}/');
+        $('#ewfRoutePrefix').attr('title', prefix ? (prefix + '/') : '/api/{module}/');
+        $('#SelectedItem_EndpointPath').val(composePath(moduleName, suffix));
+        $('#ewfPathSuffix').prop('disabled', !moduleName);
+    }
+
+    $(document).on('change', '#ewfRunOnBff', syncEndpointPath);
+
+    function getYamlValue() {
+        var el = document.getElementById('yamlEditor_SelectedItem_WorkflowContent');
+        if (!el) return '';
+        try {
+            if (typeof ace !== 'undefined' && el.env && el.env.editor) {
+                return (el.env.editor.getValue() || '').toString();
+            }
+            if (typeof ace !== 'undefined') {
+                return (ace.edit(el).getValue() || '').toString();
+            }
+        } catch (e) { /* fall through */ }
+        return (el.textContent || '').toString();
+    }
+
+    function setPlantUmlValue(text) {
+        var el = document.getElementById('umlEditorRO_SelectedItem_PlantUml');
+        if (!el) return;
+        try {
+            if (typeof ace !== 'undefined') {
+                var editor = (el.env && el.env.editor) ? el.env.editor : ace.edit(el);
+                editor.session.setMode('ace/mode/markdown');
+                editor.setTheme('ace/theme/github');
+                editor.setReadOnly(true);
+                editor.setValue(text || '', -1);
+                editor.resize(true);
+                return;
+            }
+        } catch (e) { /* fall through */ }
+        el.textContent = text || '';
+    }
+
+    function showDiagramStatus(message, isError) {
+        $('#ewfDiagramImg').hide().attr('src', '');
+        $('#ewfDiagramStatus')
+            .text(message || '')
+            .toggleClass('is-error', !!isError)
+            .show();
+    }
+
+    function resizeEditors() {
+        try {
+            var yamlEl = document.getElementById('yamlEditor_SelectedItem_WorkflowContent');
+            if (yamlEl && yamlEl.env && yamlEl.env.editor) yamlEl.env.editor.resize(true);
+            var umlEl = document.getElementById('umlEditorRO_SelectedItem_PlantUml');
+            if (umlEl && umlEl.env && umlEl.env.editor) umlEl.env.editor.resize(true);
+        } catch (e) { /* ignore */ }
+    }
+
+    function activatePane(name) {
+        var root = document.getElementById('ewfStudioFields');
+        if (!root) return;
+        root.querySelectorAll('.ewf-seg__btn').forEach(function (btn) {
+            var on = btn.getAttribute('data-ewf-pane') === name;
+            btn.classList.toggle('is-active', on);
+            btn.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        root.querySelectorAll('.ewf-pane').forEach(function (pane) {
+            var on = pane.getAttribute('data-ewf-pane') === name;
+            pane.classList.toggle('is-active', on);
+            if (on) pane.removeAttribute('hidden');
+            else pane.setAttribute('hidden', 'hidden');
+        });
+        if (name === 'diagram' || name === 'plantuml') {
+            var hasImg = ($('#ewfDiagramImg').attr('src') || '').toString();
+            if (!hasImg) {
+                lastPreviewYaml = null;
+            }
+            schedulePreview(true);
+        }
+        setTimeout(resizeEditors, 40);
+    }
+
+    var previewTimer = null;
+    var previewSeq = 0;
+    var lastPreviewYaml = null;
+
+    function schedulePreview(immediate) {
+        if (previewTimer) {
+            clearTimeout(previewTimer);
+            previewTimer = null;
+        }
+        previewTimer = setTimeout(runPreview, immediate ? 0 : 450);
+    }
+
+    function runPreview() {
+        var yaml = getYamlValue().trim();
+        var hasImg = ($('#ewfDiagramImg').attr('src') || '').toString();
+        if (yaml === lastPreviewYaml && hasImg) {
+            resizeEditors();
+            return;
+        }
+        lastPreviewYaml = yaml;
+
+        if (!yaml) {
+            showDiagramStatus('Enter workflow YAML to preview.', false);
+            $('#ewfPlantUmlStatus').text('Enter workflow YAML to preview.').removeClass('is-error').show();
+            setPlantUmlValue('');
+            return;
+        }
+
+        var seq = ++previewSeq;
+        showDiagramStatus('Generating diagram…', false);
+        $('#ewfPlantUmlStatus').hide();
+
+        $.ajax({
+            url: '/IdentityModuleEndpointWorkflows/PreviewFromYaml',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ yaml: yaml }),
+            success: function (res) {
+                if (seq !== previewSeq) return;
+                if (!res || !res.ok) {
+                    var msg = (res && res.message) ? res.message : 'Preview failed.';
+                    showDiagramStatus(msg, true);
+                    $('#ewfPlantUmlStatus').text(msg).addClass('is-error').show();
+                    setPlantUmlValue('');
+                    return;
+                }
+                $('#ewfDiagramStatus').hide();
+                $('#ewfDiagramImg').attr('src', res.svgUrl).show();
+                $('#ewfPlantUmlStatus').hide();
+                setPlantUmlValue(res.plantUml || '');
+            },
+            error: function (xhr) {
+                if (seq !== previewSeq) return;
+                var msg = (xhr.responseJSON && xhr.responseJSON.message)
+                    ? xhr.responseJSON.message
+                    : 'Preview request failed.';
+                showDiagramStatus(msg, true);
+                $('#ewfPlantUmlStatus').text(msg).addClass('is-error').show();
+                setPlantUmlValue('');
+            }
+        });
+    }
+
+    function bindYamlChange() {
+        var el = document.getElementById('yamlEditor_SelectedItem_WorkflowContent');
+        if (!el || typeof ace === 'undefined') {
+            setTimeout(bindYamlChange, 120);
+            return;
+        }
+        try {
+            var editor = (el.env && el.env.editor) ? el.env.editor : ace.edit(el);
+            editor.session.off('change', window._ewfYamlChangeHandler);
+            window._ewfYamlChangeHandler = function () {
+                lastPreviewYaml = null;
+                schedulePreview(false);
+            };
+            editor.session.on('change', window._ewfYamlChangeHandler);
+            resizeEditors();
+            schedulePreview(true);
+        } catch (e) {
+            setTimeout(bindYamlChange, 120);
+        }
+    }
+
+    $(document).off('click.ewfSeg', '.ewf-seg__btn')
+        .on('click.ewfSeg', '.ewf-seg__btn', function () {
+            activatePane(this.getAttribute('data-ewf-pane'));
+        });
+
+    $(document).off('change.ewfStudio', '#SelectedItem_ModuleName')
+        .on('change.ewfStudio', '#SelectedItem_ModuleName', syncEndpointPath);
+    $(document).off('input.ewfStudio', '#ewfPathSuffix')
+        .on('input.ewfStudio', '#ewfPathSuffix', syncEndpointPath);
+
+    syncEndpointPath();
+    setTimeout(bindYamlChange, 200);
+})();
+</script>

@@ -1,0 +1,12 @@
+#[path = "list_product_variant_query.g.rs"]
+pub mod list_product_variant_query;
+#[path = "get_item_product_variant_query.g.rs"]
+pub mod get_item_product_variant_query;
+#[path = "total_item_count_product_variant_query.g.rs"]
+pub mod total_item_count_product_variant_query;
+#[path = "get_by_product_id_product_variant_query.g.rs"]
+pub mod get_by_product_id_product_variant_query;
+#[path = "get_active_by_product_id_product_variant_query.g.rs"]
+pub mod get_active_by_product_id_product_variant_query;
+#[path = "get_low_stock_variants_product_variant_query.g.rs"]
+pub mod get_low_stock_variants_product_variant_query;
