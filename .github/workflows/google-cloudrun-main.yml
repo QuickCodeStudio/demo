@@ -1,0 +1,81 @@
+name: Demo Build and Deploy
+
+on:
+  push:
+    branches: [ 'main' ]
+    paths-ignore:
+      - '.quickcode/**'
+
+env:
+  QUICKCODE_SESSION_ID: ${{ secrets.QUICKCODE_SESSION_ID }}
+  QUICKCODE_RUN_ID: ${{ secrets.QUICKCODE_RUN_ID }}
+
+jobs:         
+  event-listener-service:
+    name: Kafka Event Listener Api
+    uses: ./.github/workflows/google-cloudrun-event-listener-service.yml
+    secrets: inherit
+
+
+  gateway:
+    name: Gateway Api
+    uses: ./.github/workflows/google-cloudrun-gateway.yml
+    secrets: inherit
+  
+  portal:
+    name: Admin Portal
+    uses: ./.github/workflows/google-cloudrun-portal.yml
+    secrets: inherit
+
+  finance-settlement:
+    name: Finance Settlement Module Api
+    uses: ./.github/workflows/google-cloudrun-finance-settlement.yml
+    secrets: inherit
+
+  order-management:
+    name: Order Management Module Api
+    uses: ./.github/workflows/google-cloudrun-order-management.yml
+    secrets: inherit
+
+  pricing-engine:
+    name: Pricing Engine Module Api
+    uses: ./.github/workflows/google-cloudrun-pricing-engine.yml
+    secrets: inherit
+
+  product-catalog:
+    name: Product Catalog Module Api
+    uses: ./.github/workflows/google-cloudrun-product-catalog.yml
+    secrets: inherit
+
+  seller-management:
+    name: Seller Management Module Api
+    uses: ./.github/workflows/google-cloudrun-seller-management.yml
+    secrets: inherit
+
+  identity:
+    name: Identity Module Api
+    uses: ./.github/workflows/google-cloudrun-identity.yml
+    secrets: inherit
+
+
+  complete:
+    name: Complete Deployments
+    runs-on: ubuntu-latest
+    needs:
+      - event-listener-service
+      - gateway
+      - portal
+      - finance-settlement
+      - order-management
+      - pricing-engine
+      - product-catalog
+      - seller-management
+      - identity
+    if: always()
+    steps:
+      - name: Complete Notification
+        uses: nick-fields/retry@v2
+        with:
+          command: curl "https://api.quickcode.net/api/GenerateSite/CompleteGeneration?runId=${{ env.QUICKCODE_RUN_ID }}&sessionId=${{ env.QUICKCODE_SESSION_ID }}&message=${{ job.status }}"
+          max_attempts: 3
+          timeout_minutes: 2
