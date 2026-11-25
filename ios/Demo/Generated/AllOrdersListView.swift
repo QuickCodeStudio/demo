@@ -112,7 +112,7 @@ struct AllOrdersListView: View {
                         .padding(.vertical, ShellMetrics.screenPadding)
                         .padding(.horizontal, ShellMetrics.screenPadding)
                     }
-                    .refreshable { await load(reset: true) }
+                    .portalStretchRefresh { await load(reset: true) }
                 }
             }
         }

@@ -1,54 +1,62 @@
 import SwiftUI
 
-/// Stretchy pull-to-refresh chrome.
-/// Visuals are overlay-only (never change scroll insets — that caused the page to jitter).
-/// The pull gesture itself uses system `.refreshable` so rubber-banding stays stable.
+/// Custom pull-to-refresh — no `UIRefreshControl` / system “sun” spinner.
+///
+/// - Pull chrome: rubber droplet → QcLoadingMark while still overscrolled.
+/// - After snap-back, overlay hides; in-content loaders (e.g. dashboard charts)
+///   own the remaining refresh affordance.
 struct PortalStretchRefreshModifier: ViewModifier {
     var action: () async -> Void
 
     @State private var pull: CGFloat = 0
     @State private var refreshing = false
+    @State private var armed = false
 
     private let threshold: CGFloat = 72
 
     func body(content: Content) -> some View {
         content
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                // Overscroll above the top edge (negative content offset past insets).
                 let y = geometry.contentOffset.y + geometry.contentInsets.top
                 return max(0, -y)
             } action: { _, distance in
-                // Visual only — do not mutate layout from this callback.
-                if refreshing {
-                    pull = max(distance, threshold)
-                } else {
-                    pull = distance
+                pull = distance
+                if !refreshing {
+                    if distance >= threshold {
+                        armed = true
+                    } else if armed, distance < 12 {
+                        // Released past threshold — fire once as rubber-band settles.
+                        armed = false
+                        Task { @MainActor in
+                            await run()
+                        }
+                    }
                 }
             }
             .overlay(alignment: .top) {
-                PortalRubberDropletChrome(
-                    progress: progress,
-                    stretch: stretchHeight,
-                    refreshing: refreshing
-                )
-                .frame(height: max(stretchHeight, refreshing ? 64 : 0))
-                .frame(maxWidth: .infinity)
-                .padding(.top, refreshing ? 6 : 2)
-                .opacity(chromeOpacity)
-                .allowsHitTesting(false)
+                if showChrome {
+                    PortalRubberDropletChrome(
+                        progress: progress,
+                        stretch: stretchHeight,
+                        refreshing: refreshing && pull > 20
+                    )
+                    .frame(height: stretchHeight)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 2)
+                    .opacity(chromeOpacity)
+                    .allowsHitTesting(false)
+                }
             }
-            .refreshable {
-                await run()
-            }
+            // Intentionally NO `.refreshable` — that installs the system spinner.
     }
 
+    private var showChrome: Bool { pull > 4 }
+
     private var progress: CGFloat {
-        if refreshing { return 1.2 }
-        return min(1.55, pull / threshold)
+        min(1.55, pull / threshold)
     }
 
     private var stretchHeight: CGFloat {
-        if refreshing { return 64 }
         guard pull > 4 else { return 0 }
         let t = min(1.35, pull / threshold)
         let eased = 1 - pow(1 - min(1, t), 2.15)
@@ -56,26 +64,20 @@ struct PortalStretchRefreshModifier: ViewModifier {
     }
 
     private var chromeOpacity: Double {
-        if refreshing { return 1 }
-        return pull < 4 ? 0 : min(1, Double((pull - 4) / 18))
+        pull < 4 ? 0 : min(1, Double((pull - 4) / 18))
     }
 
     @MainActor
     private func run() async {
         guard !refreshing else { return }
         refreshing = true
-        pull = threshold
-        // Keep work off the refreshable cancellation path when the control dismisses.
-        let work = Task { @MainActor in
-            await action()
-        }
-        await work.value
+        await action()
         refreshing = false
-        pull = 0
+        armed = false
     }
 }
 
-/// Teardrop that grows taller / thinner as you pull, then snaps into the QuickCode mark.
+/// Teardrop that grows while pulling; swaps to QC mark only while still stretched.
 struct PortalRubberDropletChrome: View {
     var progress: CGFloat
     var stretch: CGFloat
@@ -152,7 +154,6 @@ struct PortalRubberDropletChrome: View {
     }
 }
 
-/// Pointed teardrop tip under the capsule body.
 private struct PortalDropletTip: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -171,7 +172,7 @@ private struct PortalDropletTip: Shape {
 }
 
 extension View {
-    /// Apply on a `ScrollView`. Overlay chrome + system pull gesture (stable, no inset feedback).
+    /// Apply on a `ScrollView`. Custom pull chrome only — no system refresh spinner.
     func portalStretchRefresh(action: @escaping () async -> Void) -> some View {
         modifier(PortalStretchRefreshModifier(action: action))
     }
