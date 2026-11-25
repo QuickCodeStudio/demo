@@ -27,3 +27,9 @@ node_modules/
 **/target/
 **/bin/
 **/obj/
+
+# QuickCode: keep Rust OpenAPI dump tracked
+!**/src/bin/
+!**/src/bin/**
+!**/src/swagger_dump/
+!**/src/swagger_dump/**

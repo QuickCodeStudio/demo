@@ -15,7 +15,8 @@ path = "src/main.rs"
 
 [[bin]]
 name = "swagger-dump"
-path = "src/bin/swagger_dump.rs"
+# Not under src/bin — site **/bin/ gitignore would omit OpenAPI JSON from GitHub/CI.
+path = "src/swagger_dump/swagger_dump.rs"
 
 [dependencies]
 axum = { version = "0.8", features = ["macros"] }

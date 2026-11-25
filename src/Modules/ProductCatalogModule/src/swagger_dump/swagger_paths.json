@@ -1,0 +1,4346 @@
+{
+  "/api/product-catalog-module/products": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfProductDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.ProductDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.ProductDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/products/count": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/{id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.ProductDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.ProductDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/get-by-sku": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetBySku",
+      "parameters": [
+        {
+          "name": "productSku",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.GetBySkuResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/get-active-by-seller": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetActiveBySeller",
+      "parameters": [
+        {
+          "name": "productSellerId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.GetActiveBySellerResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/search-products": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsSearchProducts",
+      "parameters": [
+        {
+          "name": "productName",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.SearchProductsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/get-pending-approval": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetPendingApproval",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.GetPendingApprovalResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/get-featured": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetFeatured",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.GetFeaturedResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/get-products-with-details": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetProductsWithDetails",
+      "parameters": [
+        {
+          "name": "productsBrandId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "productPrimaryCategoryId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "brandId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "productsPrimaryCategoryId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "productBrandId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.GetProductsWithDetailsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/get-count-by-status": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsGetCountByStatus",
+      "parameters": [
+        {
+          "name": "productStatus",
+          "in": "query",
+          "schema": {
+            "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Domain.Enums.ProductStatus"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.GetCountByStatusResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/products/approve/{productId}": {
+    "patch": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsApprove",
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.ApproveRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/products/reject/{productId}": {
+    "patch": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsReject",
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.RejectRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/products/set-featured/{productId}": {
+    "patch": {
+      "tags": [
+        "Products"
+      ],
+      "operationId": "ProductsSetFeatured",
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Product.SetFeaturedRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-variants": {
+    "get": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfProductVariantDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.ProductVariantDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.ProductVariantDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-variants/count": {
+    "get": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variants/{id}": {
+    "get": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.ProductVariantDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.ProductVariantDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variants/get-by-product-id": {
+    "get": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsGetByProductId",
+      "parameters": [
+        {
+          "name": "productVariantProductId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.GetByProductIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variants/get-active-by-product-id": {
+    "get": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsGetActiveByProductId",
+      "parameters": [
+        {
+          "name": "productVariantProductId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.GetActiveByProductIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variants/get-low-stock-variants": {
+    "get": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsGetLowStockVariants",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.GetLowStockVariantsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variants/update-stock/{productVariantId}": {
+    "patch": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsUpdateStock",
+      "parameters": [
+        {
+          "name": "productVariantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.UpdateStockRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-variants/update-price/{productVariantId}": {
+    "patch": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsUpdatePrice",
+      "parameters": [
+        {
+          "name": "productVariantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.UpdatePriceRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-variants/deactivate/{productVariantId}": {
+    "patch": {
+      "tags": [
+        "ProductVariants"
+      ],
+      "operationId": "ProductVariantsDeactivate",
+      "parameters": [
+        {
+          "name": "productVariantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariant.DeactivateRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/categories": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfCategoryDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.CategoryDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.CategoryDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/categories/count": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/categories/{id}": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.CategoryDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.CategoryDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/categories/get-active": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesGetActive",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.GetActiveResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/categories/get-sub-categories": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesGetSubCategories",
+      "parameters": [
+        {
+          "name": "categoryParentCategoryId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.GetSubCategoriesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/categories/get-by-slug": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesGetBySlug",
+      "parameters": [
+        {
+          "name": "categorySlug",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.GetBySlugResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/categories/deactivate/{categoryId}": {
+    "patch": {
+      "tags": [
+        "Categories"
+      ],
+      "operationId": "CategoriesDeactivate",
+      "parameters": [
+        {
+          "name": "categoryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Category.DeactivateRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-categories": {
+    "get": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfProductCategoryDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductCategory.ProductCategoryDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductCategory.ProductCategoryDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-categories/count": {
+    "get": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-categories/{productId}/{categoryId}": {
+    "get": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesGetItem",
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductCategory.ProductCategoryDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesUpdate",
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductCategory.ProductCategoryDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesDelete",
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-categories/get-by-product-id": {
+    "get": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesGetByProductId",
+      "parameters": [
+        {
+          "name": "productCategoryProductId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductCategory.GetByProductIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-categories/get-by-category-id": {
+    "get": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesGetByCategoryId",
+      "parameters": [
+        {
+          "name": "productCategoryCategoryId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductCategory.GetByCategoryIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-categories/remove-from-category/{productCategoryProductId}/{productCategoryCategoryId}": {
+    "delete": {
+      "tags": [
+        "ProductCategories"
+      ],
+      "operationId": "ProductCategoriesRemoveFromCategory",
+      "parameters": [
+        {
+          "name": "productCategoryProductId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "productCategoryCategoryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/brands": {
+    "get": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfBrandDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.BrandDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.BrandDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/brands/count": {
+    "get": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/brands/{id}": {
+    "get": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.BrandDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.BrandDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/brands/get-active": {
+    "get": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsGetActive",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.GetActiveResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/brands/search-by-name": {
+    "get": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsSearchByName",
+      "parameters": [
+        {
+          "name": "brandName",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.SearchByNameResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/brands/deactivate/{brandId}": {
+    "patch": {
+      "tags": [
+        "Brands"
+      ],
+      "operationId": "BrandsDeactivate",
+      "parameters": [
+        {
+          "name": "brandId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.Brand.DeactivateRequestDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/attribute-definitions": {
+    "get": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfAttributeDefinitionDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeDefinition.AttributeDefinitionDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeDefinition.AttributeDefinitionDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/attribute-definitions/count": {
+    "get": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/attribute-definitions/{id}": {
+    "get": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeDefinition.AttributeDefinitionDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeDefinition.AttributeDefinitionDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/attribute-definitions/get-by-code": {
+    "get": {
+      "tags": [
+        "AttributeDefinitions"
+      ],
+      "operationId": "AttributeDefinitionsGetByCode",
+      "parameters": [
+        {
+          "name": "attributeDefinitionCode",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeDefinition.GetByCodeResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/attribute-values": {
+    "get": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfAttributeValueDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeValue.AttributeValueDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeValue.AttributeValueDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/attribute-values/count": {
+    "get": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/attribute-values/{id}": {
+    "get": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeValue.AttributeValueDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeValue.AttributeValueDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/attribute-values/get-by-attribute-id": {
+    "get": {
+      "tags": [
+        "AttributeValues"
+      ],
+      "operationId": "AttributeValuesGetByAttributeId",
+      "parameters": [
+        {
+          "name": "attributeValueAttributeId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AttributeValue.GetByAttributeIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variant-attributes": {
+    "get": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfProductVariantAttributeDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariantAttribute.ProductVariantAttributeDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariantAttribute.ProductVariantAttributeDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/product-variant-attributes/count": {
+    "get": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variant-attributes/{variantId}/{attributeValueId}": {
+    "get": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesGetItem",
+      "parameters": [
+        {
+          "name": "variantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "attributeValueId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariantAttribute.ProductVariantAttributeDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesUpdate",
+      "parameters": [
+        {
+          "name": "variantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "attributeValueId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariantAttribute.ProductVariantAttributeDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesDelete",
+      "parameters": [
+        {
+          "name": "variantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "attributeValueId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variant-attributes/get-by-variant-id": {
+    "get": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesGetByVariantId",
+      "parameters": [
+        {
+          "name": "productVariantAttributeVariantId",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.ProductVariantAttribute.GetByVariantIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/product-variant-attributes/remove-attribute/{productVariantAttributeVariantId}/{productVariantAttributeAttributeValueId}": {
+    "delete": {
+      "tags": [
+        "ProductVariantAttributes"
+      ],
+      "operationId": "ProductVariantAttributesRemoveAttribute",
+      "parameters": [
+        {
+          "name": "productVariantAttributeVariantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "productVariantAttributeAttributeValueId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsList",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "name": "includeCount",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListResultOfAuditLogDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "post": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsInsert",
+      "parameters": [],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.AuditLogDto"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.AuditLogDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/product-catalog-module/audit-logs/count": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsCount",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/{id}": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsGetItem",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.AuditLogDto"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    },
+    "put": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsUpdate",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.AuditLogDto"
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsDelete",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "400": {
+          "description": "Bad Request"
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/get-recent-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsGetRecentHttpRequests",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.GetRecentHttpRequestsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/get-recent-http-requests-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsGetRecentHttpRequestsByModule",
+      "parameters": [
+        {
+          "name": "auditLogRequestModule",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.GetRecentHttpRequestsByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-today-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsTodayHttpRequests",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsTodayHttpRequestsResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-last-hour-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsLastHourHttpRequests",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsLastHourHttpRequestsResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-yesterday-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsYesterdayHttpRequests",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsYesterdayHttpRequestsResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-weekly-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsWeeklyHttpRequests",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsWeeklyHttpRequestsResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-monthly-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsMonthlyHttpRequests",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsMonthlyHttpRequestsResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-yearly-http-requests": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsYearlyHttpRequests",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsYearlyHttpRequestsResponseDto"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-daily-http-requests-by-day": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsDailyHttpRequestsByDay",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsDailyHttpRequestsByDayResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-daily-http-requests-by-day-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsDailyHttpRequestsByDayByModule",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsDailyHttpRequestsByDayByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-hourly-http-requests-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsHourlyHttpRequestsByModule",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsHourlyHttpRequestsByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-total-http-requests-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsTotalHttpRequestsByModule",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsTotalHttpRequestsByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-http-status-codes-last24-hours-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsHttpStatusCodesLast24HoursByModule",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsHttpStatusCodesLast24HoursByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-http-status-codes": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsHttpStatusCodes",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsHttpStatusCodesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-http-status-codes-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsHttpStatusCodesByModule",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsHttpStatusCodesByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  },
+  "/api/product-catalog-module/audit-logs/stats-top-http-services-by-module": {
+    "get": {
+      "tags": [
+        "AuditLogs"
+      ],
+      "operationId": "AuditLogsStatsTopHttpServicesByModule",
+      "parameters": [
+        {
+          "name": "pageNumber",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "pageSize",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QuickCode.Demo.ProductCatalogModule.Application.Dtos.AuditLog.StatsTopHttpServicesByModuleResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "Bearer": []
+        }
+      ]
+    }
+  }
+}

@@ -8,10 +8,11 @@ use once_cell::sync::Lazy;
 use serde_json::{json, Value};
 use crate::platform::AppState;
 
-/// OpenAPI document written by the generator (`src/bin/swagger_openapi.json`).
+/// OpenAPI document written by the generator (`src/swagger_dump/swagger_openapi.json`).
 /// Served live so Swagger UI / Gateway match Nest & NSwag clients.
+/// Path must not be under `src/bin` — site `**/bin/` gitignore omits that tree from GitHub/CI.
 static OPENAPI_DOC: Lazy<Value> = Lazy::new(|| {
-    match serde_json::from_str::<Value>(include_str!("../bin/swagger_openapi.json")) {
+    match serde_json::from_str::<Value>(include_str!("../swagger_dump/swagger_openapi.json")) {
         Ok(mut doc) => {
             // Keep live metadata in sync with env / QuickCode defaults.
             if let Some(info) = doc.get_mut("info").and_then(|v| v.as_object_mut()) {
