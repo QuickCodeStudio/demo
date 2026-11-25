@@ -146,7 +146,11 @@ public class DbConfig {
     }
 
     private static String env(String key, String defaultValue) {
+        // Prefer process env; fall back to System properties set from ADO connection string.
         String v = System.getenv(key);
+        if (v == null || v.isBlank()) {
+            v = System.getProperty(key);
+        }
         return v == null || v.isBlank() ? defaultValue : v;
     }
 

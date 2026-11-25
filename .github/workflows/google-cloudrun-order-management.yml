@@ -128,6 +128,13 @@ jobs:
             ASPNETCORE_URLS=http://+
             READ_CONNECTION_STRING=${{env.READ_CONNECTION_STRING}}
             WRITE_CONNECTION_STRING=${{env.WRITE_CONNECTION_STRING}}
+            DB_TYPE=mssql
+            DB_HOST=${{ secrets.QUICKCODE_MSSQL_HOST }}
+            DB_PORT=1433
+            DB_USERNAME=${{ secrets.QUICKCODE_MSSQL_USER }}
+            DB_PASSWORD=${{ secrets.QUICKCODE_MSSQL_PASSWORD }}
+            DB_DATABASE=demo__order_management
+            MODULE_NAME=OrderManagementModule
             ELASTIC_CONNECTION_STRING=${{env.ELASTIC_CONNECTION_STRING}}
             DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP3SUPPORT=false 
             QUICKCODE_PROJECT_KEY=${{env.PROJECT_NAME}}

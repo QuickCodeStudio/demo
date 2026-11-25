@@ -61,7 +61,89 @@ export interface DbConnectionEnv {
   database: string;
 }
 
+/**
+ * Cloud Run module workflows historically inject only ADO.NET-style
+ * READ/WRITE_CONNECTION_STRING (C#). Nest/Rust/Java need DB_* — hydrate from
+ * the connection string when DB_HOST is unset so migrate/seed can reach SQL
+ * before listen (otherwise Cloud Run reports PORT not ready).
+ */
+export function applyConnectionStringEnvFallback(): void {
+  if ((process.env.DB_HOST ?? '').trim()) return;
+  const raw =
+    process.env.READ_CONNECTION_STRING?.trim() ||
+    process.env.WRITE_CONNECTION_STRING?.trim();
+  if (!raw) return;
+
+  const map = parseAdoStyleConnectionString(raw);
+  const host =
+    map['data source'] ||
+    map['server'] ||
+    map['host'] ||
+    map['addr'] ||
+    map['address'];
+  if (!host) return;
+
+  const [hostOnly, portFromHost] = splitHostPort(host);
+  process.env.DB_HOST = hostOnly;
+
+  const catalog =
+    map['initial catalog'] || map['database'] || map['db'];
+  if (catalog) process.env.DB_DATABASE = catalog;
+
+  const user = map['user id'] || map['uid'] || map['username'] || map['user'];
+  if (user) process.env.DB_USERNAME = user;
+
+  const password = map['password'] || map['pwd'];
+  if (password) process.env.DB_PASSWORD = password;
+
+  const port =
+    map['port'] ||
+    portFromHost ||
+    (looksLikeMssql(map) ? '1433' : undefined);
+  if (port) process.env.DB_PORT = port;
+
+  if (!(process.env.DB_TYPE ?? '').trim()) {
+    if (looksLikeMssql(map)) process.env.DB_TYPE = 'mssql';
+    else if (map['uid'] || map['pwd'] || map['server']) process.env.DB_TYPE = 'mysql';
+    else if (map['host'] || map['username']) process.env.DB_TYPE = 'postgresql';
+  }
+}
+
+function looksLikeMssql(map: Record<string, string>): boolean {
+  return !!(map['data source'] || map['initial catalog'] || map['user id']);
+}
+
+function parseAdoStyleConnectionString(raw: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const part of raw.split(';')) {
+    const idx = part.indexOf('=');
+    if (idx <= 0) continue;
+    const key = part.slice(0, idx).trim().toLowerCase();
+    const value = part.slice(idx + 1).trim();
+    if (key) map[key] = value;
+  }
+  return map;
+}
+
+function splitHostPort(host: string): [string, string | undefined] {
+  let h = host.trim();
+  if (h.toLowerCase().startsWith('tcp:')) h = h.slice(4);
+  // host,1433 (SQL Server) or host:1433
+  const comma = h.lastIndexOf(',');
+  if (comma > 0) {
+    const maybePort = h.slice(comma + 1).trim();
+    if (/^\d+$/.test(maybePort)) return [h.slice(0, comma).trim(), maybePort];
+  }
+  const colon = h.lastIndexOf(':');
+  if (colon > 0 && h.indexOf(':') === colon) {
+    const maybePort = h.slice(colon + 1).trim();
+    if (/^\d+$/.test(maybePort)) return [h.slice(0, colon).trim(), maybePort];
+  }
+  return [h, undefined];
+}
+
 export function readDbConnectionEnv(): DbConnectionEnv {
+  applyConnectionStringEnvFallback();
   const dbType = normalizeDbType();
   return {
     dbType,

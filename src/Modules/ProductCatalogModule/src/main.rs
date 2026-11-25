@@ -17,6 +17,8 @@ async fn main() -> anyhow::Result<()> {
     }
 
     let module_name = std::env::var("MODULE_NAME").unwrap_or_else(|_| "Template0ModuleName".into());
+    // Cloud Run often has only READ_CONNECTION_STRING (C# ADO) — map to DB_* first.
+    db::apply_connection_string_env_fallback();
     // Nest: startObservability before listen — installs fmt + OTLP (P15).
     start_observability(&format!("QuickCode.{module_name}.Api"));
     start_kafka_publisher();

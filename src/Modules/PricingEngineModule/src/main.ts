@@ -3,7 +3,7 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import compression from 'compression';
 import { HostModule } from './host.module';
-import { ensureDatabaseExists } from './db/db-config';
+import { applyConnectionStringEnvFallback, ensureDatabaseExists } from './db/db-config';
 import { runQuickCodeSqlMigrations } from './db/sql-migration.runner';
 import { runQuickCodeSeedData } from './db/seed-data.runner';
 import { SecurityAuditMiddleware } from './auditing/security-audit.middleware';
@@ -23,6 +23,8 @@ async function bootstrap() {
 
   // Ensure MODULE_NAME for JWT audience + Kafka clientId + OTEL service name
   process.env.MODULE_NAME ??= 'PricingEngineModule';
+  // Cloud Run often has only READ_CONNECTION_STRING (C# ADO) — map to DB_* first.
+  applyConnectionStringEnvFallback();
 
   await startObservability(`QuickCode.${process.env.MODULE_NAME}.Api`);
 
@@ -80,7 +82,8 @@ async function bootstrap() {
   setupCsharpCompatibleSwagger(app, swaggerTitle);
 
   const port = Number(process.env.PORT ?? 80);
-  await app.listen(port);
+  // Cloud Run requires 0.0.0.0 (not default localhost-only in some Nest/Node builds).
+  await app.listen(port, '0.0.0.0');
   logger.log(`PricingEngineModule API listening on ${port}`);
 }
 

@@ -1,5 +1,5 @@
 ﻿{
-  "exportedAt": "2026-11-25T11:31:56.19373Z",
+  "exportedAt": "2026-11-25T11:59:22.8785727Z",
   "notSourceOfTruth": true,
   "note": "OpenAPI snapshot copied from src/swagger_files at generate time. Local/CI builds update swagger_files only; this folder refreshes on the next generate.",
   "projectName": "demo",

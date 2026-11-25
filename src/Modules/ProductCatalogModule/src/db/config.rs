@@ -2,8 +2,125 @@ use anyhow::{bail, Context, Result};
 use sqlx::mysql::MySqlConnectOptions;
 use sqlx::postgres::PgConnectOptions;
 use sqlx::Connection;
+use std::sync::Once;
+
+static APPLY_CONN_STRING: Once = Once::new();
+
+/// Cloud Run module workflows inject C# ADO.NET READ/WRITE_CONNECTION_STRING.
+/// Nest/Rust/Java expect DB_* — hydrate once before any pool/migrate call.
+pub fn apply_connection_string_env_fallback() {
+    APPLY_CONN_STRING.call_once(|| {
+        if env_nonempty("DB_HOST") {
+            return;
+        }
+        let raw = std::env::var("READ_CONNECTION_STRING")
+            .or_else(|_| std::env::var("WRITE_CONNECTION_STRING"))
+            .unwrap_or_default();
+        let raw = raw.trim();
+        if raw.is_empty() {
+            return;
+        }
+        let map = parse_ado_style(raw);
+        let Some(host_raw) = first_map(
+            &map,
+            &["data source", "server", "host", "addr", "address"],
+        ) else {
+            return;
+        };
+        let (host, port_from_host) = split_host_port(host_raw);
+        set_env("DB_HOST", &host);
+        if let Some(db) = first_map(&map, &["initial catalog", "database", "db"]) {
+            set_env("DB_DATABASE", db);
+        }
+        if let Some(user) = first_map(&map, &["user id", "uid", "username", "user"]) {
+            set_env("DB_USERNAME", user);
+        }
+        if let Some(pass) = first_map(&map, &["password", "pwd"]) {
+            set_env("DB_PASSWORD", pass);
+        }
+        let port = first_map(&map, &["port"])
+            .map(|s| s.to_string())
+            .or(port_from_host)
+            .or_else(|| {
+                if looks_like_mssql(&map) {
+                    Some("1433".into())
+                } else {
+                    None
+                }
+            });
+        if let Some(p) = port {
+            set_env("DB_PORT", &p);
+        }
+        if !env_nonempty("DB_TYPE") {
+            if looks_like_mssql(&map) {
+                set_env("DB_TYPE", "mssql");
+            } else if map.contains_key("uid") || map.contains_key("pwd") || map.contains_key("server")
+            {
+                set_env("DB_TYPE", "mysql");
+            } else if map.contains_key("host") || map.contains_key("username") {
+                set_env("DB_TYPE", "postgresql");
+            }
+        }
+    });
+}
+
+fn env_nonempty(key: &str) -> bool {
+    std::env::var(key).ok().filter(|s| !s.trim().is_empty()).is_some()
+}
+
+fn set_env(key: &str, value: &str) {
+    // SAFETY: called once before Tokio workers touch DB env (Once).
+    unsafe { std::env::set_var(key, value) };
+}
+
+fn parse_ado_style(raw: &str) -> std::collections::HashMap<String, String> {
+    let mut map = std::collections::HashMap::new();
+    for part in raw.split(';') {
+        let Some((k, v)) = part.split_once('=') else {
+            continue;
+        };
+        let key = k.trim().to_ascii_lowercase();
+        if !key.is_empty() {
+            map.insert(key, v.trim().to_string());
+        }
+    }
+    map
+}
+
+fn first_map<'a>(
+    map: &'a std::collections::HashMap<String, String>,
+    keys: &[&str],
+) -> Option<&'a str> {
+    keys.iter()
+        .find_map(|k| map.get(*k).map(|s| s.as_str()))
+}
+
+fn looks_like_mssql(map: &std::collections::HashMap<String, String>) -> bool {
+    map.contains_key("data source")
+        || map.contains_key("initial catalog")
+        || map.contains_key("user id")
+}
+
+fn split_host_port(host: &str) -> (String, Option<String>) {
+    let mut h = host.trim().to_string();
+    if h.to_ascii_lowercase().starts_with("tcp:") {
+        h = h[4..].to_string();
+    }
+    if let Some((left, right)) = h.rsplit_once(',') {
+        if right.chars().all(|c| c.is_ascii_digit()) {
+            return (left.trim().to_string(), Some(right.trim().to_string()));
+        }
+    }
+    if let Some((left, right)) = h.rsplit_once(':') {
+        if !left.contains(':') && right.chars().all(|c| c.is_ascii_digit()) {
+            return (left.trim().to_string(), Some(right.trim().to_string()));
+        }
+    }
+    (h, None)
+}
 
 pub fn db_type() -> String {
+    apply_connection_string_env_fallback();
     std::env::var("DB_TYPE")
         .or_else(|_| std::env::var("TYPEORM_TYPE"))
         .unwrap_or_else(|_| "mssql".into())
@@ -11,10 +128,12 @@ pub fn db_type() -> String {
 }
 
 pub fn module_database_name() -> String {
+    apply_connection_string_env_fallback();
     std::env::var("DB_DATABASE").unwrap_or_else(|_| "quickcode_template0_module".into())
 }
 
 fn env(key: &str, default: &str) -> String {
+    apply_connection_string_env_fallback();
     std::env::var(key).unwrap_or_else(|_| default.into())
 }
 

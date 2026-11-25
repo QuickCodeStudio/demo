@@ -13,5 +13,6 @@ export interface DbConnectionEnv {
     password: string;
     database: string;
 }
+export declare function applyConnectionStringEnvFallback(): void;
 export declare function readDbConnectionEnv(): DbConnectionEnv;
 export declare function ensureDatabaseExists(): Promise<void>;

@@ -21,6 +21,7 @@ const swagger_ui_1 = require("./platform/swagger-ui");
 async function bootstrap() {
     const logger = new common_1.Logger('Bootstrap');
     process.env.MODULE_NAME ??= 'PricingEngineModule';
+    (0, db_config_1.applyConnectionStringEnvFallback)();
     await (0, otel_bootstrap_1.startObservability)(`QuickCode.${process.env.MODULE_NAME}.Api`);
     await (0, db_config_1.ensureDatabaseExists)();
     await (0, sql_migration_runner_1.runQuickCodeSqlMigrations)();
@@ -57,7 +58,7 @@ async function bootstrap() {
         `QuickCode - ${process.env.MODULE_NAME ?? 'PricingEngineModule'} Api`;
     (0, swagger_ui_1.setupCsharpCompatibleSwagger)(app, swaggerTitle);
     const port = Number(process.env.PORT ?? 80);
-    await app.listen(port);
+    await app.listen(port, '0.0.0.0');
     logger.log(`PricingEngineModule API listening on ${port}`);
 }
 function configureCors(app, logger) {
