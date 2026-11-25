@@ -12,7 +12,7 @@ env:
   REPO: main-quickcode-docker-repo
   DOCKER_IMAGE_NAME: 'demo_product-catalog_'
   DOCKER_REPO_NAME: api
-  DOCKER_FILE_PATH: 'src/Modules/ProductCatalogModule/Presentation/QuickCode.Demo.ProductCatalogModule.Api/'
+  DOCKER_FILE_PATH: 'src/Modules/ProductCatalogModule/'
   WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
   WIF_SERVICE_ACCOUNT: ${{ secrets.WIF_SERVICE_ACCOUNT }}
   QUICKCODE_SESSION_ID: ${{ secrets.QUICKCODE_SESSION_ID }}
@@ -78,6 +78,8 @@ jobs:
           curl -f -S --connect-timeout 15 --max-time 60 --retry 3 --retry-delay 5 "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject?projectName=${{ env.PROJECT_NAME }}&step=${{ env.BUILD_STEP_NAME }}&stepParameters=${{ env.STEP_PARAMS }}&isCompleted=false&message=InProgress&runId=${{ env.QUICKCODE_RUN_ID }}"
           echo "Build started notification sent"
 
+      # continue-on-error: keep notify steps running and Complete Deployments reachable.
+      # Failure is reported via message=Error:... (IsFailedActionOutput), not via red job alone.
       - name: Build and Push Container
         id: build
         if: steps.changes.outputs.src == 'true'
@@ -87,14 +89,25 @@ jobs:
             --file ${{ env.DOCKER_FILE_PATH }}Dockerfile \
             -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.DOCKER_REPO_NAME }}:${{ env.DOCKER_IMAGE_NAME }}${{ github.sha }}" \
             --push \
-            src/
+            --build-arg MODULE_NAME=ProductCatalogModule .
           
       - name: Build and Push Container Finished
         id: notify_build_done
         if: always()
         run: |
-          curl -f -S --connect-timeout 15 --max-time 60 --retry 3 --retry-delay 5 "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject?projectName=${{ env.PROJECT_NAME }}&step=${{ env.BUILD_STEP_NAME }}&stepParameters=${{ env.STEP_PARAMS }}&isCompleted=true&message=Completed&runId=${{ env.QUICKCODE_RUN_ID }}"
-          echo "Build finished notification sent"
+          # Backend treats only messages starting with "Error:" as failures.
+          STATUS_MSG="Error: Docker build failed"
+          if [ "${{ steps.build.outcome }}" = "success" ]; then STATUS_MSG="Completed"; fi
+          if [ "${{ steps.build.outcome }}" = "skipped" ]; then STATUS_MSG="Skipped"; fi
+          curl -f -S --connect-timeout 15 --max-time 60 --retry 3 --retry-delay 5 --get \
+            --data-urlencode "projectName=${{ env.PROJECT_NAME }}" \
+            --data-urlencode "step=${{ env.BUILD_STEP_NAME }}" \
+            --data-urlencode "stepParameters=${{ env.STEP_PARAMS }}" \
+            --data-urlencode "isCompleted=true" \
+            --data-urlencode "message=${STATUS_MSG}" \
+            --data-urlencode "runId=${{ env.QUICKCODE_RUN_ID }}" \
+            "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject"
+          echo "Build finished notification sent (${STATUS_MSG})"
 
       - name: Deploy to Cloud Run Started
         if: always()
@@ -105,6 +118,7 @@ jobs:
       - name: Deploy to Cloud Run
         id: deploy
         if: steps.build.outcome == 'success'
+        continue-on-error: true
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: ${{ env.SERVICE }}
@@ -145,15 +159,48 @@ jobs:
         id: notify_deploy_done
         if: always()
         run: |
-          curl -f -S --connect-timeout 15 --max-time 60 --retry 3 --retry-delay 5 "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject?projectName=${{ env.PROJECT_NAME }}&step=${{ env.DEPLOY_STEP_NAME }}&stepParameters=${{ env.STEP_PARAMS }}&isCompleted=true&message=Deployed&runId=${{ env.QUICKCODE_RUN_ID }}"
-          echo "Deploy finished notification sent"
+          # Backend treats only messages starting with "Error:" as failures.
+          STATUS_MSG="Error: Cloud Run deploy failed"
+          if [ "${{ steps.deploy.outcome }}" = "success" ]; then STATUS_MSG="Deployed"; fi
+          if [ "${{ steps.deploy.outcome }}" = "skipped" ]; then
+            if [ "${{ steps.build.outcome }}" = "failure" ]; then
+              STATUS_MSG="Error: Skipped because build failed"
+            elif [ "${{ steps.build.outcome }}" = "skipped" ]; then
+              STATUS_MSG="Skipped"
+            else
+              STATUS_MSG="Error: Skipped because build did not succeed"
+            fi
+          fi
+          curl -f -S --connect-timeout 15 --max-time 60 --retry 3 --retry-delay 5 --get \
+            --data-urlencode "projectName=${{ env.PROJECT_NAME }}" \
+            --data-urlencode "step=${{ env.DEPLOY_STEP_NAME }}" \
+            --data-urlencode "stepParameters=${{ env.STEP_PARAMS }}" \
+            --data-urlencode "isCompleted=true" \
+            --data-urlencode "message=${STATUS_MSG}" \
+            --data-urlencode "runId=${{ env.QUICKCODE_RUN_ID }}" \
+            "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject"
+          echo "Deploy finished notification sent (${STATUS_MSG})"
 
       - name: Notify job completed (fallback)
         if: always() && (steps.notify_build_done.outcome == 'failure' || steps.notify_deploy_done.outcome == 'failure')
         run: |
           for i in 1 2 3; do
-            curl -f -S --connect-timeout 15 --max-time 30 --retry 2 --retry-delay 3 "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject?projectName=${{ env.PROJECT_NAME }}&step=${{ env.BUILD_STEP_NAME }}&stepParameters=${{ env.STEP_PARAMS }}&isCompleted=true&message=Completed&runId=${{ env.QUICKCODE_RUN_ID }}" && \
-            curl -f -S --connect-timeout 15 --max-time 30 --retry 2 --retry-delay 3 "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject?projectName=${{ env.PROJECT_NAME }}&step=${{ env.DEPLOY_STEP_NAME }}&stepParameters=${{ env.STEP_PARAMS }}&isCompleted=true&message=Deployed&runId=${{ env.QUICKCODE_RUN_ID }}" && break
+            curl -f -S --connect-timeout 15 --max-time 30 --retry 2 --retry-delay 3 --get \
+              --data-urlencode "projectName=${{ env.PROJECT_NAME }}" \
+              --data-urlencode "step=${{ env.BUILD_STEP_NAME }}" \
+              --data-urlencode "stepParameters=${{ env.STEP_PARAMS }}" \
+              --data-urlencode "isCompleted=true" \
+              --data-urlencode "message=Error: Build notification failed" \
+              --data-urlencode "runId=${{ env.QUICKCODE_RUN_ID }}" \
+              "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject" && \
+            curl -f -S --connect-timeout 15 --max-time 30 --retry 2 --retry-delay 3 --get \
+              --data-urlencode "projectName=${{ env.PROJECT_NAME }}" \
+              --data-urlencode "step=${{ env.DEPLOY_STEP_NAME }}" \
+              --data-urlencode "stepParameters=${{ env.STEP_PARAMS }}" \
+              --data-urlencode "isCompleted=true" \
+              --data-urlencode "message=Error: Deploy notification failed" \
+              --data-urlencode "runId=${{ env.QUICKCODE_RUN_ID }}" \
+              "https://api.quickcode.net/api/GenerateSite/UpdateGeneratorActionByProject" && break
             sleep 5
           done
         continue-on-error: true
