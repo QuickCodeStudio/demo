@@ -1,17 +1,12 @@
-use super::config::{db_type, module_database_name};
+use super::config::{db_type, module_database_name, mssql_tiberius_config};
 use super::pool::{create_pool, execute_sql_script, DbPool};
 use super::sql_loader::{list_sql_files, resolve_migrations_root};
 use anyhow::{Context, Result};
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::fs;
-use tiberius::{AuthMethod, Client, Config};
 use tokio::net::TcpStream;
 use tokio_util::compat::TokioAsyncWriteCompatExt;
-
-fn env_or(key: &str, default: &str) -> String {
-    std::env::var(key).unwrap_or_else(|_| default.into())
-}
 
 fn should_run() -> bool {
     !matches!(
@@ -124,21 +119,15 @@ async fn record_migration(pool: &DbPool, name: &str) -> Result<()> {
 
 async fn ensure_mssql_database() -> Result<()> {
     let db = module_database_name();
-    let mut config = Config::new();
-    config.host(env_or("DB_HOST", "localhost"));
-    config.port(env_or("DB_PORT", "1433").parse().unwrap_or(1433));
-    config.authentication(AuthMethod::sql_server(
-        env_or("DB_USERNAME", "sa"),
-        env_or("DB_PASSWORD", "Pass@word"),
-    ));
-    config.database("master");
-    config.trust_cert();
-    let tcp = TcpStream::connect(config.get_addr()).await?;
+    let config = mssql_tiberius_config("master");
+    let tcp = TcpStream::connect(config.get_addr())
+        .await
+        .with_context(|| format!("mssql ensure_db tcp {}", config.get_addr()))?;
     tcp.set_nodelay(true)?;
-    let mut client = Client::connect(config, tcp.compat_write()).await?;
-    let check = format!(
-        "IF DB_ID(N'{db}') IS NULL CREATE DATABASE [{db}]"
-    );
+    let mut client = tiberius::Client::connect(config, tcp.compat_write())
+        .await
+        .context("mssql ensure_db login")?;
+    let check = format!("IF DB_ID(N'{db}') IS NULL CREATE DATABASE [{db}]");
     client.execute(check, &[]).await?;
     Ok(())
 }

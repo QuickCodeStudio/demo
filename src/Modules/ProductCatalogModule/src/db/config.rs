@@ -3,6 +3,7 @@ use sqlx::mysql::MySqlConnectOptions;
 use sqlx::postgres::PgConnectOptions;
 use sqlx::Connection;
 use std::sync::Once;
+use tiberius::{AuthMethod, Config, EncryptionLevel};
 
 static APPLY_CONN_STRING: Once = Once::new();
 
@@ -135,6 +136,25 @@ pub fn module_database_name() -> String {
 fn env(key: &str, default: &str) -> String {
     apply_connection_string_env_fallback();
     std::env::var(key).unwrap_or_else(|_| default.into())
+}
+
+/// Tiberius config aligned with Nest `encrypt: false` / Java `encrypt=false`.
+/// Default Tiberius+rustls is `EncryptionLevel::Required`, which fails against
+/// self-hosted SQL Server (e.g. `db-mssql.quickcode.net`) and aborts before listen
+/// → Cloud Run reports PORT not ready.
+pub fn mssql_tiberius_config(database: &str) -> Config {
+    apply_connection_string_env_fallback();
+    let mut config = Config::new();
+    config.host(env("DB_HOST", "localhost"));
+    config.port(env("DB_PORT", "1433").parse().unwrap_or(1433));
+    config.authentication(AuthMethod::sql_server(
+        env("DB_USERNAME", "sa"),
+        env("DB_PASSWORD", "Pass@word"),
+    ));
+    config.database(database);
+    config.encryption(EncryptionLevel::NotSupported);
+    config.trust_cert();
+    config
 }
 
 /// Provision the module database if missing (same idea as Nest ensureDatabaseExists).

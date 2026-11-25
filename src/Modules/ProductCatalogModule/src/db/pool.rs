@@ -1,4 +1,4 @@
-use super::config::{db_type, module_database_name, sqlx_any_url};
+use super::config::{db_type, module_database_name, mssql_tiberius_config, sqlx_any_url};
 use super::sql_loader::bind_named_params_map;
 use anyhow::{bail, Context, Result};
 use serde_json::Value;
@@ -6,13 +6,9 @@ use sqlx::any::AnyPoolOptions;
 use sqlx::{Any, Column, Pool, Row};
 use std::collections::HashMap;
 use std::sync::Arc;
-use tiberius::{AuthMethod, Client, Config};
+use tiberius::Client;
 use tokio::net::TcpStream;
 use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
-
-fn env_or(key: &str, default: &str) -> String {
-    std::env::var(key).unwrap_or_else(|_| default.into())
-}
 
 #[derive(Clone)]
 pub enum DbPool {
@@ -38,18 +34,14 @@ pub async fn create_pool() -> Result<DbPool> {
 }
 
 async fn mssql_client() -> Result<Client<Compat<TcpStream>>> {
-    let mut config = Config::new();
-    config.host(env_or("DB_HOST", "localhost"));
-    config.port(env_or("DB_PORT", "1433").parse().unwrap_or(1433));
-    config.authentication(AuthMethod::sql_server(
-        env_or("DB_USERNAME", "sa"),
-        env_or("DB_PASSWORD", "Pass@word"),
-    ));
-    config.database(module_database_name());
-    config.trust_cert();
-    let tcp = TcpStream::connect(config.get_addr()).await?;
+    let config = mssql_tiberius_config(&module_database_name());
+    let tcp = TcpStream::connect(config.get_addr())
+        .await
+        .with_context(|| format!("mssql tcp connect {}", config.get_addr()))?;
     tcp.set_nodelay(true)?;
-    Ok(Client::connect(config, tcp.compat_write()).await?)
+    Client::connect(config, tcp.compat_write())
+        .await
+        .context("mssql tiberius login")
 }
 
 /// Nest `executeSqlScript` positional parity — bind `@Name` tokens in appearance order.
