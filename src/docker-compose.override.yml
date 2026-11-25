@@ -132,7 +132,6 @@ services:
     ports:
       - "${EVENT_LISTENER_PORT:-6100}:80"
 
-
 networks:
   default:
     name: ${COMPOSE_NETWORK_NAME:-quickcode-local}

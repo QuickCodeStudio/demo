@@ -125,7 +125,6 @@ services:
       context: .
       dockerfile: Services/QuickCode.Demo.EventListenerService/Dockerfile
 
-
 # Shared local infra (SQL/Kafka/Elastic) lives in docker-compose.infra.yml
 # (`./scripts/docker-compose-infra-up.sh` / `docker-compose-up.sh`).
 # Apps join that stack's network; they do not create it.

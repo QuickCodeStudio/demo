@@ -6,29 +6,7 @@ use axum::{Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
-use crate::cqrs::send;
-use crate::features::queries::audit_log::list_audit_log_query::{ListAuditLogQuery, ListAuditLogHandler};
-use crate::features::queries::audit_log::get_item_audit_log_query::{GetItemAuditLogQuery, GetItemAuditLogHandler};
-use crate::features::queries::audit_log::total_item_count_audit_log_query::{TotalItemCountAuditLogQuery, TotalItemCountAuditLogHandler};
-use crate::features::commands::audit_log::insert_audit_log_command::{InsertAuditLogCommand, InsertAuditLogHandler};
-use crate::features::commands::audit_log::update_audit_log_command::{UpdateAuditLogCommand, UpdateAuditLogHandler};
-use crate::features::commands::audit_log::delete_item_audit_log_command::{DeleteItemAuditLogCommand, DeleteItemAuditLogHandler};
-use crate::features::queries::audit_log::get_recent_http_requests_audit_log_query::{GetRecentHttpRequestsAuditLogQuery, GetRecentHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::get_recent_http_requests_by_module_audit_log_query::{GetRecentHttpRequestsByModuleAuditLogQuery, GetRecentHttpRequestsByModuleAuditLogHandler};
-use crate::features::queries::audit_log::stats_today_http_requests_audit_log_query::{StatsTodayHttpRequestsAuditLogQuery, StatsTodayHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::stats_last_hour_http_requests_audit_log_query::{StatsLastHourHttpRequestsAuditLogQuery, StatsLastHourHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::stats_yesterday_http_requests_audit_log_query::{StatsYesterdayHttpRequestsAuditLogQuery, StatsYesterdayHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::stats_weekly_http_requests_audit_log_query::{StatsWeeklyHttpRequestsAuditLogQuery, StatsWeeklyHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::stats_monthly_http_requests_audit_log_query::{StatsMonthlyHttpRequestsAuditLogQuery, StatsMonthlyHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::stats_yearly_http_requests_audit_log_query::{StatsYearlyHttpRequestsAuditLogQuery, StatsYearlyHttpRequestsAuditLogHandler};
-use crate::features::queries::audit_log::stats_daily_http_requests_by_day_audit_log_query::{StatsDailyHttpRequestsByDayAuditLogQuery, StatsDailyHttpRequestsByDayAuditLogHandler};
-use crate::features::queries::audit_log::stats_daily_http_requests_by_day_by_module_audit_log_query::{StatsDailyHttpRequestsByDayByModuleAuditLogQuery, StatsDailyHttpRequestsByDayByModuleAuditLogHandler};
-use crate::features::queries::audit_log::stats_hourly_http_requests_by_module_audit_log_query::{StatsHourlyHttpRequestsByModuleAuditLogQuery, StatsHourlyHttpRequestsByModuleAuditLogHandler};
-use crate::features::queries::audit_log::stats_total_http_requests_by_module_audit_log_query::{StatsTotalHttpRequestsByModuleAuditLogQuery, StatsTotalHttpRequestsByModuleAuditLogHandler};
-use crate::features::queries::audit_log::stats_http_status_codes_last24_hours_by_module_audit_log_query::{StatsHttpStatusCodesLast24HoursByModuleAuditLogQuery, StatsHttpStatusCodesLast24HoursByModuleAuditLogHandler};
-use crate::features::queries::audit_log::stats_http_status_codes_audit_log_query::{StatsHttpStatusCodesAuditLogQuery, StatsHttpStatusCodesAuditLogHandler};
-use crate::features::queries::audit_log::stats_http_status_codes_by_module_audit_log_query::{StatsHttpStatusCodesByModuleAuditLogQuery, StatsHttpStatusCodesByModuleAuditLogHandler};
-use crate::features::queries::audit_log::stats_top_http_services_by_module_audit_log_query::{StatsTopHttpServicesByModuleAuditLogQuery, StatsTopHttpServicesByModuleAuditLogHandler};
+use crate::services::audit_log_service::AuditLogService;
 use crate::platform::{problem_json, AppState};
 
 #[derive(Debug, Deserialize)]
@@ -46,16 +24,16 @@ fn default_page() -> i64 { 1 }
 fn default_size() -> i64 { 20 }
 
 async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl IntoResponse {
-    match send::<ListAuditLogHandler, _>(&state.pool, ListAuditLogQuery {
-        page: q.page,
-        size: q.size,
-        include_count: q.include_count,
-    }).await {
-        Ok(result) => {
-            let items = crate::db::rows_to_api(result.items);
-            let total_count = match result.total_count {
-                Some(n) => Value::from(n),
-                None => Value::Null,
+    match AuditLogService::list(&state.pool, q.page, q.size).await {
+        Ok(rows) => {
+            let items = crate::db::rows_to_api(rows);
+            let total_count = if q.include_count {
+                match AuditLogService::count(&state.pool).await {
+                    Ok(count_rows) => Value::from(crate::db::scalar_number(&count_rows)),
+                    Err(_) => Value::Null,
+                }
+            } else {
+                Value::Null
             };
             (StatusCode::OK, Json(json!({ "items": items, "totalCount": total_count }))).into_response()
         }
@@ -64,14 +42,14 @@ async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl
 }
 
 async fn count(State(state): State<AppState>) -> impl IntoResponse {
-    match send::<TotalItemCountAuditLogHandler, _>(&state.pool, TotalItemCountAuditLogQuery).await {
-        Ok(n) => (StatusCode::OK, Json(json!(n))).into_response(),
+    match AuditLogService::count(&state.pool).await {
+        Ok(rows) => (StatusCode::OK, Json(json!(crate::db::scalar_number(&rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
 }
 
 async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
-    match send::<GetItemAuditLogHandler, _>(&state.pool, GetItemAuditLogQuery { id: json!(id) }).await {
+    match AuditLogService::get_item(&state.pool, json!(id)).await {
         Ok(Some(row)) => (StatusCode::OK, Json(crate::db::row_to_api(row))).into_response(),
         Ok(None) => problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
@@ -79,7 +57,7 @@ async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl
 }
 
 async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
-    match send::<InsertAuditLogHandler, _>(&state.pool, InsertAuditLogCommand { body }).await {
+    match AuditLogService::insert(&state.pool, body).await {
         Ok(rows) => (
             StatusCode::CREATED,
             Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null)),
@@ -89,24 +67,24 @@ async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, 
 }
 
 async fn update(State(state): State<AppState>, Path(id): Path<String>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
-    match send::<GetItemAuditLogHandler, _>(&state.pool, GetItemAuditLogQuery { id: json!(id) }).await {
+    match AuditLogService::get_item(&state.pool, json!(id)).await {
         Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
         Ok(Some(_)) => {}
     }
-    match send::<UpdateAuditLogHandler, _>(&state.pool, UpdateAuditLogCommand { id: json!(id), body }).await {
+    match AuditLogService::update(&state.pool, json!(id), body).await {
         Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
 }
 
 async fn delete_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
-    match send::<GetItemAuditLogHandler, _>(&state.pool, GetItemAuditLogQuery { id: json!(id) }).await {
+    match AuditLogService::get_item(&state.pool, json!(id)).await {
         Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
         Ok(Some(_)) => {}
     }
-    match send::<DeleteItemAuditLogHandler, _>(&state.pool, DeleteItemAuditLogCommand { id: json!(id) }).await {
+    match AuditLogService::delete(&state.pool, json!(id)).await {
         Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -118,7 +96,7 @@ async fn get_recent_http_requests(State(state): State<AppState>, Query(q): Query
     let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
     values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
     values.push(json!(size.max(1)));
-    match send::<GetRecentHttpRequestsAuditLogHandler, _>(&state.pool, GetRecentHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::get_recent_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -131,7 +109,7 @@ async fn get_recent_http_requests_by_module(State(state): State<AppState>, Query
     let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
     values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
     values.push(json!(size.max(1)));
-    match send::<GetRecentHttpRequestsByModuleAuditLogHandler, _>(&state.pool, GetRecentHttpRequestsByModuleAuditLogQuery { values }).await {
+    match AuditLogService::get_recent_http_requests_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -139,7 +117,7 @@ async fn get_recent_http_requests_by_module(State(state): State<AppState>, Query
 
 async fn stats_today_http_requests(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsTodayHttpRequestsAuditLogHandler, _>(&state.pool, StatsTodayHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::stats_today_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -147,7 +125,7 @@ async fn stats_today_http_requests(State(state): State<AppState>, Query(q): Quer
 
 async fn stats_last_hour_http_requests(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsLastHourHttpRequestsAuditLogHandler, _>(&state.pool, StatsLastHourHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::stats_last_hour_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -155,7 +133,7 @@ async fn stats_last_hour_http_requests(State(state): State<AppState>, Query(q): 
 
 async fn stats_yesterday_http_requests(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsYesterdayHttpRequestsAuditLogHandler, _>(&state.pool, StatsYesterdayHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::stats_yesterday_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -163,7 +141,7 @@ async fn stats_yesterday_http_requests(State(state): State<AppState>, Query(q): 
 
 async fn stats_weekly_http_requests(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsWeeklyHttpRequestsAuditLogHandler, _>(&state.pool, StatsWeeklyHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::stats_weekly_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -171,7 +149,7 @@ async fn stats_weekly_http_requests(State(state): State<AppState>, Query(q): Que
 
 async fn stats_monthly_http_requests(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsMonthlyHttpRequestsAuditLogHandler, _>(&state.pool, StatsMonthlyHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::stats_monthly_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -179,7 +157,7 @@ async fn stats_monthly_http_requests(State(state): State<AppState>, Query(q): Qu
 
 async fn stats_yearly_http_requests(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsYearlyHttpRequestsAuditLogHandler, _>(&state.pool, StatsYearlyHttpRequestsAuditLogQuery { values }).await {
+    match AuditLogService::stats_yearly_http_requests(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -187,7 +165,7 @@ async fn stats_yearly_http_requests(State(state): State<AppState>, Query(q): Que
 
 async fn stats_daily_http_requests_by_day(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsDailyHttpRequestsByDayAuditLogHandler, _>(&state.pool, StatsDailyHttpRequestsByDayAuditLogQuery { values }).await {
+    match AuditLogService::stats_daily_http_requests_by_day(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -195,7 +173,7 @@ async fn stats_daily_http_requests_by_day(State(state): State<AppState>, Query(q
 
 async fn stats_daily_http_requests_by_day_by_module(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsDailyHttpRequestsByDayByModuleAuditLogHandler, _>(&state.pool, StatsDailyHttpRequestsByDayByModuleAuditLogQuery { values }).await {
+    match AuditLogService::stats_daily_http_requests_by_day_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -203,7 +181,7 @@ async fn stats_daily_http_requests_by_day_by_module(State(state): State<AppState
 
 async fn stats_hourly_http_requests_by_module(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsHourlyHttpRequestsByModuleAuditLogHandler, _>(&state.pool, StatsHourlyHttpRequestsByModuleAuditLogQuery { values }).await {
+    match AuditLogService::stats_hourly_http_requests_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -211,7 +189,7 @@ async fn stats_hourly_http_requests_by_module(State(state): State<AppState>, Que
 
 async fn stats_total_http_requests_by_module(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsTotalHttpRequestsByModuleAuditLogHandler, _>(&state.pool, StatsTotalHttpRequestsByModuleAuditLogQuery { values }).await {
+    match AuditLogService::stats_total_http_requests_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -219,7 +197,7 @@ async fn stats_total_http_requests_by_module(State(state): State<AppState>, Quer
 
 async fn stats_http_status_codes_last24_hours_by_module(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsHttpStatusCodesLast24HoursByModuleAuditLogHandler, _>(&state.pool, StatsHttpStatusCodesLast24HoursByModuleAuditLogQuery { values }).await {
+    match AuditLogService::stats_http_status_codes_last24_hours_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -227,7 +205,7 @@ async fn stats_http_status_codes_last24_hours_by_module(State(state): State<AppS
 
 async fn stats_http_status_codes(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsHttpStatusCodesAuditLogHandler, _>(&state.pool, StatsHttpStatusCodesAuditLogQuery { values }).await {
+    match AuditLogService::stats_http_status_codes(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -235,7 +213,7 @@ async fn stats_http_status_codes(State(state): State<AppState>, Query(q): Query<
 
 async fn stats_http_status_codes_by_module(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsHttpStatusCodesByModuleAuditLogHandler, _>(&state.pool, StatsHttpStatusCodesByModuleAuditLogQuery { values }).await {
+    match AuditLogService::stats_http_status_codes_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -243,7 +221,7 @@ async fn stats_http_status_codes_by_module(State(state): State<AppState>, Query(
 
 async fn stats_top_http_services_by_module(State(state): State<AppState>, Query(q): Query<HashMap<String, String>>) -> impl IntoResponse {
     let mut values: Vec<Value> = Vec::new();
-    match send::<StatsTopHttpServicesByModuleAuditLogHandler, _>(&state.pool, StatsTopHttpServicesByModuleAuditLogQuery { values }).await {
+    match AuditLogService::stats_top_http_services_by_module(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }

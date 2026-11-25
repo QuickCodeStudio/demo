@@ -1,0 +1,86 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "contextId": "f2000001-0000-4000-8000-000000000011",
+  "projectContextId": "f2000001-0000-4000-8000-000000000001",
+  "moduleId": "ProductCatalogModule",
+  "moduleName": "ProductCatalogModule",
+  "moduleKind": "Generated",
+  "version": 1,
+  "status": "Approved",
+  "isActive": true,
+  "lastGeneratedFromVersion": null,
+  "lastGeneratedAt": null,
+  "sourceProjectAnalysisId": null,
+  "sourceModuleAnalysisId": null,
+  "createdDate": "2026-04-27T13:43:50",
+  "updatedDate": "2026-08-28T00:00:00",
+  "payload": {
+    "module": {
+      "id": "ProductCatalogModule",
+      "name": "ProductCatalogModule",
+      "description": "Manages all aspects of products, including categorization, variants, attributes, and brand information. This module serves as the central source of truth for all product data available on the marketplace.",
+      "suggestedTables": [
+        "PRODUCTS",
+        "PRODUCT_VARIANTS",
+        "CATEGORIES",
+        "PRODUCT_CATEGORIES",
+        "BRANDS",
+        "ATTRIBUTE_DEFINITIONS",
+        "ATTRIBUTE_VALUES",
+        "PRODUCT_VARIANT_ATTRIBUTES"
+      ]
+    },
+    "domainConcepts": [
+      {
+        "name": "Attribute"
+      },
+      {
+        "name": "Category"
+      },
+      {
+        "name": "Product Status"
+      },
+      {
+        "name": "Product"
+      },
+      {
+        "name": "Product Variant"
+      },
+      {
+        "name": "Categorie"
+      },
+      {
+        "name": "Product Categorie"
+      },
+      {
+        "name": "Brand"
+      },
+      {
+        "name": "Attribute Definition"
+      },
+      {
+        "name": "Attribute Value"
+      },
+      {
+        "name": "Product Variant Attribute"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "productcatalogmodule-crud",
+        "name": "Manage ProductCatalog data",
+        "description": "CRUD and queries over ProductCatalogModule tables."
+      }
+    ],
+    "processes": [
+      {
+        "id": "productcatalogmodule-read",
+        "name": "Query ProductCatalogModule",
+        "description": "Read-only access to ProductCatalogModule schema for Ask AI."
+      }
+    ]
+  }
+}

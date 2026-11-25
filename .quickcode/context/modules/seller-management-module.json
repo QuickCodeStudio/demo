@@ -1,0 +1,78 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "contextId": "f2000001-0000-4000-8000-000000000012",
+  "projectContextId": "f2000001-0000-4000-8000-000000000001",
+  "moduleId": "SellerManagementModule",
+  "moduleName": "SellerManagementModule",
+  "moduleKind": "Generated",
+  "version": 1,
+  "status": "Approved",
+  "isActive": true,
+  "lastGeneratedFromVersion": null,
+  "lastGeneratedAt": null,
+  "sourceProjectAnalysisId": null,
+  "sourceModuleAnalysisId": null,
+  "createdDate": "2026-04-27T13:43:50",
+  "updatedDate": "2026-08-28T00:00:00",
+  "payload": {
+    "module": {
+      "id": "SellerManagementModule",
+      "name": "SellerManagementModule",
+      "description": "Manages seller onboarding, store profiles, legal documents, and performance metrics. This module is the central hub for all seller-related information and administrative tasks.",
+      "suggestedTables": [
+        "SELLERS",
+        "STORES",
+        "SELLER_DOCUMENTS",
+        "SELLER_BANK_ACCOUNTS",
+        "SELLER_TIERS",
+        "SELLER_PERFORMANCE_REVIEWS"
+      ]
+    },
+    "domainConcepts": [
+      {
+        "name": "Seller Status"
+      },
+      {
+        "name": "Document Type"
+      },
+      {
+        "name": "Verification Status"
+      },
+      {
+        "name": "Seller"
+      },
+      {
+        "name": "Store"
+      },
+      {
+        "name": "Seller Document"
+      },
+      {
+        "name": "Seller Bank Account"
+      },
+      {
+        "name": "Seller Tier"
+      },
+      {
+        "name": "Seller Performance Review"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "sellermanagementmodule-crud",
+        "name": "Manage SellerManagement data",
+        "description": "CRUD and queries over SellerManagementModule tables."
+      }
+    ],
+    "processes": [
+      {
+        "id": "sellermanagementmodule-read",
+        "name": "Query SellerManagementModule",
+        "description": "Read-only access to SellerManagementModule schema for Ask AI."
+      }
+    ]
+  }
+}

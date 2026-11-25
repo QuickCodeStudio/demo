@@ -12,14 +12,14 @@
 		5E8B1F0A2F00000200000021 /* QuickCodeHTTP in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000200000031 /* QuickCodeHTTP */; };
 		5E8B1F0A2F00000200000022 /* IdentityClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000200000032 /* IdentityClient */; };
 		5E8B1F0A2F00000300000001 /* FinanceSettlementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000001 /* FinanceSettlementModuleClient */; };
-		5E8B1F0A2F00000300000002 /* OrderManagementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000002 /* OrderManagementModuleClient */; };
-		5E8B1F0A2F00000300000003 /* PricingEngineModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000003 /* PricingEngineModuleClient */; };
-		5E8B1F0A2F00000300000004 /* ProductCatalogModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000004 /* ProductCatalogModuleClient */; };
-		5E8B1F0A2F00000300000005 /* SellerManagementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000005 /* SellerManagementModuleClient */; };
 		5E8B1F0A2F00000400000001 /* FinanceSettlementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000600000001 /* FinanceSettlementModuleClient */; };
+		5E8B1F0A2F00000300000002 /* OrderManagementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000002 /* OrderManagementModuleClient */; };
 		5E8B1F0A2F00000400000002 /* OrderManagementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000600000002 /* OrderManagementModuleClient */; };
+		5E8B1F0A2F00000300000003 /* PricingEngineModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000003 /* PricingEngineModuleClient */; };
 		5E8B1F0A2F00000400000003 /* PricingEngineModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000600000003 /* PricingEngineModuleClient */; };
+		5E8B1F0A2F00000300000004 /* ProductCatalogModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000004 /* ProductCatalogModuleClient */; };
 		5E8B1F0A2F00000400000004 /* ProductCatalogModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000600000004 /* ProductCatalogModuleClient */; };
+		5E8B1F0A2F00000300000005 /* SellerManagementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000500000005 /* SellerManagementModuleClient */; };
 		5E8B1F0A2F00000400000005 /* SellerManagementModuleClient in Frameworks */ = {isa = PBXBuildFile; productRef = 5E8B1F0A2F00000600000005 /* SellerManagementModuleClient */; };
 /* End PBXBuildFile section */
 
@@ -40,8 +40,8 @@
 		5E8B1F0A2F00000200000041 /* Exceptions for "Demo" folder in "Portal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				DemoApp.swift,
 				Shell/ProductShell.swift,
+				DemoApp.swift,
 			);
 			target = 5E8B1F0A2F00000200000005 /* Portal */;
 		};
@@ -251,20 +251,20 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CLOUD_GATEWAY_URL = "https://demo-gateway.quickcode.net";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GATEWAY_URL = "http://localhost:6260";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				LOCAL_GATEWAY_URL = "http://localhost:6260";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				CLOUD_GATEWAY_URL = "https://demo-gateway.quickcode.net";
+				GATEWAY_URL = "http://localhost:6060";
+				LOCAL_GATEWAY_URL = "http://localhost:6060";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -276,17 +276,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CLOUD_GATEWAY_URL = "https://demo-gateway.quickcode.net";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GATEWAY_URL = "https://demo-gateway.quickcode.net";
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				LOCAL_GATEWAY_URL = "http://localhost:6260";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				CLOUD_GATEWAY_URL = "https://demo-gateway.quickcode.net";
+				GATEWAY_URL = "https://demo-gateway.quickcode.net";
+				LOCAL_GATEWAY_URL = "http://localhost:6060";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -489,7 +489,17 @@
 			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
 			productName = FinanceSettlementModuleClient;
 		};
+		5E8B1F0A2F00000600000001 /* FinanceSettlementModuleClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
+			productName = FinanceSettlementModuleClient;
+		};
 		5E8B1F0A2F00000500000002 /* OrderManagementModuleClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
+			productName = OrderManagementModuleClient;
+		};
+		5E8B1F0A2F00000600000002 /* OrderManagementModuleClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
 			productName = OrderManagementModuleClient;
@@ -499,7 +509,17 @@
 			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
 			productName = PricingEngineModuleClient;
 		};
+		5E8B1F0A2F00000600000003 /* PricingEngineModuleClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
+			productName = PricingEngineModuleClient;
+		};
 		5E8B1F0A2F00000500000004 /* ProductCatalogModuleClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
+			productName = ProductCatalogModuleClient;
+		};
+		5E8B1F0A2F00000600000004 /* ProductCatalogModuleClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
 			productName = ProductCatalogModuleClient;
@@ -508,26 +528,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
 			productName = SellerManagementModuleClient;
-		};
-		5E8B1F0A2F00000600000001 /* FinanceSettlementModuleClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
-			productName = FinanceSettlementModuleClient;
-		};
-		5E8B1F0A2F00000600000002 /* OrderManagementModuleClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
-			productName = OrderManagementModuleClient;
-		};
-		5E8B1F0A2F00000600000003 /* PricingEngineModuleClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
-			productName = PricingEngineModuleClient;
-		};
-		5E8B1F0A2F00000600000004 /* ProductCatalogModuleClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E8B1F0A2F00000100000020 /* XCLocalSwiftPackageReference "Clients" */;
-			productName = ProductCatalogModuleClient;
 		};
 		5E8B1F0A2F00000600000005 /* SellerManagementModuleClient */ = {
 			isa = XCSwiftPackageProductDependency;

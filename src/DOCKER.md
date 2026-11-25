@@ -44,8 +44,8 @@ Starts `quickcode-local-infra` first, then this site's app compose project (`doc
 
 | Service | URL (demo / slot 0) |
 |---------|----------------|
-| Portal | http://localhost:6220 |
-| Gateway | http://localhost:6260 |
+| Portal | http://localhost:6020 |
+| Gateway | http://localhost:6060 |
 
 A second generated site uses the next slot (`+100`, see `COMPOSE_PORT_SLOT` in `src/.env`). Infra ports (5432, 5433, 9092, 9200) stay the same.
 

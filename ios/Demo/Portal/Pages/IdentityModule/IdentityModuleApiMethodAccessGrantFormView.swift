@@ -34,15 +34,8 @@ struct IdentityModuleApiMethodAccessGrantFormView: View {
                     if let failure {
                         Text(failure).foregroundStyle(.red)
                     }
-                    if keys.isEmpty {
-                        PrimaryButton(title: busy ? "Saving…" : "Save") { Task { await save() } }
-                            .disabled(busy || !ready)
-                    } else {
-                        Text("These fields identify the record and can’t be changed. Delete this link and create a new one to pick different values.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    PrimaryButton(title: busy ? "Saving…" : "Save") { Task { await save() } }
+                        .disabled(busy || !ready)
                 }
                 .padding(ShellMetrics.screenPadding)
             }

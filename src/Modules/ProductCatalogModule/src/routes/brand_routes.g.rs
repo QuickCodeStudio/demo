@@ -6,16 +6,7 @@ use axum::{Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
-use crate::cqrs::send;
-use crate::features::queries::brand::list_brand_query::{ListBrandQuery, ListBrandHandler};
-use crate::features::queries::brand::get_item_brand_query::{GetItemBrandQuery, GetItemBrandHandler};
-use crate::features::queries::brand::total_item_count_brand_query::{TotalItemCountBrandQuery, TotalItemCountBrandHandler};
-use crate::features::commands::brand::insert_brand_command::{InsertBrandCommand, InsertBrandHandler};
-use crate::features::commands::brand::update_brand_command::{UpdateBrandCommand, UpdateBrandHandler};
-use crate::features::commands::brand::delete_item_brand_command::{DeleteItemBrandCommand, DeleteItemBrandHandler};
-use crate::features::queries::brand::get_active_brand_query::{GetActiveBrandQuery, GetActiveBrandHandler};
-use crate::features::queries::brand::search_by_name_brand_query::{SearchByNameBrandQuery, SearchByNameBrandHandler};
-use crate::features::commands::brand::deactivate_brand_command::{DeactivateBrandCommand, DeactivateBrandHandler};
+use crate::services::brand_service::BrandService;
 use crate::platform::{problem_json, AppState};
 
 #[derive(Debug, Deserialize)]
@@ -33,16 +24,16 @@ fn default_page() -> i64 { 1 }
 fn default_size() -> i64 { 20 }
 
 async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl IntoResponse {
-    match send::<ListBrandHandler, _>(&state.pool, ListBrandQuery {
-        page: q.page,
-        size: q.size,
-        include_count: q.include_count,
-    }).await {
-        Ok(result) => {
-            let items = crate::db::rows_to_api(result.items);
-            let total_count = match result.total_count {
-                Some(n) => Value::from(n),
-                None => Value::Null,
+    match BrandService::list(&state.pool, q.page, q.size).await {
+        Ok(rows) => {
+            let items = crate::db::rows_to_api(rows);
+            let total_count = if q.include_count {
+                match BrandService::count(&state.pool).await {
+                    Ok(count_rows) => Value::from(crate::db::scalar_number(&count_rows)),
+                    Err(_) => Value::Null,
+                }
+            } else {
+                Value::Null
             };
             (StatusCode::OK, Json(json!({ "items": items, "totalCount": total_count }))).into_response()
         }
@@ -51,14 +42,14 @@ async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl
 }
 
 async fn count(State(state): State<AppState>) -> impl IntoResponse {
-    match send::<TotalItemCountBrandHandler, _>(&state.pool, TotalItemCountBrandQuery).await {
-        Ok(n) => (StatusCode::OK, Json(json!(n))).into_response(),
+    match BrandService::count(&state.pool).await {
+        Ok(rows) => (StatusCode::OK, Json(json!(crate::db::scalar_number(&rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
 }
 
 async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
-    match send::<GetItemBrandHandler, _>(&state.pool, GetItemBrandQuery { id: json!(id) }).await {
+    match BrandService::get_item(&state.pool, json!(id)).await {
         Ok(Some(row)) => (StatusCode::OK, Json(crate::db::row_to_api(row))).into_response(),
         Ok(None) => problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
@@ -66,7 +57,7 @@ async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl
 }
 
 async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
-    match send::<InsertBrandHandler, _>(&state.pool, InsertBrandCommand { body }).await {
+    match BrandService::insert(&state.pool, body).await {
         Ok(rows) => (
             StatusCode::CREATED,
             Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null)),
@@ -76,24 +67,24 @@ async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, 
 }
 
 async fn update(State(state): State<AppState>, Path(id): Path<String>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
-    match send::<GetItemBrandHandler, _>(&state.pool, GetItemBrandQuery { id: json!(id) }).await {
+    match BrandService::get_item(&state.pool, json!(id)).await {
         Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
         Ok(Some(_)) => {}
     }
-    match send::<UpdateBrandHandler, _>(&state.pool, UpdateBrandCommand { id: json!(id), body }).await {
+    match BrandService::update(&state.pool, json!(id), body).await {
         Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
 }
 
 async fn delete_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
-    match send::<GetItemBrandHandler, _>(&state.pool, GetItemBrandQuery { id: json!(id) }).await {
+    match BrandService::get_item(&state.pool, json!(id)).await {
         Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
         Ok(Some(_)) => {}
     }
-    match send::<DeleteItemBrandHandler, _>(&state.pool, DeleteItemBrandCommand { id: json!(id) }).await {
+    match BrandService::delete(&state.pool, json!(id)).await {
         Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -105,7 +96,7 @@ async fn get_active(State(state): State<AppState>, Query(q): Query<HashMap<Strin
     let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
     values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
     values.push(json!(size.max(1)));
-    match send::<GetActiveBrandHandler, _>(&state.pool, GetActiveBrandQuery { values }).await {
+    match BrandService::get_active(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -118,7 +109,7 @@ async fn search_by_name(State(state): State<AppState>, Query(q): Query<HashMap<S
     let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
     values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
     values.push(json!(size.max(1)));
-    match send::<SearchByNameBrandHandler, _>(&state.pool, SearchByNameBrandQuery { values }).await {
+    match BrandService::search_by_name(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -128,7 +119,7 @@ async fn deactivate(State(state): State<AppState>, Path(brandId): Path<String>, 
     let mut values: Vec<Value> = Vec::new();
     values.push(json!(brandId));
 
-    match send::<DeactivateBrandHandler, _>(&state.pool, DeactivateBrandCommand { values }).await {
+    match BrandService::deactivate(&state.pool, values).await {
         Ok(rows) => {
             let n = crate::db::scalar_number(&rows);
             (StatusCode::OK, Json(json!(if n == 0 { 1 } else { n }))).into_response()

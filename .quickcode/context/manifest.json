@@ -1,0 +1,50 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "note": "Regenerated on every successful generate. Prefer DB PROJECT_CONTEXTS / MODULE_CONTEXTS as source of truth.",
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "projectContext": {
+    "file": "project-context.json",
+    "contextId": "f2000001-0000-4000-8000-000000000001",
+    "version": 1,
+    "status": "Approved"
+  },
+  "modules": [
+    {
+      "file": "modules/finance-settlement-module.json",
+      "moduleId": "FinanceSettlementModule",
+      "moduleName": "FinanceSettlementModule",
+      "version": 1,
+      "status": "Approved"
+    },
+    {
+      "file": "modules/order-management-module.json",
+      "moduleId": "OrderManagementModule",
+      "moduleName": "OrderManagementModule",
+      "version": 1,
+      "status": "Approved"
+    },
+    {
+      "file": "modules/pricing-engine-module.json",
+      "moduleId": "PricingEngineModule",
+      "moduleName": "PricingEngineModule",
+      "version": 1,
+      "status": "Approved"
+    },
+    {
+      "file": "modules/product-catalog-module.json",
+      "moduleId": "ProductCatalogModule",
+      "moduleName": "ProductCatalogModule",
+      "version": 1,
+      "status": "Approved"
+    },
+    {
+      "file": "modules/seller-management-module.json",
+      "moduleId": "SellerManagementModule",
+      "moduleName": "SellerManagementModule",
+      "version": 1,
+      "status": "Approved"
+    }
+  ]
+}

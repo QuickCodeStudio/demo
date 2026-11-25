@@ -9,6 +9,14 @@
           }
         }
       },
+      "identity-module-api": {
+        "clusterId": "identity-module-api",
+        "destinations": {
+          "destination1": {
+            "address": "http://quickcode-demo-identity-api"
+          }
+        }
+      },
       "finance-settlement-module-api": {
         "clusterId": "finance-settlement-module-api",
         "destinations": {
@@ -48,14 +56,6 @@
             "address": "http://quickcode-demo-seller-management-api"
           }
         }
-      },
-      "identity-module-api": {
-        "clusterId": "identity-module-api",
-        "destinations": {
-          "destination1": {
-            "address": "http://quickcode-demo-identity-api"
-          }
-        }
       }
     },
     "routes": {
@@ -66,7 +66,7 @@
         "match": {
           "path": "api/auth/{**catch-all}",
           "hosts": [
-            "localhost:6260",
+            "localhost:6060",
             "demo-gateway-821209474183.europe-west1.run.app",
             "demo-gateway",
             "quickcode-demo-gateway-api",
@@ -79,6 +79,26 @@
           }
         ]
       },
+      "identity-module": {
+        "routeId": "identity-module",
+        "clusterId": "identity-module-api",
+        "authorizationPolicy": "QuickCodeGatewayPolicy",
+        "match": {
+          "path": "api/identity-module/{**catch-all}",
+          "hosts": [
+            "localhost:6060",
+            "demo-gateway-821209474183.europe-west1.run.app",
+            "demo-gateway",
+            "quickcode-demo-gateway-api",
+            "demo-gateway.quickcode.net"
+          ]
+        },
+        "transforms": [
+          {
+            "PathPattern": "api/identity-module/{**catch-all}"
+          }
+        ]
+      },
       "finance-settlement-module": {
         "routeId": "finance-settlement-module",
         "clusterId": "finance-settlement-module-api",
@@ -86,7 +106,7 @@
         "match": {
           "path": "api/finance-settlement-module/{**catch-all}",
           "hosts": [
-            "localhost:6260",
+            "localhost:6060",
             "demo-gateway-821209474183.europe-west1.run.app",
             "demo-gateway",
             "quickcode-demo-gateway-api",
@@ -106,7 +126,7 @@
         "match": {
           "path": "api/order-management-module/{**catch-all}",
           "hosts": [
-            "localhost:6260",
+            "localhost:6060",
             "demo-gateway-821209474183.europe-west1.run.app",
             "demo-gateway",
             "quickcode-demo-gateway-api",
@@ -126,7 +146,7 @@
         "match": {
           "path": "api/pricing-engine-module/{**catch-all}",
           "hosts": [
-            "localhost:6260",
+            "localhost:6060",
             "demo-gateway-821209474183.europe-west1.run.app",
             "demo-gateway",
             "quickcode-demo-gateway-api",
@@ -146,7 +166,7 @@
         "match": {
           "path": "api/product-catalog-module/{**catch-all}",
           "hosts": [
-            "localhost:6260",
+            "localhost:6060",
             "demo-gateway-821209474183.europe-west1.run.app",
             "demo-gateway",
             "quickcode-demo-gateway-api",
@@ -166,7 +186,7 @@
         "match": {
           "path": "api/seller-management-module/{**catch-all}",
           "hosts": [
-            "localhost:6260",
+            "localhost:6060",
             "demo-gateway-821209474183.europe-west1.run.app",
             "demo-gateway",
             "quickcode-demo-gateway-api",
@@ -176,26 +196,6 @@
         "transforms": [
           {
             "PathPattern": "api/seller-management-module/{**catch-all}"
-          }
-        ]
-      },
-      "identity-module": {
-        "routeId": "identity-module",
-        "clusterId": "identity-module-api",
-        "authorizationPolicy": "QuickCodeGatewayPolicy",
-        "match": {
-          "path": "api/identity-module/{**catch-all}",
-          "hosts": [
-            "localhost:6260",
-            "demo-gateway-821209474183.europe-west1.run.app",
-            "demo-gateway",
-            "quickcode-demo-gateway-api",
-            "demo-gateway.quickcode.net"
-          ]
-        },
-        "transforms": [
-          {
-            "PathPattern": "api/identity-module/{**catch-all}"
           }
         ]
       }

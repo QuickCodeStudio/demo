@@ -1,4 +1,11 @@
 {
+  "identity-module-api": {
+    "Endpoint": "/swagger/identity-module-api/v1/swagger.json",
+    "Spec": "/swagger/v1/swagger.json",
+    "PathOptions": {
+      "/api": "/api"
+    }
+  },
   "finance-settlement-module-api": {
     "Endpoint": "/swagger/finance-settlement-module-api/v1/swagger.json",
     "Spec": "/swagger/v1/swagger.json",
@@ -29,13 +36,6 @@
   },
   "seller-management-module-api": {
     "Endpoint": "/swagger/seller-management-module-api/v1/swagger.json",
-    "Spec": "/swagger/v1/swagger.json",
-    "PathOptions": {
-      "/api": "/api"
-    }
-  },
-  "identity-module-api": {
-    "Endpoint": "/swagger/identity-module-api/v1/swagger.json",
     "Spec": "/swagger/v1/swagger.json",
     "PathOptions": {
       "/api": "/api"

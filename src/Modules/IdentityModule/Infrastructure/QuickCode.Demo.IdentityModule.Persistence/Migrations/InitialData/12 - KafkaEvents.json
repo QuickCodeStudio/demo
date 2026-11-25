@@ -1,6 +1,451 @@
 {
 "KafkaEvents": [
   {
+    "ApiMethodDefinitionKey": "PostapiidentitymodulemodulesModulesController",
+    "TopicName": "demo.identity_module.modules_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymodulemodulesnameModulesController",
+    "TopicName": "demo.identity_module.modules_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulemodulesnameModulesController",
+    "TopicName": "demo.identity_module.modules_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulemodelsdeletemodelswithmodulenamemodelmodulenameModelsController",
+    "TopicName": "demo.identity_module.models.delete_models_with_module_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymodulemodelsModelsController",
+    "TopicName": "demo.identity_module.models_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymodulemodelsnamemodulenameModelsController",
+    "TopicName": "demo.identity_module.models_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulemodelsnamemodulenameModelsController",
+    "TopicName": "demo.identity_module.models_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymodulepermissiongroupsPermissionGroupsController",
+    "TopicName": "demo.identity_module.permission_groups_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymodulepermissiongroupsnamePermissionGroupsController",
+    "TopicName": "demo.identity_module.permission_groups_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulepermissiongroupsnamePermissionGroupsController",
+    "TopicName": "demo.identity_module.permission_groups_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethoddefinitionsdeleteapimethoddefinitionswithmodulenameapimethoddefinitionmodulenameApiMethodDefinitionsController",
+    "TopicName": "demo.identity_module.api_method_definitions.delete_api_method_definitions_with_module_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethoddefinitionsdeleteapimethoddefinitionswithmodelnameapimethoddefinitionmodelnameApiMethodDefinitionsController",
+    "TopicName": "demo.identity_module.api_method_definitions.delete_api_method_definitions_with_model_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleapimethoddefinitionsApiMethodDefinitionsController",
+    "TopicName": "demo.identity_module.api_method_definitions_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleapimethoddefinitionskeyApiMethodDefinitionsController",
+    "TopicName": "demo.identity_module.api_method_definitions_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethoddefinitionskeyApiMethodDefinitionsController",
+    "TopicName": "demo.identity_module.api_method_definitions_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpagedefinitionsdeleteportalpagedefinitionswithmodulenameportalpagedefinitionmodulenamePortalPageDefinitionsController",
+    "TopicName": "demo.identity_module.portal_page_definitions.delete_portal_page_definitions_with_module_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpagedefinitionsdeleteportalpagedefinitionswithmodelnameportalpagedefinitionmodelnamePortalPageDefinitionsController",
+    "TopicName": "demo.identity_module.portal_page_definitions.delete_portal_page_definitions_with_model_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleportalpagedefinitionsPortalPageDefinitionsController",
+    "TopicName": "demo.identity_module.portal_page_definitions_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleportalpagedefinitionskeyPortalPageDefinitionsController",
+    "TopicName": "demo.identity_module.portal_page_definitions_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpagedefinitionskeyPortalPageDefinitionsController",
+    "TopicName": "demo.identity_module.portal_page_definitions_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethodaccessgrantsclearapimethodaccessgrantsApiMethodAccessGrantsController",
+    "TopicName": "demo.identity_module.api_method_access_grants.clear_api_method_access_grants_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleapimethodaccessgrantsApiMethodAccessGrantsController",
+    "TopicName": "demo.identity_module.api_method_access_grants_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleapimethodaccessgrantspermissiongroupnameapimethoddefinitionkeyApiMethodAccessGrantsController",
+    "TopicName": "demo.identity_module.api_method_access_grants_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethodaccessgrantspermissiongroupnameapimethoddefinitionkeyApiMethodAccessGrantsController",
+    "TopicName": "demo.identity_module.api_method_access_grants_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpageaccessgrantsclearportalpageaccessgrantsPortalPageAccessGrantsController",
+    "TopicName": "demo.identity_module.portal_page_access_grants.clear_portal_page_access_grants_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleportalpageaccessgrantsPortalPageAccessGrantsController",
+    "TopicName": "demo.identity_module.portal_page_access_grants_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleportalpageaccessgrantspermissiongroupnameportalpagedefinitionkeypageactionPortalPageAccessGrantsController",
+    "TopicName": "demo.identity_module.portal_page_access_grants_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpageaccessgrantspermissiongroupnameportalpagedefinitionkeypageactionPortalPageAccessGrantsController",
+    "TopicName": "demo.identity_module.portal_page_access_grants_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalmenusdeleteportalmenuitemswithmodulenameportalmenukeyPortalMenusController",
+    "TopicName": "demo.identity_module.portal_menus.delete_portal_menu_items_with_module_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalmenusdeleteportalmenuitemswithmodelnameportalmenukeyportalmenunamePortalMenusController",
+    "TopicName": "demo.identity_module.portal_menus.delete_portal_menu_items_with_model_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleportalmenusPortalMenusController",
+    "TopicName": "demo.identity_module.portal_menus_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleportalmenuskeyPortalMenusController",
+    "TopicName": "demo.identity_module.portal_menus_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalmenuskeyPortalMenusController",
+    "TopicName": "demo.identity_module.portal_menus_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymodulecolumntypesColumnTypesController",
+    "TopicName": "demo.identity_module.column_types_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymodulecolumntypesidintColumnTypesController",
+    "TopicName": "demo.identity_module.column_types_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulecolumntypesidintColumnTypesController",
+    "TopicName": "demo.identity_module.column_types_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduletablecomboboxsettingsTableComboboxSettingsController",
+    "TopicName": "demo.identity_module.table_combobox_settings_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduletablecomboboxsettingstablenameTableComboboxSettingsController",
+    "TopicName": "demo.identity_module.table_combobox_settings_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduletablecomboboxsettingstablenameTableComboboxSettingsController",
+    "TopicName": "demo.identity_module.table_combobox_settings_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulekafkaeventscleankafkaeventswithmodulenameapimethoddefinitionsmodulenameKafkaEventsController",
+    "TopicName": "demo.identity_module.kafka_events.clean_kafka_events_with_module_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulekafkaeventscleankafkaeventswithmodelnameapimethoddefinitionsmodelnameKafkaEventsController",
+    "TopicName": "demo.identity_module.kafka_events.clean_kafka_events_with_model_name_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymodulekafkaeventsKafkaEventsController",
+    "TopicName": "demo.identity_module.kafka_events_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymodulekafkaeventstopicnameKafkaEventsController",
+    "TopicName": "demo.identity_module.kafka_events_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulekafkaeventstopicnameKafkaEventsController",
+    "TopicName": "demo.identity_module.kafka_events_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduletopicworkflowsTopicWorkflowsController",
+    "TopicName": "demo.identity_module.topic_workflows_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduletopicworkflowsidintTopicWorkflowsController",
+    "TopicName": "demo.identity_module.topic_workflows_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduletopicworkflowsidintTopicWorkflowsController",
+    "TopicName": "demo.identity_module.topic_workflows_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PatchapiidentitymoduleendpointworkflowssetactiveendpointworkflowidintEndpointWorkflowsController",
+    "TopicName": "demo.identity_module.endpoint_workflows.set_active_patch",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleendpointworkflowsEndpointWorkflowsController",
+    "TopicName": "demo.identity_module.endpoint_workflows_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleendpointworkflowsidintEndpointWorkflowsController",
+    "TopicName": "demo.identity_module.endpoint_workflows_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleendpointworkflowsidintEndpointWorkflowsController",
+    "TopicName": "demo.identity_module.endpoint_workflows_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetrolesAspNetRolesController",
+    "TopicName": "demo.identity_module.asp_net_roles_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetrolesidAspNetRolesController",
+    "TopicName": "demo.identity_module.asp_net_roles_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetrolesidAspNetRolesController",
+    "TopicName": "demo.identity_module.asp_net_roles_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PatchapiidentitymoduleaspnetusersupdatephotoaspnetuseridAspNetUsersController",
+    "TopicName": "demo.identity_module.asp_net_users.update_photo_patch",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PatchapiidentitymoduleaspnetusersclearphotoaspnetuseridAspNetUsersController",
+    "TopicName": "demo.identity_module.asp_net_users.clear_photo_patch",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetusersAspNetUsersController",
+    "TopicName": "demo.identity_module.asp_net_users_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetusersidAspNetUsersController",
+    "TopicName": "demo.identity_module.asp_net_users_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetusersidAspNetUsersController",
+    "TopicName": "demo.identity_module.asp_net_users_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PatchapiidentitymodulerefreshtokensupdaterefreshtokensrefreshtokentokenRefreshTokensController",
+    "TopicName": "demo.identity_module.refresh_tokens.update_refresh_tokens_patch",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymodulerefreshtokensRefreshTokensController",
+    "TopicName": "demo.identity_module.refresh_tokens_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymodulerefreshtokensidintRefreshTokensController",
+    "TopicName": "demo.identity_module.refresh_tokens_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymodulerefreshtokensidintRefreshTokensController",
+    "TopicName": "demo.identity_module.refresh_tokens_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PatchapiidentitymoduleapikeysrevokeapikeyapikeyidguidApiKeysController",
+    "TopicName": "demo.identity_module.api_keys.revoke_api_key_patch",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PatchapiidentitymoduleapikeystouchapikeylastusedapikeyidguidApiKeysController",
+    "TopicName": "demo.identity_module.api_keys.touch_api_key_last_used_patch",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleapikeysApiKeysController",
+    "TopicName": "demo.identity_module.api_keys_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleapikeysidguidApiKeysController",
+    "TopicName": "demo.identity_module.api_keys_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapikeysidguidApiKeysController",
+    "TopicName": "demo.identity_module.api_keys_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleapikeyusagelogsApiKeyUsageLogsController",
+    "TopicName": "demo.identity_module.api_key_usage_logs_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleapikeyusagelogsidintApiKeyUsageLogsController",
+    "TopicName": "demo.identity_module.api_key_usage_logs_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapikeyusagelogsidintApiKeyUsageLogsController",
+    "TopicName": "demo.identity_module.api_key_usage_logs_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetroleclaimsAspNetRoleClaimsController",
+    "TopicName": "demo.identity_module.asp_net_role_claims_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetroleclaimsidintAspNetRoleClaimsController",
+    "TopicName": "demo.identity_module.asp_net_role_claims_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetroleclaimsidintAspNetRoleClaimsController",
+    "TopicName": "demo.identity_module.asp_net_role_claims_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetuserclaimsAspNetUserClaimsController",
+    "TopicName": "demo.identity_module.asp_net_user_claims_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetuserclaimsidintAspNetUserClaimsController",
+    "TopicName": "demo.identity_module.asp_net_user_claims_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetuserclaimsidintAspNetUserClaimsController",
+    "TopicName": "demo.identity_module.asp_net_user_claims_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetuserloginsAspNetUserLoginsController",
+    "TopicName": "demo.identity_module.asp_net_user_logins_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetuserloginsloginproviderproviderkeyAspNetUserLoginsController",
+    "TopicName": "demo.identity_module.asp_net_user_logins_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetuserloginsloginproviderproviderkeyAspNetUserLoginsController",
+    "TopicName": "demo.identity_module.asp_net_user_logins_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetuserrolesAspNetUserRolesController",
+    "TopicName": "demo.identity_module.asp_net_user_roles_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetuserrolesuseridroleidAspNetUserRolesController",
+    "TopicName": "demo.identity_module.asp_net_user_roles_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetuserrolesuseridroleidAspNetUserRolesController",
+    "TopicName": "demo.identity_module.asp_net_user_roles_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetusertokensAspNetUserTokensController",
+    "TopicName": "demo.identity_module.asp_net_user_tokens_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetusertokensuseridAspNetUserTokensController",
+    "TopicName": "demo.identity_module.asp_net_user_tokens_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetusertokensuseridAspNetUserTokensController",
+    "TopicName": "demo.identity_module.asp_net_user_tokens_delete",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PostapiidentitymoduleauditlogsAuditLogsController",
+    "TopicName": "demo.identity_module.audit_logs_post",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "PutapiidentitymoduleauditlogsidguidAuditLogsController",
+    "TopicName": "demo.identity_module.audit_logs_put",
+    "IsActive": false
+  },
+  {
+    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleauditlogsidguidAuditLogsController",
+    "TopicName": "demo.identity_module.audit_logs_delete",
+    "IsActive": false
+  },
+  {
     "ApiMethodDefinitionKey": "PostapifinancesettlementmodulepayoutperiodsPayoutPeriodsController",
     "TopicName": "demo.finance_settlement_module.payout_periods_post",
     "IsActive": false
@@ -858,451 +1303,6 @@
   {
     "ApiMethodDefinitionKey": "DeleteapisellermanagementmoduleauditlogsidguidAuditLogsController",
     "TopicName": "demo.seller_management_module.audit_logs_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymodulemodulesModulesController",
-    "TopicName": "demo.identity_module.modules_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymodulemodulesnameModulesController",
-    "TopicName": "demo.identity_module.modules_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulemodulesnameModulesController",
-    "TopicName": "demo.identity_module.modules_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulemodelsdeletemodelswithmodulenamemodelmodulenameModelsController",
-    "TopicName": "demo.identity_module.models.delete_models_with_module_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymodulemodelsModelsController",
-    "TopicName": "demo.identity_module.models_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymodulemodelsnamemodulenameModelsController",
-    "TopicName": "demo.identity_module.models_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulemodelsnamemodulenameModelsController",
-    "TopicName": "demo.identity_module.models_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymodulepermissiongroupsPermissionGroupsController",
-    "TopicName": "demo.identity_module.permission_groups_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymodulepermissiongroupsnamePermissionGroupsController",
-    "TopicName": "demo.identity_module.permission_groups_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulepermissiongroupsnamePermissionGroupsController",
-    "TopicName": "demo.identity_module.permission_groups_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethoddefinitionsdeleteapimethoddefinitionswithmodulenameapimethoddefinitionmodulenameApiMethodDefinitionsController",
-    "TopicName": "demo.identity_module.api_method_definitions.delete_api_method_definitions_with_module_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethoddefinitionsdeleteapimethoddefinitionswithmodelnameapimethoddefinitionmodelnameApiMethodDefinitionsController",
-    "TopicName": "demo.identity_module.api_method_definitions.delete_api_method_definitions_with_model_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleapimethoddefinitionsApiMethodDefinitionsController",
-    "TopicName": "demo.identity_module.api_method_definitions_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleapimethoddefinitionskeyApiMethodDefinitionsController",
-    "TopicName": "demo.identity_module.api_method_definitions_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethoddefinitionskeyApiMethodDefinitionsController",
-    "TopicName": "demo.identity_module.api_method_definitions_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpagedefinitionsdeleteportalpagedefinitionswithmodulenameportalpagedefinitionmodulenamePortalPageDefinitionsController",
-    "TopicName": "demo.identity_module.portal_page_definitions.delete_portal_page_definitions_with_module_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpagedefinitionsdeleteportalpagedefinitionswithmodelnameportalpagedefinitionmodelnamePortalPageDefinitionsController",
-    "TopicName": "demo.identity_module.portal_page_definitions.delete_portal_page_definitions_with_model_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleportalpagedefinitionsPortalPageDefinitionsController",
-    "TopicName": "demo.identity_module.portal_page_definitions_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleportalpagedefinitionskeyPortalPageDefinitionsController",
-    "TopicName": "demo.identity_module.portal_page_definitions_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpagedefinitionskeyPortalPageDefinitionsController",
-    "TopicName": "demo.identity_module.portal_page_definitions_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethodaccessgrantsclearapimethodaccessgrantsApiMethodAccessGrantsController",
-    "TopicName": "demo.identity_module.api_method_access_grants.clear_api_method_access_grants_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleapimethodaccessgrantsApiMethodAccessGrantsController",
-    "TopicName": "demo.identity_module.api_method_access_grants_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleapimethodaccessgrantspermissiongroupnameapimethoddefinitionkeyApiMethodAccessGrantsController",
-    "TopicName": "demo.identity_module.api_method_access_grants_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapimethodaccessgrantspermissiongroupnameapimethoddefinitionkeyApiMethodAccessGrantsController",
-    "TopicName": "demo.identity_module.api_method_access_grants_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpageaccessgrantsclearportalpageaccessgrantsPortalPageAccessGrantsController",
-    "TopicName": "demo.identity_module.portal_page_access_grants.clear_portal_page_access_grants_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleportalpageaccessgrantsPortalPageAccessGrantsController",
-    "TopicName": "demo.identity_module.portal_page_access_grants_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleportalpageaccessgrantspermissiongroupnameportalpagedefinitionkeypageactionPortalPageAccessGrantsController",
-    "TopicName": "demo.identity_module.portal_page_access_grants_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalpageaccessgrantspermissiongroupnameportalpagedefinitionkeypageactionPortalPageAccessGrantsController",
-    "TopicName": "demo.identity_module.portal_page_access_grants_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalmenusdeleteportalmenuitemswithmodulenameportalmenukeyPortalMenusController",
-    "TopicName": "demo.identity_module.portal_menus.delete_portal_menu_items_with_module_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalmenusdeleteportalmenuitemswithmodelnameportalmenukeyportalmenunamePortalMenusController",
-    "TopicName": "demo.identity_module.portal_menus.delete_portal_menu_items_with_model_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleportalmenusPortalMenusController",
-    "TopicName": "demo.identity_module.portal_menus_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleportalmenuskeyPortalMenusController",
-    "TopicName": "demo.identity_module.portal_menus_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleportalmenuskeyPortalMenusController",
-    "TopicName": "demo.identity_module.portal_menus_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymodulecolumntypesColumnTypesController",
-    "TopicName": "demo.identity_module.column_types_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymodulecolumntypesidintColumnTypesController",
-    "TopicName": "demo.identity_module.column_types_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulecolumntypesidintColumnTypesController",
-    "TopicName": "demo.identity_module.column_types_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduletablecomboboxsettingsTableComboboxSettingsController",
-    "TopicName": "demo.identity_module.table_combobox_settings_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduletablecomboboxsettingstablenameTableComboboxSettingsController",
-    "TopicName": "demo.identity_module.table_combobox_settings_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduletablecomboboxsettingstablenameTableComboboxSettingsController",
-    "TopicName": "demo.identity_module.table_combobox_settings_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulekafkaeventscleankafkaeventswithmodulenameapimethoddefinitionsmodulenameKafkaEventsController",
-    "TopicName": "demo.identity_module.kafka_events.clean_kafka_events_with_module_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulekafkaeventscleankafkaeventswithmodelnameapimethoddefinitionsmodelnameKafkaEventsController",
-    "TopicName": "demo.identity_module.kafka_events.clean_kafka_events_with_model_name_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymodulekafkaeventsKafkaEventsController",
-    "TopicName": "demo.identity_module.kafka_events_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymodulekafkaeventstopicnameKafkaEventsController",
-    "TopicName": "demo.identity_module.kafka_events_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulekafkaeventstopicnameKafkaEventsController",
-    "TopicName": "demo.identity_module.kafka_events_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduletopicworkflowsTopicWorkflowsController",
-    "TopicName": "demo.identity_module.topic_workflows_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduletopicworkflowsidintTopicWorkflowsController",
-    "TopicName": "demo.identity_module.topic_workflows_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduletopicworkflowsidintTopicWorkflowsController",
-    "TopicName": "demo.identity_module.topic_workflows_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PatchapiidentitymoduleendpointworkflowssetactiveendpointworkflowidintEndpointWorkflowsController",
-    "TopicName": "demo.identity_module.endpoint_workflows.set_active_patch",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleendpointworkflowsEndpointWorkflowsController",
-    "TopicName": "demo.identity_module.endpoint_workflows_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleendpointworkflowsidintEndpointWorkflowsController",
-    "TopicName": "demo.identity_module.endpoint_workflows_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleendpointworkflowsidintEndpointWorkflowsController",
-    "TopicName": "demo.identity_module.endpoint_workflows_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetrolesAspNetRolesController",
-    "TopicName": "demo.identity_module.asp_net_roles_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetrolesidAspNetRolesController",
-    "TopicName": "demo.identity_module.asp_net_roles_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetrolesidAspNetRolesController",
-    "TopicName": "demo.identity_module.asp_net_roles_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PatchapiidentitymoduleaspnetusersupdatephotoaspnetuseridAspNetUsersController",
-    "TopicName": "demo.identity_module.asp_net_users.update_photo_patch",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PatchapiidentitymoduleaspnetusersclearphotoaspnetuseridAspNetUsersController",
-    "TopicName": "demo.identity_module.asp_net_users.clear_photo_patch",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetusersAspNetUsersController",
-    "TopicName": "demo.identity_module.asp_net_users_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetusersidAspNetUsersController",
-    "TopicName": "demo.identity_module.asp_net_users_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetusersidAspNetUsersController",
-    "TopicName": "demo.identity_module.asp_net_users_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PatchapiidentitymodulerefreshtokensupdaterefreshtokensrefreshtokentokenRefreshTokensController",
-    "TopicName": "demo.identity_module.refresh_tokens.update_refresh_tokens_patch",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymodulerefreshtokensRefreshTokensController",
-    "TopicName": "demo.identity_module.refresh_tokens_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymodulerefreshtokensidintRefreshTokensController",
-    "TopicName": "demo.identity_module.refresh_tokens_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymodulerefreshtokensidintRefreshTokensController",
-    "TopicName": "demo.identity_module.refresh_tokens_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PatchapiidentitymoduleapikeysrevokeapikeyapikeyidguidApiKeysController",
-    "TopicName": "demo.identity_module.api_keys.revoke_api_key_patch",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PatchapiidentitymoduleapikeystouchapikeylastusedapikeyidguidApiKeysController",
-    "TopicName": "demo.identity_module.api_keys.touch_api_key_last_used_patch",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleapikeysApiKeysController",
-    "TopicName": "demo.identity_module.api_keys_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleapikeysidguidApiKeysController",
-    "TopicName": "demo.identity_module.api_keys_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapikeysidguidApiKeysController",
-    "TopicName": "demo.identity_module.api_keys_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleapikeyusagelogsApiKeyUsageLogsController",
-    "TopicName": "demo.identity_module.api_key_usage_logs_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleapikeyusagelogsidintApiKeyUsageLogsController",
-    "TopicName": "demo.identity_module.api_key_usage_logs_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleapikeyusagelogsidintApiKeyUsageLogsController",
-    "TopicName": "demo.identity_module.api_key_usage_logs_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetroleclaimsAspNetRoleClaimsController",
-    "TopicName": "demo.identity_module.asp_net_role_claims_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetroleclaimsidintAspNetRoleClaimsController",
-    "TopicName": "demo.identity_module.asp_net_role_claims_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetroleclaimsidintAspNetRoleClaimsController",
-    "TopicName": "demo.identity_module.asp_net_role_claims_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetuserclaimsAspNetUserClaimsController",
-    "TopicName": "demo.identity_module.asp_net_user_claims_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetuserclaimsidintAspNetUserClaimsController",
-    "TopicName": "demo.identity_module.asp_net_user_claims_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetuserclaimsidintAspNetUserClaimsController",
-    "TopicName": "demo.identity_module.asp_net_user_claims_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetuserloginsAspNetUserLoginsController",
-    "TopicName": "demo.identity_module.asp_net_user_logins_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetuserloginsloginproviderproviderkeyAspNetUserLoginsController",
-    "TopicName": "demo.identity_module.asp_net_user_logins_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetuserloginsloginproviderproviderkeyAspNetUserLoginsController",
-    "TopicName": "demo.identity_module.asp_net_user_logins_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetuserrolesAspNetUserRolesController",
-    "TopicName": "demo.identity_module.asp_net_user_roles_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetuserrolesuseridroleidAspNetUserRolesController",
-    "TopicName": "demo.identity_module.asp_net_user_roles_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetuserrolesuseridroleidAspNetUserRolesController",
-    "TopicName": "demo.identity_module.asp_net_user_roles_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleaspnetusertokensAspNetUserTokensController",
-    "TopicName": "demo.identity_module.asp_net_user_tokens_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleaspnetusertokensuseridAspNetUserTokensController",
-    "TopicName": "demo.identity_module.asp_net_user_tokens_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleaspnetusertokensuseridAspNetUserTokensController",
-    "TopicName": "demo.identity_module.asp_net_user_tokens_delete",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PostapiidentitymoduleauditlogsAuditLogsController",
-    "TopicName": "demo.identity_module.audit_logs_post",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "PutapiidentitymoduleauditlogsidguidAuditLogsController",
-    "TopicName": "demo.identity_module.audit_logs_put",
-    "IsActive": false
-  },
-  {
-    "ApiMethodDefinitionKey": "DeleteapiidentitymoduleauditlogsidguidAuditLogsController",
-    "TopicName": "demo.identity_module.audit_logs_delete",
     "IsActive": false
   },
   {

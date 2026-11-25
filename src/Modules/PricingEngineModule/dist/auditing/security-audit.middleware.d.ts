@@ -4,6 +4,9 @@ import { IAuditLogWriter } from './audit-log-writer.interface';
 export interface SecurityAuditInfo {
     timestamp: Date;
     userId: string;
+    userGroup?: string | null;
+    clientId?: string | null;
+    tokenUse?: string | null;
     userAgent: string;
     ipAddress: string;
     method: string;

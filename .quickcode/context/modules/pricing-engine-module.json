@@ -1,0 +1,75 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "contextId": "f2000001-0000-4000-8000-000000000014",
+  "projectContextId": "f2000001-0000-4000-8000-000000000001",
+  "moduleId": "PricingEngineModule",
+  "moduleName": "PricingEngineModule",
+  "moduleKind": "Generated",
+  "version": 1,
+  "status": "Approved",
+  "isActive": true,
+  "lastGeneratedFromVersion": null,
+  "lastGeneratedAt": null,
+  "sourceProjectAnalysisId": null,
+  "sourceModuleAnalysisId": null,
+  "createdDate": "2026-04-27T13:43:50",
+  "updatedDate": "2026-08-28T00:00:00",
+  "payload": {
+    "module": {
+      "id": "PricingEngineModule",
+      "name": "PricingEngineModule",
+      "description": "Commission models, rules, seller assignments, category overrides, and promotional campaigns.",
+      "suggestedTables": [
+        "COMMISSION_MODELS",
+        "COMMISSION_RULES",
+        "SELLER_COMMISSION_ASSIGNMENTS",
+        "CATEGORY_COMMISSION_OVERRIDES",
+        "PROMOTIONAL_CAMPAIGNS",
+        "CAMPAIGN_APPLICABILITY"
+      ]
+    },
+    "domainConcepts": [
+      {
+        "name": "Commission Type"
+      },
+      {
+        "name": "Rule Scope"
+      },
+      {
+        "name": "Commission Model"
+      },
+      {
+        "name": "Commission Rule"
+      },
+      {
+        "name": "Seller Commission Assignment"
+      },
+      {
+        "name": "Category Commission Override"
+      },
+      {
+        "name": "Promotional Campaign"
+      },
+      {
+        "name": "Campaign Applicability"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "pricingenginemodule-crud",
+        "name": "Manage PricingEngine data",
+        "description": "CRUD and queries over PricingEngineModule tables."
+      }
+    ],
+    "processes": [
+      {
+        "id": "pricingenginemodule-read",
+        "name": "Query PricingEngineModule",
+        "description": "Read-only access to PricingEngineModule schema for Ask AI."
+      }
+    ]
+  }
+}

@@ -1,0 +1,96 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "contextId": "f2000001-0000-4000-8000-000000000015",
+  "projectContextId": "f2000001-0000-4000-8000-000000000001",
+  "moduleId": "FinanceSettlementModule",
+  "moduleName": "FinanceSettlementModule",
+  "moduleKind": "Generated",
+  "version": 1,
+  "status": "Approved",
+  "isActive": true,
+  "lastGeneratedFromVersion": null,
+  "lastGeneratedAt": null,
+  "sourceProjectAnalysisId": null,
+  "sourceModuleAnalysisId": null,
+  "createdDate": "2026-04-27T13:43:50",
+  "updatedDate": "2026-08-28T00:00:00",
+  "payload": {
+    "module": {
+      "id": "FinanceSettlementModule",
+      "name": "FinanceSettlementModule",
+      "description": "Seller payouts, commission entries, transaction ledger, and financial adjustments for marketplace settlement.",
+      "suggestedTables": [
+        "PAYOUT_PERIODS",
+        "COMMISSION_MODELS",
+        "COMMISSION_RULES",
+        "SELLER_PAYOUTS",
+        "PAYOUT_LINE_ITEMS",
+        "COMMISSION_ENTRIES",
+        "TRANSACTION_LEDGER",
+        "FINANCIAL_ADJUSTMENTS",
+        "PAYOUT_REPORTS"
+      ]
+    },
+    "domainConcepts": [
+      {
+        "name": "Commission Entry"
+      },
+      {
+        "name": "Payout Status"
+      },
+      {
+        "name": "Transaction Type"
+      },
+      {
+        "name": "Adjustment Reason"
+      },
+      {
+        "name": "Commission Status"
+      },
+      {
+        "name": "Payout Period"
+      },
+      {
+        "name": "Commission Model"
+      },
+      {
+        "name": "Commission Rule"
+      },
+      {
+        "name": "Seller Payout"
+      },
+      {
+        "name": "Payout Line Item"
+      },
+      {
+        "name": "Commission Entrie"
+      },
+      {
+        "name": "Transaction Ledger"
+      },
+      {
+        "name": "Financial Adjustment"
+      },
+      {
+        "name": "Payout Report"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "financesettlementmodule-crud",
+        "name": "Manage FinanceSettlement data",
+        "description": "CRUD and queries over FinanceSettlementModule tables."
+      }
+    ],
+    "processes": [
+      {
+        "id": "financesettlementmodule-read",
+        "name": "Query FinanceSettlementModule",
+        "description": "Read-only access to FinanceSettlementModule schema for Ask AI."
+      }
+    ]
+  }
+}

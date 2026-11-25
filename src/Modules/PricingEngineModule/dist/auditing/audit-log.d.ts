@@ -18,6 +18,7 @@ export interface AuditLogPayload {
     changeSummary?: string | null;
     ipAddress?: string | null;
     userAgent?: string | null;
+    clientId?: string | null;
     correlationId?: string | null;
     isSuccess: boolean;
     errorMessage?: string | null;

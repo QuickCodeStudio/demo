@@ -1,0 +1,38 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.8045955Z",
+  "notSourceOfTruth": true,
+  "note": "OpenAPI snapshot copied from src/swagger_files at generate time. Local/CI builds update swagger_files only; this folder refreshes on the next generate.",
+  "projectName": "demo",
+  "specs": [
+    {
+      "file": "QuickCode.Demo.FinanceSettlementModule.Api-Swagger.json",
+      "bytes": 197750,
+      "source": "src/swagger_files/QuickCode.Demo.FinanceSettlementModule.Api-Swagger.json"
+    },
+    {
+      "file": "QuickCode.Demo.IdentityModule.Api-Swagger.json",
+      "bytes": 469273,
+      "source": "src/swagger_files/QuickCode.Demo.IdentityModule.Api-Swagger.json"
+    },
+    {
+      "file": "QuickCode.Demo.OrderManagementModule.Api-Swagger.json",
+      "bytes": 183770,
+      "source": "src/swagger_files/QuickCode.Demo.OrderManagementModule.Api-Swagger.json"
+    },
+    {
+      "file": "QuickCode.Demo.PricingEngineModule.Api-Swagger.json",
+      "bytes": 132314,
+      "source": "src/swagger_files/QuickCode.Demo.PricingEngineModule.Api-Swagger.json"
+    },
+    {
+      "file": "QuickCode.Demo.ProductCatalogModule.Api-Swagger.json",
+      "bytes": 148063,
+      "source": "src/swagger_files/QuickCode.Demo.ProductCatalogModule.Api-Swagger.json"
+    },
+    {
+      "file": "QuickCode.Demo.SellerManagementModule.Api-Swagger.json",
+      "bytes": 161261,
+      "source": "src/swagger_files/QuickCode.Demo.SellerManagementModule.Api-Swagger.json"
+    }
+  ]
+}

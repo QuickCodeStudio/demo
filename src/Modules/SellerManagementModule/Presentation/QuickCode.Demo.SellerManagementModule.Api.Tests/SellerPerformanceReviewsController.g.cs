@@ -8,11 +8,10 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using QuickCode.Demo.Application.Contracts.Mediator;
 using Microsoft.Extensions.Logging;
 using QuickCode.Demo.SellerManagementModule.Api.Controllers;
 using QuickCode.Demo.SellerManagementModule.Application.Dtos.SellerPerformanceReview;
-using QuickCode.Demo.SellerManagementModule.Application.Features.SellerPerformanceReview;
+using QuickCode.Demo.SellerManagementModule.Application.Services.SellerPerformanceReview;
 using System.Collections.Generic;
 using QuickCode.Demo.Application.Contracts;
 using QuickCode.Demo.Infrastructure.Web.Helpers;
@@ -24,12 +23,12 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
 {
     public class SellerPerformanceReviewsControllerTests
     {
-        private readonly Mock<IMediator> _mediatorMock = new();
+        private readonly Mock<ISellerPerformanceReviewService> _serviceMock = new();
         private readonly Mock<ILogger<SellerPerformanceReviewsController>> _loggerMock = new();
         private readonly SellerPerformanceReviewsController _controller;
         public SellerPerformanceReviewsControllerTests()
         {
-            _controller = new SellerPerformanceReviewsController(_mediatorMock.Object, null, _loggerMock.Object);
+            _controller = new SellerPerformanceReviewsController(_serviceMock.Object, null, _loggerMock.Object);
         }
 
         [Fact]
@@ -41,7 +40,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
             {
                 Items = fakeList
             };
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ListSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<ListResult<SellerPerformanceReviewDto>> { Code = 0, Value = fakeResult });
+            _serviceMock.Setup(s => s.ListAsync(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<bool>())).ReturnsAsync(new Response<ListResult<SellerPerformanceReviewDto>> { Code = 0, Value = fakeResult });
             // Act
             var result = await _controller.ListAsync(1, 10);
             // Assert
@@ -53,7 +52,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         public async Task ListAsync_Should_Return_BadRequest_When_Fail()
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<ListSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<ListResult<SellerPerformanceReviewDto>> { Code = 1, Message = "Error" });
+            _serviceMock.Setup(s => s.ListAsync(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<bool>())).ReturnsAsync(new Response<ListResult<SellerPerformanceReviewDto>> { Code = 1, Message = "Error" });
             // Act
             var result = await _controller.ListAsync(1, 10);
             // Assert
@@ -74,7 +73,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         public async Task TotalCountAsync_Should_Return_Ok_When_Success()
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<TotalCountSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<int> { Code = 0, Value = 5 });
+            _serviceMock.Setup(s => s.TotalItemCountAsync()).ReturnsAsync(new Response<int> { Code = 0, Value = 5 });
             // Act
             var result = await _controller.CountAsync();
             // Assert
@@ -86,7 +85,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         public async Task TotalCountAsync_Should_Return_BadRequest_When_Fail()
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<TotalCountSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<int> { Code = 1, Message = "Error" });
+            _serviceMock.Setup(s => s.TotalItemCountAsync()).ReturnsAsync(new Response<int> { Code = 1, Message = "Error" });
             // Act
             var result = await _controller.CountAsync();
             // Assert
@@ -99,7 +98,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange 
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetItemSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 0, Value = fakeDto });
+            _serviceMock.Setup(s => s.GetItemAsync(It.IsAny<int>())).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 0, Value = fakeDto });
             // Act
             var result = await _controller.GetItemAsync(fakeDto.Id);
             // Assert
@@ -112,7 +111,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetItemSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 404, Message = "Not found" });
+            _serviceMock.Setup(s => s.GetItemAsync(It.IsAny<int>())).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 404, Message = "Not found" });
             // Act
             var result = await _controller.GetItemAsync(fakeDto.Id);
             // Assert
@@ -124,7 +123,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetItemSellerPerformanceReviewQuery>(), default)).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 1, Message = "Error" });
+            _serviceMock.Setup(s => s.GetItemAsync(It.IsAny<int>())).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 1, Message = "Error" });
             // Act
             var result = await _controller.GetItemAsync(fakeDto.Id);
             // Assert
@@ -136,7 +135,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<InsertSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 0, Value = fakeDto });
+            _serviceMock.Setup(s => s.InsertAsync(It.IsAny<SellerPerformanceReviewDto>())).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 0, Value = fakeDto });
             // Act
             var result = await _controller.InsertAsync(fakeDto);
             // Assert
@@ -149,7 +148,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<InsertSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 1, Message = "Insert failed" });
+            _serviceMock.Setup(s => s.InsertAsync(It.IsAny<SellerPerformanceReviewDto>())).ReturnsAsync(new Response<SellerPerformanceReviewDto> { Code = 1, Message = "Insert failed" });
             // Act
             var result = await _controller.InsertAsync(fakeDto);
             // Assert
@@ -161,7 +160,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<bool> { Code = 0, Value = true });
+            _serviceMock.Setup(s => s.UpdateAsync(It.IsAny<int>(), It.IsAny<SellerPerformanceReviewDto>())).ReturnsAsync(new Response<bool> { Code = 0, Value = true });
             // Act
             var result = await _controller.UpdateAsync(fakeDto.Id, fakeDto);
             // Assert
@@ -174,7 +173,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<bool> { Code = 404, Message = "Not found" });
+            _serviceMock.Setup(s => s.UpdateAsync(It.IsAny<int>(), It.IsAny<SellerPerformanceReviewDto>())).ReturnsAsync(new Response<bool> { Code = 404, Message = "Not found" });
             // Act
             var result = await _controller.UpdateAsync(fakeDto.Id, fakeDto);
             // Assert
@@ -186,7 +185,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<UpdateSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<bool> { Code = 1, Message = "Update failed" });
+            _serviceMock.Setup(s => s.UpdateAsync(It.IsAny<int>(), It.IsAny<SellerPerformanceReviewDto>())).ReturnsAsync(new Response<bool> { Code = 1, Message = "Update failed" });
             // Act
             var result = await _controller.UpdateAsync(fakeDto.Id, fakeDto);
             // Assert
@@ -198,7 +197,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteItemSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<bool> { Code = 0, Value = true });
+            _serviceMock.Setup(s => s.DeleteItemAsync(It.IsAny<int>())).ReturnsAsync(new Response<bool> { Code = 0, Value = true });
             // Act
             var result = await _controller.DeleteAsync(fakeDto.Id);
             // Assert
@@ -211,7 +210,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteItemSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<bool> { Code = 404, Message = "Not found" });
+            _serviceMock.Setup(s => s.DeleteItemAsync(It.IsAny<int>())).ReturnsAsync(new Response<bool> { Code = 404, Message = "Not found" });
             // Act
             var result = await _controller.DeleteAsync(fakeDto.Id);
             // Assert
@@ -223,7 +222,7 @@ namespace QuickCode.Demo.SellerManagementModule.Api.Tests
         {
             // Arrange
             var fakeDto = TestDataGenerator.CreateFake<SellerPerformanceReviewDto>("tr");
-            _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteItemSellerPerformanceReviewCommand>(), default)).ReturnsAsync(new Response<bool> { Code = 1, Message = "Delete failed" });
+            _serviceMock.Setup(s => s.DeleteItemAsync(It.IsAny<int>())).ReturnsAsync(new Response<bool> { Code = 1, Message = "Delete failed" });
             // Act
             var result = await _controller.DeleteAsync(fakeDto.Id);
             // Assert

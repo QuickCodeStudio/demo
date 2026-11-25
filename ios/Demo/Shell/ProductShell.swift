@@ -1,63 +1,21 @@
 import SwiftUI
 
-/// Demo / product app: Customer site screens from analysis (project-context modules[].screens).
+/// Product / Demo target: analysis (or curated) screens in the shared portal shell.
 enum AppShellContent {
     static let loadsRemoteMenus = false
 
     static var homePage: ShellPage {
-        ShellPage(
-            id: "home",
-            title: "Home",
-            symbol: "rectangle.3.group.fill",
-            group: "Overview",
-            route: .home
-        )
+        ShellPage(id: "home", title: "Home", symbol: "rectangle.3.group.fill", group: "Overview", route: .home)
     }
 
     static var menuPages: [ShellPage] {
         [
-            ShellPage(
-                id: "ProductCatalogModule.Products",
-                title: "Products",
-                symbol: "shippingbox",
-                group: "Browse",
-                route: .resource(module: "ProductCatalogModule", model: "Products", title: "Products")
-            ),
-            ShellPage(
-                id: "ProductCatalogModule.Brands",
-                title: "Brands",
-                symbol: "seal",
-                group: "Browse",
-                route: .resource(module: "ProductCatalogModule", model: "Brands", title: "Brands")
-            ),
-            ShellPage(
-                id: "ProductCatalogModule.Categories",
-                title: "Categories",
-                symbol: "square.grid.2x2",
-                group: "Browse",
-                route: .resource(module: "ProductCatalogModule", model: "Categories", title: "Categories")
-            ),
-            ShellPage(
-                id: "OrderManagementModule.MyOrders",
-                title: "My orders",
-                symbol: "list.bullet.rectangle",
-                group: "Browse",
-                route: .resource(module: "OrderManagementModule", model: "Orders", title: "My orders")
-            ),
-            ShellPage(
-                id: "OrderManagementModule.AllOrders",
-                title: "All orders",
-                symbol: "list.bullet.rectangle.fill",
-                group: "Browse",
-                route: .resource(module: "OrderManagementModule", model: "Orders", title: "All orders")
-            ),
-            ShellPage(
-                id: "OrderManagementModule.Checkout",
-                title: "Checkout",
-                symbol: "cart",
-                group: "Browse",
-                route: .resource(module: "OrderManagementModule", model: "ShippingMethods", title: "Checkout")
-            )
+            ShellPage(id: "ProductCatalogModule.ProductCatalogModuleProducts", title: "Products", symbol: "shippingbox", group: "Browse", route: .resource(module: "ProductCatalogModule", model: "Products", title: "Products")),
+            ShellPage(id: "ProductCatalogModule.ProductCatalogModuleBrands", title: "Brands", symbol: "seal", group: "Browse", route: .resource(module: "ProductCatalogModule", model: "Brands", title: "Brands")),
+            ShellPage(id: "ProductCatalogModule.ProductCatalogModuleCategories", title: "Categories", symbol: "square.grid.2x2", group: "Browse", route: .resource(module: "ProductCatalogModule", model: "Categories", title: "Categories")),
+            ShellPage(id: "OrderManagementModule.MyOrders", title: "My orders", symbol: "list.bullet.rectangle", group: "Browse", route: .resource(module: "OrderManagementModule", model: "Orders", title: "My orders")),
+            ShellPage(id: "OrderManagementModule.AllOrders", title: "All orders", symbol: "list.bullet.rectangle.fill", group: "Browse", route: .resource(module: "OrderManagementModule", model: "Orders", title: "All orders")),
+            ShellPage(id: "OrderManagementModule.Checkout", title: "Checkout", symbol: "cart", group: "Browse", route: .resource(module: "OrderManagementModule", model: "ShippingMethods", title: "Checkout")),
         ]
     }
 
@@ -76,18 +34,6 @@ enum AppShellContent {
         default:
             portalPage(module: module, model: model, title: title)
         }
-    }
-
-    /// Access Grant Managers are Portal-only; product target keeps the ShellRoute exhaustive.
-    @ViewBuilder
-    static func managerPage(_ kind: PortalManagerKind) -> some View {
-        ContentUnavailableView(
-            "Portal only",
-            systemImage: "lock.shield",
-            description: Text("Access Grant Managers are available in the Portal app.")
-        )
-        .navigationTitle(kind.rawValue)
-        .portalShellChrome()
     }
 }
 

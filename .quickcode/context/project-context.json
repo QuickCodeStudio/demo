@@ -1,550 +1,165 @@
-{
-  "schemaVersion": "1.0",
-  "analysisId": "ctx_f20000010000",
-  "status": "APPROVED",
-  "language": "en-US",
-  "project": {
-    "name": "Demo",
-    "type": "",
-    "businessDomain": "",
-    "description": "",
-    "objectives": [],
-    "scope": {
-      "inScope": [],
-      "outOfScope": []
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "contextId": "f2000001-0000-4000-8000-000000000001",
+  "version": 1,
+  "status": "Approved",
+  "isActive": true,
+  "sourceProjectAnalysisId": null,
+  "createdDate": "2026-04-27T13:43:50",
+  "updatedDate": "2026-08-28T00:00:00",
+  "payload": {
+    "project": {
+      "name": "Demo",
+      "summary": "Public marketplace demo: product catalog, sellers, orders, pricing, and finance settlement.",
+      "domain": "Multi-vendor e-commerce marketplace"
+    },
+    "analysisSummary": {
+      "title": "Demo platform seed",
+      "overview": "Public marketplace demo: product catalog, sellers, orders, pricing, and finance settlement."
+    },
+    "modules": [
+      {
+        "id": "FinanceSettlementModule",
+        "name": "FinanceSettlementModule",
+        "kind": "GENERATED",
+        "description": "Seller payouts, commission entries, transaction ledger, and financial adjustments for marketplace settlement."
+      },
+      {
+        "id": "OrderManagementModule",
+        "name": "OrderManagementModule",
+        "kind": "GENERATED",
+        "description": "Customer orders, order items, shipments, shipping methods, and return requests."
+      },
+      {
+        "id": "PricingEngineModule",
+        "name": "PricingEngineModule",
+        "kind": "GENERATED",
+        "description": "Commission models, rules, seller assignments, category overrides, and promotional campaigns."
+      },
+      {
+        "id": "ProductCatalogModule",
+        "name": "ProductCatalogModule",
+        "kind": "GENERATED",
+        "description": "Manages all aspects of products, including categorization, variants, attributes, and brand information. This module serves as the central source of truth for all product data available on the marketplace."
+      },
+      {
+        "id": "SellerManagementModule",
+        "name": "SellerManagementModule",
+        "kind": "GENERATED",
+        "description": "Manages seller onboarding, store profiles, legal documents, and performance metrics. This module is the central hub for all seller-related information and administrative tasks."
+      }
+    ],
+    "domainConcepts": [
+      {
+        "name": "Commission Entry"
+      },
+      {
+        "name": "Payout Status"
+      },
+      {
+        "name": "Transaction Type"
+      },
+      {
+        "name": "Adjustment Reason"
+      },
+      {
+        "name": "Commission Status"
+      },
+      {
+        "name": "Payout Period"
+      },
+      {
+        "name": "Commission Model"
+      },
+      {
+        "name": "Commission Rule"
+      },
+      {
+        "name": "Seller Payout"
+      },
+      {
+        "name": "Payout Line Item"
+      },
+      {
+        "name": "Commission Entrie"
+      },
+      {
+        "name": "Transaction Ledger"
+      },
+      {
+        "name": "Financial Adjustment"
+      },
+      {
+        "name": "Payout Report"
+      },
+      {
+        "name": "Order Status"
+      },
+      {
+        "name": "Shipment Status"
+      },
+      {
+        "name": "Return Status"
+      },
+      {
+        "name": "Order"
+      },
+      {
+        "name": "Order Item"
+      },
+      {
+        "name": "Shipment"
+      },
+      {
+        "name": "Shipping Method"
+      },
+      {
+        "name": "Order Status History"
+      },
+      {
+        "name": "Order Status Manager"
+      },
+      {
+        "name": "Return Request"
+      },
+      {
+        "name": "Commission Type"
+      },
+      {
+        "name": "Rule Scope"
+      },
+      {
+        "name": "Seller Commission Assignment"
+      },
+      {
+        "name": "Category Commission Override"
+      },
+      {
+        "name": "Promotional Campaign"
+      },
+      {
+        "name": "Campaign Applicability"
+      },
+      {
+        "name": "Attribute"
+      },
+      {
+        "name": "Category"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "ask-ai-readonly",
+        "name": "Ask AI read-only Q\u0026A",
+        "description": "Answer questions about project schema and modules."
+      }
+    ],
+    "readiness": {
+      "status": "APPROVED",
+      "notes": "Seeded from InitialData for platform projects."
     }
-  },
-  "capabilities": [
-    {
-      "id": "ask-ai-readonly",
-      "name": "Ask AI read-only Q\u0026A",
-      "description": "Answer questions about project schema and modules.",
-      "actors": [],
-      "sourceRefs": null
-    }
-  ],
-  "processes": [],
-  "businessRules": [],
-  "domainConcepts": [
-    {
-      "id": "",
-      "name": "Commission Entry",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Payout Status",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Transaction Type",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Adjustment Reason",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Commission Status",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Payout Period",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Commission Model",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Commission Rule",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Seller Payout",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Payout Line Item",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Commission Entrie",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Transaction Ledger",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Financial Adjustment",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Payout Report",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Order Status",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Shipment Status",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Return Status",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Order",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Order Item",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Shipment",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Shipping Method",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Order Status History",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Order Status Manager",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Return Request",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Commission Type",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Rule Scope",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Seller Commission Assignment",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Category Commission Override",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Promotional Campaign",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Campaign Applicability",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Attribute",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    },
-    {
-      "id": "",
-      "name": "Category",
-      "description": "",
-      "attributesMentioned": [],
-      "relationshipsMentioned": [],
-      "origin": "AI_INFERENCE",
-      "confidence": 0,
-      "sourceRefs": null
-    }
-  ],
-  "openQuestions": [],
-  "headingFills": [],
-  "modules": [
-    {
-      "id": "FinanceSettlementModule",
-      "moduleName": "",
-      "moduleKind": "GENERATED",
-      "platformModuleKey": "",
-      "description": "Seller payouts, commission entries, transaction ledger, and financial adjustments for marketplace settlement.",
-      "oneLiner": "",
-      "boundedContext": "",
-      "domainConceptIds": [],
-      "capabilityIds": [],
-      "processIds": [],
-      "dependsOnModuleIds": [],
-      "crossModuleRefs": [],
-      "suggestedTables": [
-        "PAYOUT_PERIODS",
-        "COMMISSION_MODELS",
-        "COMMISSION_RULES",
-        "SELLER_PAYOUTS",
-        "PAYOUT_LINE_ITEMS",
-        "COMMISSION_ENTRIES",
-        "TRANSACTION_LEDGER",
-        "FINANCIAL_ADJUSTMENTS",
-        "PAYOUT_REPORTS"
-      ],
-      "documentModuleNames": [],
-      "screens": [],
-      "generationStatus": "PENDING",
-      "generationErrors": [],
-      "moduleAnalysisId": null,
-      "moduleAnalysisStatus": "MISSING",
-      "dbTypeKey": null,
-      "architecturalPatternKey": null,
-      "targetStackKey": null,
-      "sourceRefs": null,
-      "name": "FinanceSettlementModule"
-    },
-    {
-      "id": "OrderManagementModule",
-      "moduleName": "",
-      "moduleKind": "GENERATED",
-      "platformModuleKey": "",
-      "description": "Customer orders, order items, shipments, shipping methods, and return requests.",
-      "oneLiner": "",
-      "boundedContext": "",
-      "domainConceptIds": [],
-      "capabilityIds": [],
-      "processIds": [],
-      "dependsOnModuleIds": [],
-      "crossModuleRefs": [],
-      "suggestedTables": [
-        "ORDERS",
-        "ORDER_ITEMS",
-        "SHIPMENTS",
-        "SHIPPING_METHODS",
-        "ORDER_STATUS_HISTORY",
-        "ORDER_STATUS_MANAGER",
-        "RETURN_REQUESTS"
-      ],
-      "documentModuleNames": [],
-      "screens": [],
-      "generationStatus": "PENDING",
-      "generationErrors": [],
-      "moduleAnalysisId": null,
-      "moduleAnalysisStatus": "MISSING",
-      "dbTypeKey": null,
-      "architecturalPatternKey": null,
-      "targetStackKey": null,
-      "sourceRefs": null,
-      "name": "OrderManagementModule"
-    },
-    {
-      "id": "PricingEngineModule",
-      "moduleName": "",
-      "moduleKind": "GENERATED",
-      "platformModuleKey": "",
-      "description": "Commission models, rules, seller assignments, category overrides, and promotional campaigns.",
-      "oneLiner": "",
-      "boundedContext": "",
-      "domainConceptIds": [],
-      "capabilityIds": [],
-      "processIds": [],
-      "dependsOnModuleIds": [],
-      "crossModuleRefs": [],
-      "suggestedTables": [
-        "COMMISSION_MODELS",
-        "COMMISSION_RULES",
-        "SELLER_COMMISSION_ASSIGNMENTS",
-        "CATEGORY_COMMISSION_OVERRIDES",
-        "PROMOTIONAL_CAMPAIGNS",
-        "CAMPAIGN_APPLICABILITY"
-      ],
-      "documentModuleNames": [],
-      "screens": [],
-      "generationStatus": "PENDING",
-      "generationErrors": [],
-      "moduleAnalysisId": null,
-      "moduleAnalysisStatus": "MISSING",
-      "dbTypeKey": null,
-      "architecturalPatternKey": null,
-      "targetStackKey": null,
-      "sourceRefs": null,
-      "name": "PricingEngineModule"
-    },
-    {
-      "id": "ProductCatalogModule",
-      "moduleName": "",
-      "moduleKind": "GENERATED",
-      "platformModuleKey": "",
-      "description": "Manages all aspects of products, including categorization, variants, attributes, and brand information. This module serves as the central source of truth for all product data available on the marketplace.",
-      "oneLiner": "",
-      "boundedContext": "",
-      "domainConceptIds": [],
-      "capabilityIds": [],
-      "processIds": [],
-      "dependsOnModuleIds": [],
-      "crossModuleRefs": [],
-      "suggestedTables": [
-        "PRODUCTS",
-        "PRODUCT_VARIANTS",
-        "CATEGORIES",
-        "PRODUCT_CATEGORIES",
-        "BRANDS",
-        "ATTRIBUTE_DEFINITIONS",
-        "ATTRIBUTE_VALUES",
-        "PRODUCT_VARIANT_ATTRIBUTES"
-      ],
-      "documentModuleNames": [],
-      "screens": [],
-      "generationStatus": "PENDING",
-      "generationErrors": [],
-      "moduleAnalysisId": null,
-      "moduleAnalysisStatus": "MISSING",
-      "dbTypeKey": null,
-      "architecturalPatternKey": null,
-      "targetStackKey": null,
-      "sourceRefs": null,
-      "name": "ProductCatalogModule"
-    },
-    {
-      "id": "SellerManagementModule",
-      "moduleName": "",
-      "moduleKind": "GENERATED",
-      "platformModuleKey": "",
-      "description": "Manages seller onboarding, store profiles, legal documents, and performance metrics. This module is the central hub for all seller-related information and administrative tasks.",
-      "oneLiner": "",
-      "boundedContext": "",
-      "domainConceptIds": [],
-      "capabilityIds": [],
-      "processIds": [],
-      "dependsOnModuleIds": [],
-      "crossModuleRefs": [],
-      "suggestedTables": [
-        "SELLERS",
-        "STORES",
-        "SELLER_DOCUMENTS",
-        "SELLER_BANK_ACCOUNTS",
-        "SELLER_TIERS",
-        "SELLER_PERFORMANCE_REVIEWS"
-      ],
-      "documentModuleNames": [],
-      "screens": [],
-      "generationStatus": "PENDING",
-      "generationErrors": [],
-      "moduleAnalysisId": null,
-      "moduleAnalysisStatus": "MISSING",
-      "dbTypeKey": null,
-      "architecturalPatternKey": null,
-      "targetStackKey": null,
-      "sourceRefs": null,
-      "name": "SellerManagementModule"
-    }
-  ],
-  "unplacedDocumentModules": [],
-  "analysisSummary": {
-    "headline": "",
-    "howWeUnderstood": "",
-    "howWeSplitModules": "",
-    "platformChoices": [],
-    "keyAssumptions": [],
-    "whatWeStillNeed": [],
-    "recommendedNextStep": ""
-  },
-  "userCopy": null,
-  "promptTrace": null,
-  "studioChat": null,
-  "workflowSuggestions": null,
-  "readiness": {
-    "overall": "REQUIRES_USER_INPUT",
-    "analysisCompletenessPercent": 0,
-    "blockingQuestionCount": 0,
-    "canGenerateDraftDbml": false,
-    "canGenerateApprovedDbml": false,
-    "modulesPlannedCount": 0,
-    "modulesGeneratedCount": 0,
-    "modulesFailedCount": 0,
-    "platformModulesSelectedCount": 0
   }
 }

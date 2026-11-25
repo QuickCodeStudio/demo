@@ -6,14 +6,7 @@ use axum::{Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
-use crate::cqrs::send;
-use crate::features::queries::attribute_value::list_attribute_value_query::{ListAttributeValueQuery, ListAttributeValueHandler};
-use crate::features::queries::attribute_value::get_item_attribute_value_query::{GetItemAttributeValueQuery, GetItemAttributeValueHandler};
-use crate::features::queries::attribute_value::total_item_count_attribute_value_query::{TotalItemCountAttributeValueQuery, TotalItemCountAttributeValueHandler};
-use crate::features::commands::attribute_value::insert_attribute_value_command::{InsertAttributeValueCommand, InsertAttributeValueHandler};
-use crate::features::commands::attribute_value::update_attribute_value_command::{UpdateAttributeValueCommand, UpdateAttributeValueHandler};
-use crate::features::commands::attribute_value::delete_item_attribute_value_command::{DeleteItemAttributeValueCommand, DeleteItemAttributeValueHandler};
-use crate::features::queries::attribute_value::get_by_attribute_id_attribute_value_query::{GetByAttributeIdAttributeValueQuery, GetByAttributeIdAttributeValueHandler};
+use crate::services::attribute_value_service::AttributeValueService;
 use crate::platform::{problem_json, AppState};
 
 #[derive(Debug, Deserialize)]
@@ -31,16 +24,16 @@ fn default_page() -> i64 { 1 }
 fn default_size() -> i64 { 20 }
 
 async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl IntoResponse {
-    match send::<ListAttributeValueHandler, _>(&state.pool, ListAttributeValueQuery {
-        page: q.page,
-        size: q.size,
-        include_count: q.include_count,
-    }).await {
-        Ok(result) => {
-            let items = crate::db::rows_to_api(result.items);
-            let total_count = match result.total_count {
-                Some(n) => Value::from(n),
-                None => Value::Null,
+    match AttributeValueService::list(&state.pool, q.page, q.size).await {
+        Ok(rows) => {
+            let items = crate::db::rows_to_api(rows);
+            let total_count = if q.include_count {
+                match AttributeValueService::count(&state.pool).await {
+                    Ok(count_rows) => Value::from(crate::db::scalar_number(&count_rows)),
+                    Err(_) => Value::Null,
+                }
+            } else {
+                Value::Null
             };
             (StatusCode::OK, Json(json!({ "items": items, "totalCount": total_count }))).into_response()
         }
@@ -49,14 +42,14 @@ async fn list(State(state): State<AppState>, Query(q): Query<PageQuery>) -> impl
 }
 
 async fn count(State(state): State<AppState>) -> impl IntoResponse {
-    match send::<TotalItemCountAttributeValueHandler, _>(&state.pool, TotalItemCountAttributeValueQuery).await {
-        Ok(n) => (StatusCode::OK, Json(json!(n))).into_response(),
+    match AttributeValueService::count(&state.pool).await {
+        Ok(rows) => (StatusCode::OK, Json(json!(crate::db::scalar_number(&rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
 }
 
 async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
-    match send::<GetItemAttributeValueHandler, _>(&state.pool, GetItemAttributeValueQuery { id: json!(id) }).await {
+    match AttributeValueService::get_item(&state.pool, json!(id)).await {
         Ok(Some(row)) => (StatusCode::OK, Json(crate::db::row_to_api(row))).into_response(),
         Ok(None) => problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
@@ -64,7 +57,7 @@ async fn get_item(State(state): State<AppState>, Path(id): Path<String>) -> impl
 }
 
 async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
-    match send::<InsertAttributeValueHandler, _>(&state.pool, InsertAttributeValueCommand { body }).await {
+    match AttributeValueService::insert(&state.pool, body).await {
         Ok(rows) => (
             StatusCode::CREATED,
             Json(rows.into_iter().next().map(crate::db::row_to_api).unwrap_or(Value::Null)),
@@ -74,24 +67,24 @@ async fn insert(State(state): State<AppState>, Json(body): Json<HashMap<String, 
 }
 
 async fn update(State(state): State<AppState>, Path(id): Path<String>, Json(body): Json<HashMap<String, Value>>) -> impl IntoResponse {
-    match send::<GetItemAttributeValueHandler, _>(&state.pool, GetItemAttributeValueQuery { id: json!(id) }).await {
+    match AttributeValueService::get_item(&state.pool, json!(id)).await {
         Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
         Ok(Some(_)) => {}
     }
-    match send::<UpdateAttributeValueHandler, _>(&state.pool, UpdateAttributeValueCommand { id: json!(id), body }).await {
+    match AttributeValueService::update(&state.pool, json!(id), body).await {
         Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
 }
 
 async fn delete_item(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
-    match send::<GetItemAttributeValueHandler, _>(&state.pool, GetItemAttributeValueQuery { id: json!(id) }).await {
+    match AttributeValueService::get_item(&state.pool, json!(id)).await {
         Ok(None) => return problem_json(StatusCode::NOT_FOUND, "Not found"),
         Err(e) => return (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
         Ok(Some(_)) => {}
     }
-    match send::<DeleteItemAttributeValueHandler, _>(&state.pool, DeleteItemAttributeValueCommand { id: json!(id) }).await {
+    match AttributeValueService::delete(&state.pool, json!(id)).await {
         Ok(_) => (StatusCode::OK, Json(json!(true))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }
@@ -104,7 +97,7 @@ async fn get_by_attribute_id(State(state): State<AppState>, Query(q): Query<Hash
     let size: i64 = q.get("pageSize").or_else(|| q.get("page_size")).and_then(|s| s.parse().ok()).unwrap_or(20);
     values.push(json!(((page.max(1) - 1) * size.max(1)).max(0)));
     values.push(json!(size.max(1)));
-    match send::<GetByAttributeIdAttributeValueHandler, _>(&state.pool, GetByAttributeIdAttributeValueQuery { values }).await {
+    match AttributeValueService::get_by_attribute_id(&state.pool, values).await {
         Ok(rows) => (StatusCode::OK, Json(Value::Array(crate::db::rows_to_api(rows)))).into_response(),
         Err(e) => (StatusCode::BAD_REQUEST, Json(json!({ "error": e.to_string() }))).into_response(),
     }

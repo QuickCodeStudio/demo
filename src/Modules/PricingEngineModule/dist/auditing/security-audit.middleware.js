@@ -37,6 +37,9 @@ let SecurityAuditMiddleware = SecurityAuditMiddleware_1 = class SecurityAuditMid
             const auditInfo = {
                 timestamp: startTime,
                 userId: getUserId(req),
+                userGroup: getUserGroup(req),
+                clientId: getClientId(req),
+                tokenUse: header(req, 'x-token-use') || claim(req, 'token_use'),
                 userAgent: String(req.headers['user-agent'] ?? ''),
                 ipAddress: req.ip || req.socket.remoteAddress || 'unknown',
                 method: req.method,
@@ -53,15 +56,22 @@ let SecurityAuditMiddleware = SecurityAuditMiddleware_1 = class SecurityAuditMid
         next();
     }
     async queueSecurityAudit(req, auditInfo) {
-        const correlationId = String(req.headers['x-correlation-id'] ?? '') ||
-            String(req.headers['x-request-id'] ?? '') ||
+        const correlationId = header(req, 'x-correlation-id') ||
+            header(req, 'x-request-id') ||
             (0, crypto_1.randomUUID)();
+        const changeParts = [];
+        if (auditInfo.tokenUse)
+            changeParts.push(`token_use=${auditInfo.tokenUse}`);
+        const clientApp = header(req, 'x-client-app');
+        if (clientApp)
+            changeParts.push(`client_app=${clientApp}`);
         const auditLog = (0, audit_log_1.createAuditLog)({
             entityName: 'HttpRequest',
             entityId: correlationId,
             action: auditInfo.method,
             userId: auditInfo.userId,
             userName: req.user?.name ?? req.user?.username ?? null,
+            userGroup: auditInfo.userGroup,
             timestamp: auditInfo.timestamp,
             durationMs: auditInfo.durationMs,
             statusCode: auditInfo.statusCode,
@@ -69,7 +79,9 @@ let SecurityAuditMiddleware = SecurityAuditMiddleware_1 = class SecurityAuditMid
             requestPath: auditInfo.path,
             ipAddress: auditInfo.ipAddress,
             userAgent: auditInfo.userAgent,
+            clientId: auditInfo.clientId,
             correlationId,
+            changeSummary: changeParts.length ? changeParts.join(';') : null,
             isSuccess: auditInfo.statusCode < 400,
             isChanged: false,
             newValues: JSON.stringify(auditInfo),
@@ -78,6 +90,7 @@ let SecurityAuditMiddleware = SecurityAuditMiddleware_1 = class SecurityAuditMid
     }
     logSecurityAudit(auditInfo) {
         const msg = `Security Audit: ${auditInfo.method} ${auditInfo.path} - User: ${auditInfo.userId} - ` +
+            `Group: ${auditInfo.userGroup ?? ''} - ClientId: ${auditInfo.clientId ?? ''} - ` +
             `IP: ${auditInfo.ipAddress} - Status: ${auditInfo.statusCode} - Duration: ${auditInfo.durationMs}ms`;
         if (auditInfo.statusCode >= 400)
             this.logger.warn(msg);
@@ -94,7 +107,29 @@ exports.SecurityAuditMiddleware = SecurityAuditMiddleware = SecurityAuditMiddlew
     __param(0, (0, common_1.Inject)(audit_log_writer_interface_1.AUDIT_LOG_WRITER)),
     __metadata("design:paramtypes", [Object])
 ], SecurityAuditMiddleware);
+function header(req, name) {
+    const value = req.headers[name];
+    if (Array.isArray(value))
+        return (value[0] ?? '').trim();
+    return String(value ?? '').trim();
+}
+function claim(req, key) {
+    const user = req.user;
+    if (!user)
+        return '';
+    if (user[key] != null)
+        return String(user[key]).trim();
+    if (Array.isArray(user.claims)) {
+        const found = user.claims.find((c) => c?.type === key || c?.Type === key);
+        if (found?.value != null || found?.Value != null)
+            return String(found.value ?? found.Value).trim();
+    }
+    return '';
+}
 function getUserId(req) {
+    const fromHeader = header(req, 'x-user-id');
+    if (fromHeader)
+        return fromHeader;
     const user = req.user;
     if (user?.id != null)
         return String(user.id);
@@ -102,7 +137,25 @@ function getUserId(req) {
         return String(user.sub);
     if (user?.userId != null)
         return String(user.userId);
+    const nameId = claim(req, 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier');
+    if (nameId)
+        return nameId;
     return 'anonymous';
+}
+function getUserGroup(req) {
+    const fromHeader = header(req, 'x-permission-group');
+    if (fromHeader)
+        return fromHeader;
+    const fromClaim = claim(req, 'PermissionGroupName') ||
+        String(req.user?.PermissionGroupName ?? req.user?.permissionGroupName ?? '').trim();
+    return fromClaim || null;
+}
+function getClientId(req) {
+    const fromHeader = header(req, 'x-client-id');
+    if (fromHeader)
+        return fromHeader;
+    const fromClaim = claim(req, 'client_id') || claim(req, 'guest_client_id');
+    return fromClaim || null;
 }
 function isCriticalSecurityEvent(auditInfo) {
     return (auditInfo.statusCode === 401 ||

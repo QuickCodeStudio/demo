@@ -123,6 +123,7 @@ let BackgroundAuditLogWriter = BackgroundAuditLogWriter_1 = class BackgroundAudi
             return;
         try {
             const dbType = (0, db_config_1.normalizeDbType)(rawType);
+            await ensureClientIdColumn(this.dataSource, dbType, this.logger);
             for (const log of batch)
                 coalesceNullableStringsForInsert(log);
             const sql = insertAuditSql(dbType);
@@ -178,6 +179,7 @@ function coalesceNullableStringsForInsert(log) {
     log.changeSummary ??= '';
     log.ipAddress ??= '';
     log.userAgent ??= '';
+    log.clientId ??= '';
     log.correlationId ??= '';
     log.requestModule ??= '';
     log.requestPath ??= '';
@@ -205,23 +207,49 @@ function toNamedParams(log) {
         ChangeSummary: log.changeSummary,
         IpAddress: log.ipAddress,
         UserAgent: log.userAgent,
+        ClientId: log.clientId,
         CorrelationId: log.correlationId,
         IsSuccess: log.isSuccess,
         ErrorMessage: log.errorMessage,
         Hash: log.hash,
     };
 }
+let clientIdColumnReady = false;
+async function ensureClientIdColumn(dataSource, databaseType, logger) {
+    if (clientIdColumnReady)
+        return;
+    try {
+        let sql = null;
+        switch (databaseType) {
+            case 'mssql':
+                sql = `IF COL_LENGTH('dbo.AUDIT_LOGS', 'CLIENT_ID') IS NULL ALTER TABLE [dbo].[AUDIT_LOGS] ADD [CLIENT_ID] nvarchar(100) NULL;`;
+                break;
+            case 'mysql':
+                sql = `ALTER TABLE \`AUDIT_LOGS\` ADD COLUMN IF NOT EXISTS \`CLIENT_ID\` varchar(100) NULL;`;
+                break;
+            default:
+                sql = `ALTER TABLE "AUDIT_LOGS" ADD COLUMN IF NOT EXISTS "CLIENT_ID" varchar(100) NULL;`;
+                break;
+        }
+        if (sql)
+            await dataSource.query(sql);
+        clientIdColumnReady = true;
+    }
+    catch (err) {
+        logger.warn(`Could not ensure AUDIT_LOGS.CLIENT_ID column; continuing without alter. ${err}`);
+    }
+}
 function insertAuditSql(databaseType) {
     switch (databaseType) {
         case 'mssql':
-            return `INSERT INTO [dbo].[AUDIT_LOGS] ([ID], [ENTITY_NAME], [ENTITY_ID], [ACTION], [USER_ID], [USER_NAME], [USER_GROUP], [TIMESTAMP], [DURATION_MS], [STATUS_CODE], [REQUEST_MODULE], [REQUEST_PATH], [OLD_VALUES], [NEW_VALUES], [CHANGED_COLUMNS], [IS_CHANGED], [CHANGE_SUMMARY], [IP_ADDRESS], [USER_AGENT], [CORRELATION_ID], [IS_SUCCESS], [ERROR_MESSAGE], [HASH])
-VALUES (@Id, @EntityName, @EntityId, @Action, @UserId, @UserName, @UserGroup, @Timestamp, @DurationMs, @StatusCode, @RequestModule, @RequestPath, @OldValues, @NewValues, @ChangedColumns, @IsChanged, @ChangeSummary, @IpAddress, @UserAgent, @CorrelationId, @IsSuccess, @ErrorMessage, @Hash);`;
+            return `INSERT INTO [dbo].[AUDIT_LOGS] ([ID], [ENTITY_NAME], [ENTITY_ID], [ACTION], [USER_ID], [USER_NAME], [USER_GROUP], [TIMESTAMP], [DURATION_MS], [STATUS_CODE], [REQUEST_MODULE], [REQUEST_PATH], [OLD_VALUES], [NEW_VALUES], [CHANGED_COLUMNS], [IS_CHANGED], [CHANGE_SUMMARY], [IP_ADDRESS], [USER_AGENT], [CLIENT_ID], [CORRELATION_ID], [IS_SUCCESS], [ERROR_MESSAGE], [HASH])
+VALUES (@Id, @EntityName, @EntityId, @Action, @UserId, @UserName, @UserGroup, @Timestamp, @DurationMs, @StatusCode, @RequestModule, @RequestPath, @OldValues, @NewValues, @ChangedColumns, @IsChanged, @ChangeSummary, @IpAddress, @UserAgent, @ClientId, @CorrelationId, @IsSuccess, @ErrorMessage, @Hash);`;
         case 'mysql':
-            return `INSERT INTO \`AUDIT_LOGS\` (\`ID\`, \`ENTITY_NAME\`, \`ENTITY_ID\`, \`ACTION\`, \`USER_ID\`, \`USER_NAME\`, \`USER_GROUP\`, \`TIMESTAMP\`, \`DURATION_MS\`, \`STATUS_CODE\`, \`REQUEST_MODULE\`, \`REQUEST_PATH\`, \`OLD_VALUES\`, \`NEW_VALUES\`, \`CHANGED_COLUMNS\`, \`IS_CHANGED\`, \`CHANGE_SUMMARY\`, \`IP_ADDRESS\`, \`USER_AGENT\`, \`CORRELATION_ID\`, \`IS_SUCCESS\`, \`ERROR_MESSAGE\`, \`HASH\`)
-VALUES (@Id, @EntityName, @EntityId, @Action, @UserId, @UserName, @UserGroup, @Timestamp, @DurationMs, @StatusCode, @RequestModule, @RequestPath, @OldValues, @NewValues, @ChangedColumns, @IsChanged, @ChangeSummary, @IpAddress, @UserAgent, @CorrelationId, @IsSuccess, @ErrorMessage, @Hash);`;
+            return `INSERT INTO \`AUDIT_LOGS\` (\`ID\`, \`ENTITY_NAME\`, \`ENTITY_ID\`, \`ACTION\`, \`USER_ID\`, \`USER_NAME\`, \`USER_GROUP\`, \`TIMESTAMP\`, \`DURATION_MS\`, \`STATUS_CODE\`, \`REQUEST_MODULE\`, \`REQUEST_PATH\`, \`OLD_VALUES\`, \`NEW_VALUES\`, \`CHANGED_COLUMNS\`, \`IS_CHANGED\`, \`CHANGE_SUMMARY\`, \`IP_ADDRESS\`, \`USER_AGENT\`, \`CLIENT_ID\`, \`CORRELATION_ID\`, \`IS_SUCCESS\`, \`ERROR_MESSAGE\`, \`HASH\`)
+VALUES (@Id, @EntityName, @EntityId, @Action, @UserId, @UserName, @UserGroup, @Timestamp, @DurationMs, @StatusCode, @RequestModule, @RequestPath, @OldValues, @NewValues, @ChangedColumns, @IsChanged, @ChangeSummary, @IpAddress, @UserAgent, @ClientId, @CorrelationId, @IsSuccess, @ErrorMessage, @Hash);`;
         default:
-            return `INSERT INTO "AUDIT_LOGS" ("ID", "ENTITY_NAME", "ENTITY_ID", "ACTION", "USER_ID", "USER_NAME", "USER_GROUP", "TIMESTAMP", "DURATION_MS", "STATUS_CODE", "REQUEST_MODULE", "REQUEST_PATH", "OLD_VALUES", "NEW_VALUES", "CHANGED_COLUMNS", "IS_CHANGED", "CHANGE_SUMMARY", "IP_ADDRESS", "USER_AGENT", "CORRELATION_ID", "IS_SUCCESS", "ERROR_MESSAGE", "HASH")
-VALUES (@Id, @EntityName, @EntityId, @Action, @UserId, @UserName, @UserGroup, @Timestamp, @DurationMs, @StatusCode, @RequestModule, @RequestPath, @OldValues, @NewValues, @ChangedColumns, @IsChanged, @ChangeSummary, @IpAddress, @UserAgent, @CorrelationId, @IsSuccess, @ErrorMessage, @Hash);`;
+            return `INSERT INTO "AUDIT_LOGS" ("ID", "ENTITY_NAME", "ENTITY_ID", "ACTION", "USER_ID", "USER_NAME", "USER_GROUP", "TIMESTAMP", "DURATION_MS", "STATUS_CODE", "REQUEST_MODULE", "REQUEST_PATH", "OLD_VALUES", "NEW_VALUES", "CHANGED_COLUMNS", "IS_CHANGED", "CHANGE_SUMMARY", "IP_ADDRESS", "USER_AGENT", "CLIENT_ID", "CORRELATION_ID", "IS_SUCCESS", "ERROR_MESSAGE", "HASH")
+VALUES (@Id, @EntityName, @EntityId, @Action, @UserId, @UserName, @UserGroup, @Timestamp, @DurationMs, @StatusCode, @RequestModule, @RequestPath, @OldValues, @NewValues, @ChangedColumns, @IsChanged, @ChangeSummary, @IpAddress, @UserAgent, @ClientId, @CorrelationId, @IsSuccess, @ErrorMessage, @Hash);`;
     }
 }
 //# sourceMappingURL=background-audit-log-writer.js.map

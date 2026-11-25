@@ -23,6 +23,7 @@ function createAuditLog(partial) {
         changeSummary: partial.changeSummary ?? null,
         ipAddress: partial.ipAddress ?? null,
         userAgent: partial.userAgent ?? null,
+        clientId: partial.clientId ?? null,
         correlationId: partial.correlationId ?? null,
         isSuccess: partial.isSuccess ?? true,
         errorMessage: partial.errorMessage ?? null,

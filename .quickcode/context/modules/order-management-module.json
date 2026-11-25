@@ -1,0 +1,82 @@
+﻿{
+  "exportedAt": "2026-11-25T09:49:14.7710621Z",
+  "notSourceOfTruth": true,
+  "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
+  "projectName": "demo",
+  "contextId": "f2000001-0000-4000-8000-000000000013",
+  "projectContextId": "f2000001-0000-4000-8000-000000000001",
+  "moduleId": "OrderManagementModule",
+  "moduleName": "OrderManagementModule",
+  "moduleKind": "Generated",
+  "version": 1,
+  "status": "Approved",
+  "isActive": true,
+  "lastGeneratedFromVersion": null,
+  "lastGeneratedAt": null,
+  "sourceProjectAnalysisId": null,
+  "sourceModuleAnalysisId": null,
+  "createdDate": "2026-04-27T13:43:50",
+  "updatedDate": "2026-08-28T00:00:00",
+  "payload": {
+    "module": {
+      "id": "OrderManagementModule",
+      "name": "OrderManagementModule",
+      "description": "Customer orders, order items, shipments, shipping methods, and return requests.",
+      "suggestedTables": [
+        "ORDERS",
+        "ORDER_ITEMS",
+        "SHIPMENTS",
+        "SHIPPING_METHODS",
+        "ORDER_STATUS_HISTORY",
+        "ORDER_STATUS_MANAGER",
+        "RETURN_REQUESTS"
+      ]
+    },
+    "domainConcepts": [
+      {
+        "name": "Order Status"
+      },
+      {
+        "name": "Shipment Status"
+      },
+      {
+        "name": "Return Status"
+      },
+      {
+        "name": "Order"
+      },
+      {
+        "name": "Order Item"
+      },
+      {
+        "name": "Shipment"
+      },
+      {
+        "name": "Shipping Method"
+      },
+      {
+        "name": "Order Status History"
+      },
+      {
+        "name": "Order Status Manager"
+      },
+      {
+        "name": "Return Request"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "ordermanagementmodule-crud",
+        "name": "Manage OrderManagement data",
+        "description": "CRUD and queries over OrderManagementModule tables."
+      }
+    ],
+    "processes": [
+      {
+        "id": "ordermanagementmodule-read",
+        "name": "Query OrderManagementModule",
+        "description": "Read-only access to OrderManagementModule schema for Ask AI."
+      }
+    ]
+  }
+}

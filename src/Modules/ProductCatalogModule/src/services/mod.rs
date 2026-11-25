@@ -1,1 +1,18 @@
-//! Generated services (*.g.rs) are emitted here when ArchitecturalPattern = Service.
+#[path = "product_service.g.rs"]
+pub mod product_service;
+#[path = "product_variant_service.g.rs"]
+pub mod product_variant_service;
+#[path = "category_service.g.rs"]
+pub mod category_service;
+#[path = "product_category_service.g.rs"]
+pub mod product_category_service;
+#[path = "brand_service.g.rs"]
+pub mod brand_service;
+#[path = "attribute_definition_service.g.rs"]
+pub mod attribute_definition_service;
+#[path = "attribute_value_service.g.rs"]
+pub mod attribute_value_service;
+#[path = "product_variant_attribute_service.g.rs"]
+pub mod product_variant_attribute_service;
+#[path = "audit_log_service.g.rs"]
+pub mod audit_log_service;

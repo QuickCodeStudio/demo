@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.quickcode.module.db.SeedSupportTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-01T17:52:00.914Z" hostname="Uzeyirs-Mac.local" time="0.087">
+  <properties/>
+  <testcase name="quoteIdentEscapesPerDialect()" classname="com.quickcode.module.db.SeedSupportTest" time="0.057"/>
+  <testcase name="stripBomBeforeHash()" classname="com.quickcode.module.db.SeedSupportTest" time="0.002"/>
+  <testcase name="contentHashIsUppercaseSha256()" classname="com.quickcode.module.db.SeedSupportTest" time="0.001"/>
+  <testcase name="parseSeedRootGroupsTables()" classname="com.quickcode.module.db.SeedSupportTest" time="0.025"/>
+  <testcase name="buildRowKeyMatchesJsonStringifySemantics()" classname="com.quickcode.module.db.SeedSupportTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
