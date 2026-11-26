@@ -1,5 +1,5 @@
 ﻿{
-  "exportedAt": "2026-11-25T21:10:28.8549792Z",
+  "exportedAt": "2026-11-26T15:29:12.756301Z",
   "notSourceOfTruth": true,
   "projectId": "019dcfe7-9b31-77ac-b31a-1fc6f2a10832",
   "projectName": "demo",
@@ -25,31 +25,1835 @@
         "id": "FinanceSettlementModule",
         "name": "FinanceSettlementModule",
         "kind": "GENERATED",
-        "description": "Seller payouts, commission entries, transaction ledger, and financial adjustments for marketplace settlement."
+        "description": "Seller payouts, commission entries, transaction ledger, and financial adjustments for marketplace settlement.",
+        "screens": [
+          {
+            "name": "Payouts",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on pending payouts, ordered by the date they were requested. The admin selects rows and approves them together, then marks one payout paid. A separate call lists one seller\u0027s payouts.",
+            "purpose": "Added because the admin approves several pending payouts at once, in request-date order.",
+            "filters": [],
+            "columns": [
+              "SELLER_ID",
+              "NET_PAYOUT_AMOUNT",
+              "STATUS",
+              "REQUESTED_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_PENDING_PAYOUTS",
+                "kind": "Query",
+                "table": "SELLER_PAYOUTS",
+                "parameters": [],
+                "fixed": [
+                  "STATUS[PENDING]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SELLER_ID",
+                  "NET_PAYOUT_AMOUNT",
+                  "REQUESTED_DATE"
+                ]
+              },
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "SELLER_PAYOUTS",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NET_PAYOUT_AMOUNT",
+                  "STATUS",
+                  "REQUESTED_DATE",
+                  "CREATED_DATE"
+                ]
+              },
+              {
+                "name": "APPROVE",
+                "kind": "Update",
+                "table": "SELLER_PAYOUTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[APPROVED]",
+                  "APPROVED_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Approve",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "MARK_AS_PAID",
+                "kind": "Update",
+                "table": "SELLER_PAYOUTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[PAID]",
+                  "PAID_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Mark as paid",
+                "confirm": true,
+                "destructive": false
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Approve",
+                "endpoint": "APPROVE"
+              },
+              {
+                "name": "Mark as paid",
+                "endpoint": "MARK_AS_PAID"
+              }
+            ],
+            "sort": "REQUESTED_DATE",
+            "selection": "multiple"
+          },
+          {
+            "name": "Commission entries",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on pending commission entries, with seller, order, and amount. A separate call lists entries for one seller.",
+            "purpose": "Added because settlement starts from the pending commission list. One seller\u0027s entries stay a separate call.",
+            "filters": [],
+            "columns": [
+              "SELLER_ID",
+              "ORDER_ID",
+              "COMMISSION_AMOUNT",
+              "STATUS"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_PENDING_COMMISSIONS",
+                "kind": "Query",
+                "table": "COMMISSION_ENTRIES",
+                "parameters": [],
+                "fixed": [
+                  "STATUS[PENDING]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SELLER_ID",
+                  "ORDER_ID",
+                  "COMMISSION_AMOUNT"
+                ]
+              },
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "COMMISSION_ENTRIES",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "ORDER_ID",
+                  "COMMISSION_AMOUNT",
+                  "CALCULATED_DATE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt"
+          },
+          {
+            "name": "Ledger",
+            "application": "Seller Portal",
+            "template": "list",
+            "roles": [
+              "Seller",
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on the signed-in seller\u0027s ledger. Rows are grouped by transaction type and ordered by date. A separate call limits that ledger to a date range.",
+            "purpose": "Added because the seller reads the ledger in sections by type, ordered by date.",
+            "filters": [
+              "SELLER_ID",
+              "TRANSACTION_DATE"
+            ],
+            "columns": [
+              "TRANSACTION_TYPE",
+              "AMOUNT",
+              "DESCRIPTION",
+              "TRANSACTION_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "TRANSACTION_LEDGER",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "TRANSACTION_TYPE",
+                  "AMOUNT",
+                  "DESCRIPTION",
+                  "TRANSACTION_DATE"
+                ]
+              },
+              {
+                "name": "GET_TRANSACTIONS_BY_DATE_RANGE",
+                "kind": "Query",
+                "table": "TRANSACTION_LEDGER",
+                "parameters": [
+                  "SELLER_ID",
+                  "TRANSACTION_DATE[Between]"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "TRANSACTION_TYPE",
+                  "AMOUNT",
+                  "DESCRIPTION",
+                  "TRANSACTION_DATE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "filterBindings": [
+              {
+                "parameter": "SELLER_ID",
+                "source": "session"
+              }
+            ],
+            "groupBy": "TRANSACTION_TYPE",
+            "sort": "TRANSACTION_DATE"
+          },
+          {
+            "name": "Payout periods",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on the open payout period, ordered by start date. The admin closes that period and it is no longer the open period.",
+            "purpose": "Added because the admin lists the open period in start-date order and closes it.",
+            "filters": [],
+            "columns": [
+              "PERIOD_NAME",
+              "START_DATE",
+              "END_DATE",
+              "IS_CLOSED"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_OPEN_PERIOD",
+                "kind": "Query",
+                "table": "PAYOUT_PERIODS",
+                "parameters": [],
+                "fixed": [
+                  "IS_CLOSED[false]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "PERIOD_NAME",
+                  "START_DATE",
+                  "END_DATE"
+                ]
+              },
+              {
+                "name": "CLOSE_PERIOD",
+                "kind": "Update",
+                "table": "PAYOUT_PERIODS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "IS_CLOSED[true]",
+                  "CLOSED_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Close period",
+                "confirm": true,
+                "destructive": false
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Close period",
+                "endpoint": "CLOSE_PERIOD"
+              }
+            ],
+            "sort": "START_DATE"
+          }
+        ]
       },
       {
         "id": "OrderManagementModule",
         "name": "OrderManagementModule",
         "kind": "GENERATED",
-        "description": "Customer orders, order items, shipments, shipping methods, and return requests."
+        "description": "Customer orders, order items, shipments, shipping methods, and return requests.",
+        "screens": [
+          {
+            "name": "My orders",
+            "application": "Customer site",
+            "template": "list",
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on the signed-in buyer\u0027s orders, ordered by date, with order number, status, total, and date. On a wide screen the order stays beside the list.",
+            "purpose": "Added because the buyer tracks their own orders, sorted by date, and opens one beside the list.",
+            "filters": [
+              "CUSTOMER_ID"
+            ],
+            "columns": [
+              "ORDER_NUMBER",
+              "STATUS",
+              "TOTAL_AMOUNT",
+              "ORDER_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_CUSTOMER_ID",
+                "kind": "Query",
+                "table": "ORDERS",
+                "parameters": [
+                  "CUSTOMER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "ORDER_NUMBER",
+                  "STATUS",
+                  "TOTAL_AMOUNT",
+                  "ORDER_DATE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "sort": "ORDER_DATE",
+            "layout": "split",
+            "filterBindings": [
+              {
+                "parameter": "CUSTOMER_ID",
+                "source": "session"
+              }
+            ]
+          },
+          {
+            "name": "All orders",
+            "application": "Customer site",
+            "roles": [
+              "Buyer",
+              "Platform Admin"
+            ],
+            "scene": "The screen opens with a customer picker. Choosing a customer reloads that customer\u0027s orders, ordered by date. On a wide screen the order stays beside the list.",
+            "purpose": "Added because support browses orders by customer, sorts them by date, and opens one beside the list.",
+            "filters": [
+              "CUSTOMER_ID"
+            ],
+            "filterBindings": [
+              {
+                "parameter": "CUSTOMER_ID",
+                "source": "picker",
+                "options": {
+                  "name": "LIST",
+                  "kind": "Query",
+                  "table": "ORDERS",
+                  "parameters": [],
+                  "fixed": [],
+                  "select": [
+                    "CUSTOMER_ID"
+                  ],
+                  "value": "CUSTOMER_ID",
+                  "label": "CUSTOMER_ID"
+                }
+              }
+            ],
+            "columns": [
+              "ORDER_NUMBER",
+              "STATUS",
+              "TOTAL_AMOUNT",
+              "ORDER_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_CUSTOMER_ID",
+                "kind": "Query",
+                "table": "ORDERS",
+                "role": "primary",
+                "parameters": [
+                  "CUSTOMER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "ORDER_NUMBER",
+                  "STATUS",
+                  "TOTAL_AMOUNT",
+                  "ORDER_DATE"
+                ]
+              },
+              {
+                "name": "LIST",
+                "kind": "Query",
+                "table": "ORDERS",
+                "role": "lookup",
+                "parameters": [],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "CUSTOMER_ID"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "template": "list",
+            "sort": "ORDER_DATE",
+            "layout": "split"
+          },
+          {
+            "name": "Seller orders",
+            "application": "Seller Portal",
+            "template": "list",
+            "roles": [
+              "Seller"
+            ],
+            "scene": "The screen opens on the signed-in seller\u0027s orders, ordered by date. On a wide screen the order stays beside the list. The seller uses this list to start fulfillment.",
+            "purpose": "Added because the seller fulfills their own orders, sorted by date, and opens one beside the list.",
+            "filters": [
+              "SELLER_ID"
+            ],
+            "columns": [
+              "ORDER_NUMBER",
+              "STATUS",
+              "TOTAL_AMOUNT",
+              "ORDER_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "ORDERS",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "ORDER_NUMBER",
+                  "STATUS",
+                  "TOTAL_AMOUNT",
+                  "ORDER_DATE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "sort": "ORDER_DATE",
+            "layout": "split",
+            "filterBindings": [
+              {
+                "parameter": "SELLER_ID",
+                "source": "session"
+              }
+            ]
+          },
+          {
+            "name": "Order",
+            "application": "Customer site",
+            "template": "detail",
+            "openedFrom": [
+              {
+                "screen": "My orders",
+                "via": "row"
+              },
+              {
+                "screen": "Seller orders",
+                "via": "row"
+              },
+              {
+                "screen": "All orders",
+                "via": "row"
+              }
+            ],
+            "roles": [
+              "Buyer",
+              "Seller"
+            ],
+            "scene": "The screen opens on one order found by order number, with status and total. Line items show product name, SKU, quantity, and price. The buyer or seller cancels the order and the status becomes cancelled.",
+            "purpose": "Added because an order is opened and cancelled: list the order, list its items, and cancel.",
+            "filters": [
+              "ORDER_NUMBER"
+            ],
+            "columns": [
+              "ORDER_NUMBER",
+              "STATUS",
+              "TOTAL_AMOUNT"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_ORDER_NUMBER",
+                "kind": "Query",
+                "table": "ORDERS",
+                "parameters": [
+                  "ORDER_NUMBER"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "STATUS",
+                  "TOTAL_AMOUNT"
+                ],
+                "role": "primary"
+              },
+              {
+                "name": "GET_BY_ORDER_ID",
+                "kind": "Query",
+                "table": "ORDER_ITEMS",
+                "parameters": [
+                  "ORDER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "PRODUCT_NAME",
+                  "SKU",
+                  "QUANTITY",
+                  "UNIT_PRICE",
+                  "TOTAL_PRICE"
+                ]
+              },
+              {
+                "name": "CANCEL_ORDER",
+                "kind": "Update",
+                "table": "ORDERS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[CANCELLED]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Cancel order",
+                "confirm": true,
+                "destructive": true
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Cancel order",
+                "endpoint": "CANCEL_ORDER"
+              }
+            ],
+            "related": [
+              {
+                "name": "Items",
+                "endpoint": "GET_BY_ORDER_ID"
+              }
+            ]
+          },
+          {
+            "name": "Checkout",
+            "application": "Customer site",
+            "template": "list",
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on active shipping methods, ordered by cost, with name and cost. The buyer picks one method. Creating the order itself is the default create and is not a separate locked call.",
+            "purpose": "Added because checkout lists active shipping methods, cheapest first.",
+            "filters": [],
+            "columns": [
+              "NAME",
+              "COST"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE",
+                "kind": "Query",
+                "table": "SHIPPING_METHODS",
+                "parameters": [],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "COST"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "sort": "COST"
+          },
+          {
+            "name": "Shipment",
+            "application": "Seller Portal",
+            "template": "detail",
+            "openedFrom": [
+              {
+                "screen": "Seller orders",
+                "via": "row"
+              }
+            ],
+            "roles": [
+              "Seller"
+            ],
+            "scene": "The screen opens on the shipment for an order. Mark as shipped opens the camera, reads a QR code into the tracking number, then marks the shipment in transit. Mark as delivered sets the status to delivered.",
+            "purpose": "Added because the seller scans a parcel code into the tracking number, then marks the shipment shipped or delivered.",
+            "filters": [
+              "ORDER_ID"
+            ],
+            "columns": [
+              "TRACKING_NUMBER",
+              "STATUS",
+              "SHIPPED_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_ORDER_ID",
+                "kind": "Query",
+                "table": "SHIPMENTS",
+                "parameters": [
+                  "ORDER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "TRACKING_NUMBER",
+                  "STATUS",
+                  "SHIPPED_DATE"
+                ]
+              },
+              {
+                "name": "MARK_AS_SHIPPED",
+                "kind": "Update",
+                "table": "SHIPMENTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[IN_TRANSIT]",
+                  "SHIPPED_DATE[Now]",
+                  "TRACKING_NUMBER"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Mark as shipped",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "MARK_AS_DELIVERED",
+                "kind": "Update",
+                "table": "SHIPMENTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[DELIVERED]",
+                  "DELIVERED_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Mark as delivered",
+                "confirm": true,
+                "destructive": false
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Mark as shipped",
+                "endpoint": "MARK_AS_SHIPPED",
+                "behavior": "scan",
+                "into": "TRACKING_NUMBER"
+              },
+              {
+                "name": "Mark as delivered",
+                "endpoint": "MARK_AS_DELIVERED"
+              }
+            ]
+          },
+          {
+            "name": "Returns",
+            "application": "Seller Portal",
+            "template": "list",
+            "roles": [
+              "Seller"
+            ],
+            "scene": "The screen opens on the signed-in seller\u0027s return requests that are still requested. The seller selects rows and approves them together, or rejects one request.",
+            "purpose": "Added because the seller approves several pending returns at once, and can still reject one.",
+            "filters": [
+              "SELLER_ID"
+            ],
+            "columns": [
+              "ORDER_ID",
+              "REASON",
+              "STATUS",
+              "REQUESTED_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_PENDING_RETURNS_BY_SELLER",
+                "kind": "Query",
+                "table": "RETURN_REQUESTS",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [
+                  "STATUS[REQUESTED]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "ORDER_ID",
+                  "REASON",
+                  "REQUESTED_DATE"
+                ]
+              },
+              {
+                "name": "APPROVE",
+                "kind": "Update",
+                "table": "RETURN_REQUESTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[APPROVED]",
+                  "UPDATED_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Approve",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "REJECT",
+                "kind": "Update",
+                "table": "RETURN_REQUESTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[REJECTED]",
+                  "UPDATED_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Reject",
+                "confirm": true,
+                "destructive": true
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Approve",
+                "endpoint": "APPROVE"
+              },
+              {
+                "name": "Reject",
+                "endpoint": "REJECT"
+              }
+            ],
+            "filterBindings": [
+              {
+                "parameter": "SELLER_ID",
+                "source": "session"
+              }
+            ],
+            "selection": "multiple"
+          }
+        ]
       },
       {
         "id": "PricingEngineModule",
         "name": "PricingEngineModule",
         "kind": "GENERATED",
-        "description": "Commission models, rules, seller assignments, category overrides, and promotional campaigns."
+        "description": "Commission models, rules, seller assignments, category overrides, and promotional campaigns.",
+        "screens": [
+          {
+            "name": "Commission models",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on active commission models, ordered by name. On a wide screen the model\u0027s rules stay beside the list. The admin deactivates a model and it leaves the active list.",
+            "purpose": "Added because the admin lists commission models by name and reads one model\u0027s rules beside the list.",
+            "filters": [
+              "NAME"
+            ],
+            "columns": [
+              "NAME",
+              "DESCRIPTION",
+              "IS_ACTIVE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE",
+                "kind": "Query",
+                "table": "COMMISSION_MODELS",
+                "parameters": [],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "DESCRIPTION"
+                ]
+              },
+              {
+                "name": "GET_BY_NAME",
+                "kind": "Query",
+                "table": "COMMISSION_MODELS",
+                "parameters": [
+                  "NAME"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "IS_ACTIVE"
+                ]
+              },
+              {
+                "name": "DEACTIVATE",
+                "kind": "Update",
+                "table": "COMMISSION_MODELS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "IS_ACTIVE[false]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Deactivate",
+                "confirm": true,
+                "destructive": true
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Deactivate",
+                "endpoint": "DEACTIVATE"
+              }
+            ],
+            "sort": "NAME",
+            "layout": "split"
+          },
+          {
+            "name": "Commission rules",
+            "application": "Marketplace Admin",
+            "template": "detail",
+            "openedFrom": [
+              {
+                "screen": "Commission models",
+                "via": "row"
+              }
+            ],
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on the active rules of one commission model, with scope, type, and rate. The admin reads which rule applies before assigning the model to a seller.",
+            "purpose": "Added because a commission model has scoped rules: list the active rules of one model.",
+            "filters": [
+              "COMMISSION_MODEL_ID"
+            ],
+            "columns": [
+              "SCOPE",
+              "SCOPE_ID",
+              "COMMISSION_TYPE",
+              "PERCENTAGE_RATE",
+              "FIXED_AMOUNT"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE_RULES_BY_MODEL",
+                "kind": "Query",
+                "table": "COMMISSION_RULES",
+                "parameters": [
+                  "COMMISSION_MODEL_ID"
+                ],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SCOPE",
+                  "SCOPE_ID",
+                  "COMMISSION_TYPE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt"
+          },
+          {
+            "name": "Seller commission",
+            "application": "Marketplace Admin",
+            "template": "detail",
+            "openedFrom": [
+              {
+                "screen": "Sellers",
+                "via": "row"
+              }
+            ],
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on the commission model assigned to one seller, with the model and the date it became effective. The admin checks the assignment before settlement.",
+            "purpose": "Added because each seller has a commission assignment: list the assignment for one seller.",
+            "filters": [
+              "SELLER_ID"
+            ],
+            "columns": [
+              "COMMISSION_MODEL_ID",
+              "EFFECTIVE_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "SELLER_COMMISSION_ASSIGNMENTS",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "COMMISSION_MODEL_ID",
+                  "EFFECTIVE_DATE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt"
+          },
+          {
+            "name": "Campaigns",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on active campaigns, ordered by start date. A separate call lists campaigns whose start date falls in a range.",
+            "purpose": "Added because the admin lists active campaigns in start-date order.",
+            "filters": [
+              "START_DATE"
+            ],
+            "columns": [
+              "NAME",
+              "START_DATE",
+              "END_DATE",
+              "DISCOUNT_PERCENTAGE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE_CAMPAIGNS",
+                "kind": "Query",
+                "table": "PROMOTIONAL_CAMPAIGNS",
+                "parameters": [],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "START_DATE",
+                  "END_DATE"
+                ]
+              },
+              {
+                "name": "GET_CAMPAIGNS_IN_DATE_RANGE",
+                "kind": "Query",
+                "table": "PROMOTIONAL_CAMPAIGNS",
+                "parameters": [
+                  "START_DATE[Between]"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "DISCOUNT_PERCENTAGE"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "sort": "START_DATE"
+          }
+        ]
       },
       {
         "id": "ProductCatalogModule",
         "name": "ProductCatalogModule",
         "kind": "GENERATED",
-        "description": "Manages all aspects of products, including categorization, variants, attributes, and brand information. This module serves as the central source of truth for all product data available on the marketplace."
+        "description": "Manages all aspects of products, including categorization, variants, attributes, and brand information. This module serves as the central source of truth for all product data available on the marketplace.",
+        "screens": [
+          {
+            "name": "Shop",
+            "application": "Customer site",
+            "template": "dashboard",
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on cards for the catalog, brands, categories, the buyer\u0027s orders, and checkout. Each card opens that screen.",
+            "purpose": "Added because the buyer starts from one screen and opens the catalog pages.",
+            "filters": [],
+            "columns": [],
+            "cards": [
+              {
+                "name": "Products",
+                "screen": "Products"
+              },
+              {
+                "name": "Brands",
+                "screen": "Brands"
+              },
+              {
+                "name": "Categories",
+                "screen": "Categories"
+              },
+              {
+                "name": "My orders",
+                "screen": "My orders"
+              },
+              {
+                "name": "Checkout",
+                "screen": "Checkout"
+              }
+            ],
+            "endpoints": [],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt"
+          },
+          {
+            "name": "Products",
+            "application": "Customer site",
+            "template": "list",
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on featured products, each row showing the photo, name, and SKU. Rows are ordered by name. The buyer types a name and the loaded rows narrow. On a wide screen the product stays beside the list.",
+            "purpose": "Added because the buyer browses featured products, sorts them by name, and opens one product beside the list.",
+            "filters": [
+              "NAME"
+            ],
+            "columns": [
+              "NAME",
+              "SKU",
+              "PHOTO",
+              "STATUS"
+            ],
+            "endpoints": [
+              {
+                "name": "SEARCH_PRODUCTS",
+                "kind": "Query",
+                "table": "PRODUCTS",
+                "parameters": [
+                  "NAME[Contains]"
+                ],
+                "fixed": [
+                  "STATUS[ACTIVE]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SKU",
+                  "NAME",
+                  "PHOTO",
+                  "VIDEO"
+                ]
+              },
+              {
+                "name": "GET_FEATURED",
+                "kind": "Query",
+                "table": "PRODUCTS",
+                "parameters": [],
+                "fixed": [
+                  "IS_FEATURED[true]",
+                  "STATUS[ACTIVE]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SKU",
+                  "NAME",
+                  "PHOTO",
+                  "VIDEO"
+                ],
+                "role": "primary"
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Search",
+                "endpoint": "SEARCH_PRODUCTS"
+              }
+            ],
+            "sort": "NAME",
+            "layout": "split"
+          },
+          {
+            "name": "Product",
+            "application": "Customer site",
+            "template": "detail",
+            "openedFrom": [
+              {
+                "screen": "Products",
+                "via": "row"
+              }
+            ],
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on one product: name, SKU, description, photo, and status. Active variants for that product are listed with price and stock. The buyer reads the listing before ordering.",
+            "purpose": "Added because the buyer opens one catalog product: list its active variants.",
+            "filters": [
+              "SKU"
+            ],
+            "columns": [
+              "NAME",
+              "SKU",
+              "DESCRIPTION",
+              "PHOTO",
+              "STATUS"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_SKU",
+                "kind": "Query",
+                "table": "PRODUCTS",
+                "parameters": [
+                  "SKU"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "STATUS",
+                  "SELLER_ID",
+                  "PHOTO",
+                  "VIDEO",
+                  "DATASHEET"
+                ],
+                "role": "primary"
+              },
+              {
+                "name": "GET_ACTIVE_BY_PRODUCT_ID",
+                "kind": "Query",
+                "table": "PRODUCT_VARIANTS",
+                "parameters": [
+                  "PRODUCT_ID"
+                ],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SKU",
+                  "PRICE",
+                  "STOCK_QUANTITY"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "related": [
+              {
+                "name": "Variants",
+                "endpoint": "GET_ACTIVE_BY_PRODUCT_ID"
+              }
+            ]
+          },
+          {
+            "name": "Seller products",
+            "application": "Seller Portal",
+            "template": "list",
+            "roles": [
+              "Seller"
+            ],
+            "scene": "The screen opens on the seller\u0027s active products, with SKU, name, status, and photo. The seller picks a variant and changes its stock or its price. The row updates to the new stock or price.",
+            "purpose": "Added because the seller manages their own listings: list, update stock, and update price.",
+            "filters": [
+              "SELLER_ID"
+            ],
+            "columns": [
+              "SKU",
+              "NAME",
+              "STATUS",
+              "PHOTO"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE_BY_SELLER",
+                "kind": "Query",
+                "table": "PRODUCTS",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [
+                  "STATUS[ACTIVE]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SKU",
+                  "NAME",
+                  "STATUS",
+                  "PHOTO",
+                  "VIDEO"
+                ]
+              },
+              {
+                "name": "UPDATE_STOCK",
+                "kind": "Update",
+                "table": "PRODUCT_VARIANTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STOCK_QUANTITY"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Update stock",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "UPDATE_PRICE",
+                "kind": "Update",
+                "table": "PRODUCT_VARIANTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "PRICE"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Update price",
+                "confirm": true,
+                "destructive": false
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Update stock",
+                "endpoint": "UPDATE_STOCK"
+              },
+              {
+                "name": "Update price",
+                "endpoint": "UPDATE_PRICE"
+              }
+            ],
+            "filterBindings": [
+              {
+                "parameter": "SELLER_ID",
+                "source": "session"
+              }
+            ]
+          },
+          {
+            "name": "Product approval",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on products waiting for approval, with SKU, name, seller, and photo. The admin selects rows and approves them together, or rejects one row.",
+            "purpose": "Added because the admin approves several pending products at once, and can still reject one row.",
+            "filters": [],
+            "columns": [
+              "SKU",
+              "NAME",
+              "SELLER_ID",
+              "STATUS",
+              "PHOTO"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_PENDING_APPROVAL",
+                "kind": "Query",
+                "table": "PRODUCTS",
+                "parameters": [],
+                "fixed": [
+                  "STATUS[PENDING_APPROVAL]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SKU",
+                  "NAME",
+                  "SELLER_ID",
+                  "PHOTO",
+                  "VIDEO",
+                  "DATASHEET"
+                ]
+              },
+              {
+                "name": "APPROVE",
+                "kind": "Update",
+                "table": "PRODUCTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[ACTIVE]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Approve",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "REJECT",
+                "kind": "Update",
+                "table": "PRODUCTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[INACTIVE]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Reject",
+                "confirm": true,
+                "destructive": true
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Approve",
+                "endpoint": "APPROVE"
+              },
+              {
+                "name": "Reject",
+                "endpoint": "REJECT"
+              }
+            ],
+            "selection": "multiple"
+          },
+          {
+            "name": "Brands",
+            "application": "Customer site",
+            "template": "list",
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on active brands, ordered by name, each row showing the name and logo. The buyer types a name and the loaded rows narrow.",
+            "purpose": "Added because catalog browse lists active brands in name order and narrows them in the search field.",
+            "filters": [
+              "NAME"
+            ],
+            "columns": [
+              "NAME",
+              "LOGO",
+              "PHOTO"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE",
+                "kind": "Query",
+                "table": "BRANDS",
+                "parameters": [],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "LOGO",
+                  "PHOTO",
+                  "BRAND_VIDEO",
+                  "CATALOG_PDF"
+                ]
+              },
+              {
+                "name": "SEARCH_BY_NAME",
+                "kind": "Query",
+                "table": "BRANDS",
+                "parameters": [
+                  "NAME[Contains]"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "LOGO",
+                  "PHOTO",
+                  "BRAND_VIDEO",
+                  "CATALOG_PDF"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Search",
+                "endpoint": "SEARCH_BY_NAME"
+              }
+            ],
+            "sort": "NAME"
+          },
+          {
+            "name": "Categories",
+            "application": "Customer site",
+            "template": "list",
+            "roles": [
+              "Buyer"
+            ],
+            "scene": "The screen opens on active categories on one page. Rows with the same parent sit under that parent as a heading. The buyer reads the tree without leaving the list.",
+            "purpose": "Added because catalog browse groups categories by their parent on one page.",
+            "filters": [
+              "PARENT_CATEGORY_ID"
+            ],
+            "columns": [
+              "NAME",
+              "SLUG",
+              "ICON",
+              "PARENT_CATEGORY_ID"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_ACTIVE",
+                "kind": "Query",
+                "table": "CATEGORIES",
+                "parameters": [],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "SLUG",
+                  "ICON",
+                  "BANNER",
+                  "INTRO_VIDEO",
+                  "PARENT_CATEGORY_ID"
+                ]
+              },
+              {
+                "name": "GET_SUB_CATEGORIES",
+                "kind": "Query",
+                "table": "CATEGORIES",
+                "parameters": [
+                  "PARENT_CATEGORY_ID"
+                ],
+                "fixed": [
+                  "IS_ACTIVE[true]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "SLUG",
+                  "ICON",
+                  "BANNER",
+                  "INTRO_VIDEO"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "groupBy": "PARENT_CATEGORY_ID"
+          }
+        ]
       },
       {
         "id": "SellerManagementModule",
         "name": "SellerManagementModule",
         "kind": "GENERATED",
-        "description": "Manages seller onboarding, store profiles, legal documents, and performance metrics. This module is the central hub for all seller-related information and administrative tasks."
+        "description": "Manages seller onboarding, store profiles, legal documents, and performance metrics. This module is the central hub for all seller-related information and administrative tasks.",
+        "screens": [
+          {
+            "name": "Sellers",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on sellers filtered by status, ordered by the date they joined. The admin selects rows and approves them together, or suspends or rejects one seller.",
+            "purpose": "Added because the admin lists sellers by status, sorts them by join date, and approves a selection.",
+            "filters": [
+              "STATUS"
+            ],
+            "columns": [
+              "COMPANY_NAME",
+              "CONTACT_EMAIL",
+              "STATUS",
+              "JOINED_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_STATUS",
+                "kind": "Query",
+                "table": "SELLERS",
+                "parameters": [
+                  "STATUS"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "COMPANY_NAME",
+                  "CONTACT_EMAIL",
+                  "JOINED_DATE"
+                ]
+              },
+              {
+                "name": "APPROVE",
+                "kind": "Update",
+                "table": "SELLERS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[ACTIVE]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Approve",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "SUSPEND",
+                "kind": "Update",
+                "table": "SELLERS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[SUSPENDED]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Suspend",
+                "confirm": true,
+                "destructive": true
+              },
+              {
+                "name": "REJECT",
+                "kind": "Update",
+                "table": "SELLERS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[REJECTED]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Reject",
+                "confirm": true,
+                "destructive": true
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Approve",
+                "endpoint": "APPROVE"
+              },
+              {
+                "name": "Suspend",
+                "endpoint": "SUSPEND"
+              },
+              {
+                "name": "Reject",
+                "endpoint": "REJECT"
+              }
+            ],
+            "sort": "JOINED_DATE",
+            "selection": "multiple"
+          },
+          {
+            "name": "Store",
+            "application": "Seller Portal",
+            "template": "list",
+            "roles": [
+              "Seller"
+            ],
+            "scene": "The screen opens on the signed-in seller\u0027s store, ordered by name. The seller edits the name, description, and logo.",
+            "purpose": "Added because the seller lists their store in name order and updates its profile.",
+            "filters": [
+              "SELLER_ID"
+            ],
+            "columns": [
+              "NAME",
+              "SLUG",
+              "IS_ACTIVE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "STORES",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "NAME",
+                  "SLUG",
+                  "IS_ACTIVE"
+                ]
+              },
+              {
+                "name": "UPDATE_PROFILE",
+                "kind": "Update",
+                "table": "STORES",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "NAME",
+                  "DESCRIPTION",
+                  "LOGO_URL"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Update profile",
+                "confirm": true,
+                "destructive": false
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Update profile",
+                "endpoint": "UPDATE_PROFILE"
+              }
+            ],
+            "filterBindings": [
+              {
+                "parameter": "SELLER_ID",
+                "source": "session"
+              }
+            ],
+            "sort": "NAME"
+          },
+          {
+            "name": "Seller documents",
+            "application": "Marketplace Admin",
+            "template": "list",
+            "roles": [
+              "Platform Admin"
+            ],
+            "scene": "The screen opens on documents still pending. The admin selects rows and verifies them together, or rejects one document with a reason.",
+            "purpose": "Added because the admin verifies several pending documents at once, and can still reject one.",
+            "filters": [],
+            "columns": [
+              "SELLER_ID",
+              "DOCUMENT_TYPE",
+              "STATUS",
+              "UPLOADED_DATE"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_PENDING_DOCUMENTS",
+                "kind": "Query",
+                "table": "SELLER_DOCUMENTS",
+                "parameters": [],
+                "fixed": [
+                  "STATUS[PENDING]"
+                ],
+                "set": [],
+                "select": [
+                  "ID",
+                  "SELLER_ID",
+                  "DOCUMENT_TYPE",
+                  "UPLOADED_DATE"
+                ]
+              },
+              {
+                "name": "VERIFY",
+                "kind": "Update",
+                "table": "SELLER_DOCUMENTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[VERIFIED]",
+                  "REVIEWED_DATE[Now]"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Verify",
+                "confirm": true,
+                "destructive": false
+              },
+              {
+                "name": "REJECT",
+                "kind": "Update",
+                "table": "SELLER_DOCUMENTS",
+                "parameters": [
+                  "ID"
+                ],
+                "fixed": [],
+                "set": [
+                  "STATUS[REJECTED]",
+                  "REVIEWED_DATE[Now]",
+                  "REJECTION_REASON"
+                ],
+                "select": [],
+                "role": "action",
+                "label": "Reject",
+                "confirm": true,
+                "destructive": true
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "ctas": [
+              {
+                "name": "Verify",
+                "endpoint": "VERIFY"
+              },
+              {
+                "name": "Reject",
+                "endpoint": "REJECT"
+              }
+            ],
+            "selection": "multiple"
+          },
+          {
+            "name": "Bank accounts",
+            "application": "Seller Portal",
+            "template": "list",
+            "roles": [
+              "Seller"
+            ],
+            "scene": "The screen opens on the signed-in seller\u0027s bank accounts, ordered by bank name. The seller reads the list before a payout.",
+            "purpose": "Added because the seller lists their bank accounts in bank-name order.",
+            "filters": [
+              "SELLER_ID"
+            ],
+            "columns": [
+              "BANK_NAME",
+              "ACCOUNT_HOLDER_NAME",
+              "IBAN",
+              "IS_DEFAULT",
+              "IS_VERIFIED"
+            ],
+            "endpoints": [
+              {
+                "name": "GET_BY_SELLER_ID",
+                "kind": "Query",
+                "table": "SELLER_BANK_ACCOUNTS",
+                "parameters": [
+                  "SELLER_ID"
+                ],
+                "fixed": [],
+                "set": [],
+                "select": [
+                  "ID",
+                  "BANK_NAME",
+                  "ACCOUNT_HOLDER_NAME",
+                  "IBAN",
+                  "IS_DEFAULT",
+                  "IS_VERIFIED"
+                ]
+              }
+            ],
+            "origin": "analysis",
+            "source": "marketplace-brief.txt",
+            "filterBindings": [
+              {
+                "parameter": "SELLER_ID",
+                "source": "session"
+              }
+            ],
+            "sort": "BANK_NAME"
+          }
+        ]
       }
     ],
     "domainConcepts": [
